@@ -1,0 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:lifeline/core/network/connection_checker.dart';
+import 'package:lifeline/features/authentication/data/data_source/auth_remote_data_source.dart';
+import 'package:lifeline/features/authentication/data/repository_impl/authentication_repository_impl.dart';
+import 'package:lifeline/features/authentication/domain/repository/authentication_repository.dart';
+import 'package:lifeline/features/authentication/domain/usecases/sign_in_email_usecase.dart';
+import 'package:lifeline/features/authentication/domain/usecases/signup_email_usecase.dart';
+import 'package:lifeline/features/diary/data/data_source/local/diary_local_data_source.dart';
+import 'package:lifeline/features/diary/data/data_source/remote/diary_remote_data_source.dart';
+import 'package:lifeline/features/diary/data/repository_impl/diary_repository_impl.dart';
+import 'package:lifeline/features/diary/domain/repository/diary_repository.dart';
+import 'package:lifeline/features/diary/domain/usecases/create_diary.dart';
+import 'package:lifeline/features/diary/domain/usecases/get_user_diaries.dart';
+import 'package:lifeline/features/diary/domain/usecases/update_diary.dart';
+import 'package:lifeline/features/user/data/data_source/user_local_data_source.dart';
+import 'package:lifeline/features/user/data/data_source/user_remote_data_source.dart';
+import 'package:lifeline/features/user/data/repository_impl/user_repository_impl.dart';
+import 'package:lifeline/features/user/domain/repository/user_repository.dart';
+import 'package:lifeline/features/user/domain/usecases/edit_user.dart';
+import 'package:lifeline/features/user/domain/usecases/get_user.dart';
+import 'package:lifeline/features/user/domain/usecases/save_user.dart';
+
+part 'init_dependencies_main.dart';
