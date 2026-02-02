@@ -114,7 +114,7 @@ class CreateDiaryController extends GetxController {
 
   bool validateEntry() {
     return mood.value.isNotEmpty &&
-        totalWordsCount.value > 100 &&
+        content.value.text.isNotEmpty&&
         title.value.text.isNotEmpty &&
         !creating.value;
   }

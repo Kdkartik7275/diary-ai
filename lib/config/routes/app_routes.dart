@@ -6,6 +6,9 @@ class Routes {
   static const home = '/home';
   static const writeDiary = '/writeDiary';
   static const story = '/story';
+  static const createStory = '/createStory';
+  static const createStoryManually = '/createStoryManually';
+  static const storyType = '/storyType';
   static const settings = '/settings';
   static const editProfile = '/editProfile';
 }

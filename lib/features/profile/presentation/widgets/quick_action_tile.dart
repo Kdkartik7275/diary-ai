@@ -1,5 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'package:flutter/material.dart';
+
 import 'package:lifeline/core/containers/rounded_container.dart';
 
 class QuickActionTile extends StatelessWidget {
@@ -9,16 +11,19 @@ class QuickActionTile extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.backgroundColor,
+    this.onTap,
   });
 
   final TextTheme theme;
   final String label;
   final IconData icon;
   final Color backgroundColor;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: onTap,
       title: Text(
         label,
         style: theme.titleLarge!.copyWith(fontWeight: FontWeight.normal,fontSize: 15),

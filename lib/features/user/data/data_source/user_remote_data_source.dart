@@ -1,9 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:lifeline/features/user/data/model/user_model.dart';
+import 'package:lifeline/services/storage/storage_service.dart';
 
 abstract interface class UserRemoteDataSource {
   Future<UserModel> saveUserToDatabase({
@@ -15,13 +18,19 @@ abstract interface class UserRemoteDataSource {
 
   Future<UserModel> getUserFromDatabase({required String userId});
   Future<UserModel> editUser({required Map<String, dynamic> userData});
+  Future<String?> uploadUserProfile(File file);
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
+  final StorageService storageService;
 
-  UserRemoteDataSourceImpl({required this.firestore, required this.auth});
+  UserRemoteDataSourceImpl({
+    required this.firestore,
+    required this.auth,
+    required this.storageService,
+  });
   @override
   Future<UserModel> saveUserToDatabase({
     required String userId,
@@ -67,5 +76,15 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       debugPrint(e.toString());
       throw e.toString();
     }
+  }
+  
+  @override
+  Future<String?> uploadUserProfile(File file) async{
+   try {
+     final url = await storageService.uploadFileData(file);
+     return url;
+   } catch (e) {
+     throw e.toString();
+   }
   }
 }

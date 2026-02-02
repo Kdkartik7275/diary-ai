@@ -7,12 +7,16 @@ import 'package:lifeline/core/snackbars/success_dialog.dart';
 import 'package:lifeline/core/utils/helpers/functions.dart';
 import 'package:lifeline/features/user/domain/entity/user_entity.dart';
 import 'package:lifeline/features/user/domain/usecases/edit_user.dart';
+import 'package:lifeline/features/user/domain/usecases/upload_user_profile.dart';
 import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
-import 'package:lifeline/services/storage/storage_service.dart';
 
 class EditProfileController extends GetxController {
   final EditUser editUser;
-  EditProfileController({required this.editUser});
+  final UploadUserProfile uploadUserProfile;
+  EditProfileController({
+    required this.editUser,
+    required this.uploadUserProfile,
+  });
 
   var username = TextEditingController().obs;
   var fullname = TextEditingController().obs;
@@ -23,6 +27,7 @@ class EditProfileController extends GetxController {
   var profileUrl = 'asd'.obs;
   RxBool profileVisibilty = RxBool(false);
   RxBool makeStoriesPublic = RxBool(false);
+  RxBool updatingProfile = RxBool(false);
   var selectedFile = Rx<File?>(null);
 
   final userController = Get.find<UserController>();
@@ -50,9 +55,12 @@ class EditProfileController extends GetxController {
 
   Future<void> updateUser() async {
     try {
+      updatingProfile.value = true;
       if (selectedFile.value != null) {
-        final url = await StorageService().uploadFileData(selectedFile.value!);
-        profileUrl.value = url!;
+        final urlResult = await uploadUserProfile.call(selectedFile.value!);
+        urlResult.fold((error) => showErrorDialog(error.message), (url) {
+          profileUrl.value = url!;
+        });
       }
       final Map<String, dynamic> data = {
         'fullName': fullname.value.text.trim(),
@@ -64,7 +72,6 @@ class EditProfileController extends GetxController {
         'phone': phone.value.text,
         'location': location.value.text,
       };
-      //  debugPrint(data.toString());
       debugPrint('Method called');
       final result = await editUser.call(data);
 
@@ -75,6 +82,8 @@ class EditProfileController extends GetxController {
     } catch (e) {
       debugPrint(e.toString());
       showErrorDialog(e.toString());
+    } finally {
+      updatingProfile.value = false;
     }
   }
 

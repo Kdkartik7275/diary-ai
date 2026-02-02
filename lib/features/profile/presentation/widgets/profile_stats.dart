@@ -1,8 +1,17 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileStats extends StatelessWidget {
-  const ProfileStats({super.key});
+  const ProfileStats({
+    super.key,
+    required this.totalWordsCount,
+    required this.totalEntries,
+    required this.publishedStoriesCount,
+  });
+  final int totalWordsCount;
+  final int totalEntries;
+  final int publishedStoriesCount;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +33,7 @@ class ProfileStats extends StatelessWidget {
               _statCard(
                 color: const Color(0xFFFFB175),
                 icon: CupertinoIcons.pencil_outline,
-                value: "47",
+                value: totalEntries.toString(),
                 label: "Total Entries",
                 theme: theme,
               ),
@@ -36,15 +45,15 @@ class ProfileStats extends StatelessWidget {
               _statCard(
                 color: const Color(0xFFB095FF),
                 icon: CupertinoIcons.book,
-                value: "3",
-                label: "Stories Created",
+                value: publishedStoriesCount.toString(),
+                label: "Stories Published",
                 theme: theme,
               ),
               const SizedBox(width: 14),
               _statCard(
                 color: const Color(0xFFC8B5FF),
                 icon: CupertinoIcons.pencil,
-                value: "15,420",
+                value: totalWordsCount.toString(),
                 label: "Words Written",
                 theme: theme,
               ),

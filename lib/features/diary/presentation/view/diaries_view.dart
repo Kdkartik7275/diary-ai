@@ -96,8 +96,8 @@ class DiariesView extends GetView<DiaryController> {
                                   ),
 
                                   contentPadding: const EdgeInsets.only(
-                                    top: 14,
-                                    bottom: 14,
+                                    top: 5,
+                                    bottom:10,
                                     right: 16,
                                   ),
 
@@ -136,24 +136,31 @@ class DiariesView extends GetView<DiaryController> {
                       SizedBox(height: height * 0.02),
 
                       Expanded(
-                        child: ListView.separated(
-                          itemCount: controller.searching.value
-                              ? controller.searchedDiaries.length
-                              : controller.diaries.length,
-                          itemBuilder: (context, index) {
-                            final diary = controller.searching.value
-                                ? controller.searchedDiaries[index]
-                                : controller.diaries[index];
-                            return DiaryCard(
-                              width: width,
-                              theme: theme,
-                              height: height,
-                              diary: diary,
-                            );
+                        child: RefreshIndicator(
+                          backgroundColor: AppColors.white,
+                          color: AppColors.primary,
+                          onRefresh: ()async{
+                          await  controller.getDiaries();
                           },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return SizedBox(height: height * .02);
-                          },
+                          child: ListView.separated(
+                            itemCount: controller.searching.value
+                                ? controller.searchedDiaries.length
+                                : controller.diaries.length,
+                            itemBuilder: (context, index) {
+                              final diary = controller.searching.value
+                                  ? controller.searchedDiaries[index]
+                                  : controller.diaries[index];
+                              return DiaryCard(
+                                width: width,
+                                theme: theme,
+                                height: height,
+                                diary: diary,
+                              );
+                            },
+                            separatorBuilder: (BuildContext context, int index) {
+                              return SizedBox(height: height * .02);
+                            },
+                          ),
                         ),
                       ),
                     ],

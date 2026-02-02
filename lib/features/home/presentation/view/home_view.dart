@@ -7,6 +7,7 @@ import 'package:lifeline/features/diary/presentation/controller/diary_controller
 import 'package:lifeline/features/home/presentation/widgets/entry_item.dart';
 import 'package:lifeline/features/home/presentation/widgets/stat_card.dart';
 import 'package:lifeline/features/home/presentation/widgets/today_card.dart';
+import 'package:lifeline/features/story/presentation/controller/story_controller.dart';
 import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
 
 class HomeView extends StatefulWidget {
@@ -19,12 +20,28 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   late UserController controller;
   late DiaryController diaryController;
+  late StoryController storyController;
 
   @override
   void initState() {
     super.initState();
     controller = Get.find<UserController>();
     diaryController = Get.find<DiaryController>();
+    storyController = Get.find<StoryController>();
+  }
+
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good Evening';
+    } else {
+      return 'Good Night';
+    }
   }
 
   @override
@@ -34,81 +51,98 @@ class _HomeViewState extends State<HomeView> {
     final height = size.height;
     final theme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      body: Obx(() {
-        final user = controller.currentUser.value;
+    return Obx(() {
+      final user = controller.currentUser.value;
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: false,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${getGreeting()}, ${user?.fullName.split(' ')[0] ?? ''}',
+                style: theme.titleMedium!.copyWith(fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
 
-        return SafeArea(
+              SizedBox(height: 2),
+              Text(
+                'How was your day today?',
+                style: theme.titleSmall!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textLighter,
+                ),
+              ),
+            ],
+          ),
+        ),
+        body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-            child: ListView(
-              children: [
-                SizedBox(height: height * 0.02),
-                Text(
-                  'Good Evening, ${user?.fullName.split(' ')[0] ?? ''}',
-                  style: theme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'How was your day today?',
-                  style: theme.titleSmall!.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textLighter,
-                  ),
-                ),
+            child: RefreshIndicator(
+              backgroundColor: AppColors.white,
+              color: AppColors.primary,
+              onRefresh: () async {
+                await diaryController.getDiaries();
+                await storyController.getDrafts();
+              },
+              child: ListView(
+                children: [
+                  SizedBox(height: height * 0.02),
 
-                SizedBox(height: height * 0.02),
-
-                // Today Card
-                TodayCard(width: width, height: height, theme: theme),
-                SizedBox(height: height * 0.03),
-                Row(
-                  children: [
-                    Expanded(
-                      child: StatCard(
-                        icon: Icons.trending_up_rounded,
-                        label: "Writing Streak",
-                        value: "12 Days",
-                        theme: theme,
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    Expanded(
-                      child: StatCard(
-                        icon: CupertinoIcons.wand_stars,
-                        label: "Stories Created",
-                        value: "54 Notes",
-                        theme: theme,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: height * 0.02),
-                if (!diaryController.diariesLoading.value) ...[
+                  TodayCard(width: width, height: height, theme: theme),
+                  SizedBox(height: height * 0.03),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Recent Entries', style: theme.titleLarge),
-                      if (diaryController.recentDiaries.length > 4)
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'View all',
-                            style: theme.titleSmall!.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 14,
-                            ),
-                          ),
+                      Expanded(
+                        child: StatCard(
+                          icon: Icons.trending_up_rounded,
+                          label: "Writing Streak",
+                          value: "12 Days",
+                          theme: theme,
                         ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      Expanded(
+                        child: StatCard(
+                          icon: CupertinoIcons.wand_stars,
+                          label: "Draft Stories",
+                          value:
+                              "${storyController.draftStoriesCount.value} Notes",
+                          theme: theme,
+                        ),
+                      ),
                     ],
                   ),
+                  SizedBox(height: height * 0.02),
+                  diaryController.diariesLoading.value
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Recent Entries', style: theme.titleLarge),
+                            if (diaryController.recentDiaries.length > 4)
+                              TextButton(
+                                onPressed: () {},
+                                child: Text(
+                                  'View all',
+                                  style: theme.titleSmall!.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                   if (diaryController.recentDiaries.length < 4)
                     SizedBox(height: 10),
                   ListView.separated(
@@ -125,21 +159,21 @@ class _HomeViewState extends State<HomeView> {
                     },
                   ),
                 ],
-              ],
+              ),
             ),
           ),
-        );
-      }),
+        ),
 
-      // Floating Button
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        shape: CircleBorder(),
-        onPressed: () => Get.toNamed(Routes.writeDiary),
-        child: const Icon(Icons.add, color: AppColors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
+        // Floating Button
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: AppColors.primary,
+          elevation: 0,
+          shape: CircleBorder(),
+          onPressed: () => Get.toNamed(Routes.writeDiary),
+          child: const Icon(Icons.add, color: AppColors.white),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      );
+    });
   }
 }

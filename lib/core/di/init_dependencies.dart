@@ -15,6 +15,18 @@ import 'package:lifeline/features/diary/domain/repository/diary_repository.dart'
 import 'package:lifeline/features/diary/domain/usecases/create_diary.dart';
 import 'package:lifeline/features/diary/domain/usecases/get_user_diaries.dart';
 import 'package:lifeline/features/diary/domain/usecases/update_diary.dart';
+import 'package:lifeline/features/story/data/data_source/local/story_local_data_source.dart';
+import 'package:lifeline/features/story/data/data_source/remote/story_remote_data_source.dart';
+import 'package:lifeline/features/story/data/repository_impl/story_repository_impl.dart';
+import 'package:lifeline/features/story/domain/repository/story_repository.dart';
+import 'package:lifeline/features/story/domain/usecases/create_story.dart';
+import 'package:lifeline/features/story/domain/usecases/edit_story.dart';
+import 'package:lifeline/features/story/domain/usecases/get_drafts_count.dart';
+import 'package:lifeline/features/story/domain/usecases/get_published_count.dart';
+import 'package:lifeline/features/story/domain/usecases/get_published_stories.dart';
+import 'package:lifeline/features/story/domain/usecases/get_user_drafts.dart';
+import 'package:lifeline/features/story/domain/usecases/publish_story.dart';
+import 'package:lifeline/features/story/domain/usecases/stories_total_wordcount.dart';
 import 'package:lifeline/features/user/data/data_source/user_local_data_source.dart';
 import 'package:lifeline/features/user/data/data_source/user_remote_data_source.dart';
 import 'package:lifeline/features/user/data/repository_impl/user_repository_impl.dart';
@@ -22,5 +34,7 @@ import 'package:lifeline/features/user/domain/repository/user_repository.dart';
 import 'package:lifeline/features/user/domain/usecases/edit_user.dart';
 import 'package:lifeline/features/user/domain/usecases/get_user.dart';
 import 'package:lifeline/features/user/domain/usecases/save_user.dart';
+import 'package:lifeline/features/user/domain/usecases/upload_user_profile.dart';
+import 'package:lifeline/services/storage/storage_service.dart';
 
 part 'init_dependencies_main.dart';

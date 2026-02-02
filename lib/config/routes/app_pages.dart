@@ -8,6 +8,11 @@ import 'package:lifeline/features/diary/presentation/binding/diary_binding.dart'
 import 'package:lifeline/features/diary/presentation/view/create_entry.dart';
 import 'package:lifeline/features/profile/presentation/bindings/edit_profile_binding.dart';
 import 'package:lifeline/features/profile/presentation/views/edit_profile_view.dart';
+import 'package:lifeline/features/story/presentation/bindings/create_story_binding.dart';
+import 'package:lifeline/features/story/presentation/bindings/story_binding.dart';
+import 'package:lifeline/features/story/presentation/views/create_manual_story.dart';
+import 'package:lifeline/features/story/presentation/views/create_story_view.dart';
+import 'package:lifeline/features/story/presentation/views/story_type_view.dart';
 import 'package:lifeline/features/user/presentation/binding/user_binding.dart';
 import 'package:lifeline/tabs.dart';
 import 'package:lifeline/features/onboarding/binding/onboarding_binding.dart';
@@ -37,10 +42,7 @@ class AppPages {
     GetPage(
       name: Routes.tabs,
       page: () => const Tabs(),
-      bindings:[
-         UserBinding(),
-         DiaryBinding()
-      ]
+      bindings: [UserBinding(), DiaryBinding(), StoryBinding()],
     ),
     GetPage(
       name: Routes.writeDiary,
@@ -51,6 +53,13 @@ class AppPages {
       name: Routes.editProfile,
       page: () => const EditProfileView(),
       binding: EditProfileBinding(),
+    ),
+    GetPage(name: Routes.createStory, page: () => CreateStoryView()),
+    GetPage(name: Routes.storyType, page: () => StoryTypeView()),
+    GetPage(
+      name: Routes.createStoryManually,
+      page: () => CreateManualStory(),
+      binding: CreateStoryBinding(),
     ),
   ];
 }

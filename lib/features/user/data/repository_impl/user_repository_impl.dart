@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
 import 'package:fpdart/fpdart.dart';
 
 import 'package:lifeline/config/constants/typedefs.dart';
@@ -73,6 +75,19 @@ class UserRepositoryImpl implements UserRepository {
       final user = await remoteDataSource.editUser(userData: data);
       await localDataSource.updateUser(user: user);
       return right(user);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<String?> uploadUserProfile(File file) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(FirebaseFailure(message: "No Internet Connection"));
+      }
+      final url = await remoteDataSource.uploadUserProfile(file);
+      return right(url);
     } catch (e) {
       return left(FirebaseFailure(message: e.toString()));
     }

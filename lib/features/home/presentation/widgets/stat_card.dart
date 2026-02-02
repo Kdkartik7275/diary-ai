@@ -49,7 +49,7 @@ class StatCard extends StatelessWidget {
           Text(
             value,
             style: theme.titleSmall!.copyWith(
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -33,26 +33,29 @@ class _EditProfileViewState extends State<EditProfileView> {
     final height = size.height;
     final theme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Edit Profile',
-          style: theme.titleMedium!.copyWith(fontWeight: FontWeight.normal),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              await controller.updateUser();
-            },
-            child: Text(
-              'Save',
-              style: theme.titleLarge!.copyWith(color: AppColors.primary),
-            ),
+    return Obx(() {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Edit Profile',
+            style: theme.titleMedium!.copyWith(fontWeight: FontWeight.normal),
           ),
-        ],
-      ),
-      body: Obx(() {
-        return ListView(
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await controller.updateUser();
+              },
+              child:controller.updatingProfile.value ?CircularProgressIndicator(
+                color: AppColors.primary,
+                strokeWidth: 2,
+              ) : Text(
+                'Save',
+                style: theme.titleLarge!.copyWith(color: AppColors.primary),
+              ),
+            ),
+          ],
+        ),
+        body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           children: [
             Center(
@@ -273,9 +276,9 @@ class _EditProfileViewState extends State<EditProfileView> {
             ),
             SizedBox(height: height * 0.1),
           ],
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 }
 

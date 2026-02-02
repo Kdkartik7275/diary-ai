@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:lifeline/features/story/data/model/story_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -45,6 +46,26 @@ class DataBaseService {
   final String _diaryTags = 'tags';
   final String _isUsedInStory = 'isUsedInStory';
 
+  // ----------- Story Table
+
+  final String _storyTableName = 'stories';
+  final String _storyId = 'id';
+  final String _storyUserId = 'userId';
+  final String _storyTitle = 'title';
+  final String _storyTags = 'tags';
+  final String _storyIsPublished = 'isPublished';
+  final String _storyGeneratedByAI = 'generatedByAI';
+  final String _storyPublishedAt = 'publishedAt';
+  final String _storyCreatedAt = 'createdAt';
+  final String _storyUpdatedAt = 'updatedAt';
+
+  final String _chapterTableName = 'story_chapters';
+  final String _chapterId = 'id';
+  final String _chapterStoryId = 'storyId';
+  final String _chapterTitle = 'title';
+  final String _chapterContent = 'content';
+  final String _chapterCreatedAt = 'createdAt';
+
   Future<void> _onCreate(Database db, int version) async {
     // USER TABLE
     await db.execute('''
@@ -82,6 +103,33 @@ class DataBaseService {
       $_diaryTags TEXT
     )
   ''');
+
+    await db.execute('''
+  CREATE TABLE $_storyTableName (
+    $_storyId TEXT PRIMARY KEY,
+    $_storyUserId TEXT NOT NULL,
+    $_storyTitle TEXT NOT NULL,
+    $_storyTags TEXT NOT NULL,
+    $_storyIsPublished INTEGER NOT NULL DEFAULT 0,
+    $_storyGeneratedByAI INTEGER NOT NULL,
+    $_storyPublishedAt INTEGER,
+    $_storyCreatedAt INTEGER NOT NULL,
+    $_storyUpdatedAt INTEGER
+  )
+''');
+
+    await db.execute('''
+  CREATE TABLE $_chapterTableName (
+    $_chapterId TEXT PRIMARY KEY,
+    $_chapterStoryId TEXT NOT NULL,
+    $_chapterTitle TEXT NOT NULL,
+    $_chapterContent TEXT NOT NULL,
+    $_chapterCreatedAt INTEGER NOT NULL,
+    FOREIGN KEY ($_chapterStoryId)
+      REFERENCES $_storyTableName ($_storyId)
+      ON DELETE CASCADE
+  )
+''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -96,6 +144,8 @@ class DataBaseService {
     if (needsRecreate) {
       await db.execute("DROP TABLE IF EXISTS $_diaryTableName");
       await db.execute("DROP TABLE IF EXISTS $_userTableName");
+      await db.execute("DROP TABLE IF EXISTS $_chapterTableName");
+      await db.execute("DROP TABLE IF EXISTS $_storyTableName");
 
       // Create fresh tables
       await _onCreate(db, newVersion);
@@ -110,7 +160,7 @@ class DataBaseService {
 
     return await openDatabase(
       databasePath,
-      version: 7,
+      version: 8,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -148,15 +198,37 @@ class DataBaseService {
     try {
       final db = await database;
 
-      final int deletedCount = await db.delete(
-        _userTableName,
-        where: '$_userId = ?',
-        whereArgs: [userId],
-      );
+      await db.transaction((txn) async {
+        await txn.delete(
+          _diaryTableName,
+          where: '$_diaryUserId = ?',
+          whereArgs: [userId],
+        );
 
-      return deletedCount > 0;
+        await txn.delete(
+          _chapterTableName,
+          where:
+              '$_chapterStoryId IN (SELECT $_storyId FROM $_storyTableName WHERE $_storyUserId = ?)',
+          whereArgs: [userId],
+        );
+
+        await txn.delete(
+          _storyTableName,
+          where: '$_storyUserId = ?',
+          whereArgs: [userId],
+        );
+
+        await txn.delete(
+          _userTableName,
+          where: '$_userId = ?',
+          whereArgs: [userId],
+        );
+      });
+
+      debugPrint('All user data deleted successfully');
+      return true;
     } catch (e) {
-      debugPrint('Error deleting user: $e');
+      debugPrint('Error deleting user data: $e');
       return false;
     }
   }
@@ -294,5 +366,198 @@ class DataBaseService {
     } catch (e) {
       throw e.toString();
     }
+  }
+
+  // ------------------- STORY DB METHODS ------------------------
+
+  Future<void> addStory(StoryModel story) async {
+    final db = await database;
+    final batch = db.batch();
+
+    batch.insert(
+      _storyTableName,
+      story.toSql(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+
+    for (final chapter in story.chapters) {
+      batch.insert(_chapterTableName, {
+        'id': chapter.id,
+        'storyId': story.id,
+        'title': chapter.title,
+        'content': chapter.content,
+        'createdAt': chapter.createdAt.millisecondsSinceEpoch,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<void> updateStory(StoryModel story) async {
+    final db = await database;
+    final batch = db.batch();
+
+    batch.update(
+      _storyTableName,
+      story.toSql(),
+      where: '$_storyId = ?',
+      whereArgs: [story.id],
+    );
+
+    batch.delete(
+      _chapterTableName,
+      where: '$_chapterStoryId = ?',
+      whereArgs: [story.id],
+    );
+
+    for (final chapter in story.chapters) {
+      batch.insert(_chapterTableName, {
+        _chapterId: chapter.id,
+        _chapterStoryId: story.id,
+        _chapterTitle: chapter.title,
+        _chapterContent: chapter.content,
+        _chapterCreatedAt: chapter.createdAt.millisecondsSinceEpoch,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  Future<List<StoryModel>> getDraftStories(String userId) async {
+    final db = await database;
+
+    final stories = await db.query(
+      _storyTableName,
+      where: '$_storyUserId = ? AND $_storyIsPublished = 0',
+      whereArgs: [userId],
+      orderBy: '$_storyCreatedAt DESC',
+    );
+
+    return _mapStoriesWithChapters(stories);
+  }
+
+  Future<List<StoryModel>> getPublishedStories(String userId) async {
+    final db = await database;
+
+    final stories = await db.query(
+      _storyTableName,
+      where: '$_storyUserId = ? AND $_storyIsPublished = 1',
+      whereArgs: [userId],
+      orderBy: '$_storyPublishedAt DESC',
+    );
+
+    return _mapStoriesWithChapters(stories);
+  }
+
+  Future<List<StoryModel>> getAllStories({required String userId}) async {
+    final db = await database;
+    final result = await db.query(
+      _storyTableName,
+      where: '$_storyUserId = ?',
+      whereArgs: [userId],
+      orderBy: '$_storyUpdatedAt DESC',
+    );
+    return _mapStoriesWithChapters(result);
+  }
+
+  Future<void> deleteStory(String storyId) async {
+    final db = await database;
+
+    await db.delete(
+      _storyTableName,
+      where: '$_storyId = ?',
+      whereArgs: [storyId],
+    );
+  }
+
+  Future<bool> isStoryTableEmpty() async {
+    final db = await database;
+
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery('SELECT COUNT(*) FROM $_storyTableName'),
+    );
+
+    return count == null || count == 0;
+  }
+
+  Future<List<StoryModel>> _mapStoriesWithChapters(
+    List<Map<String, dynamic>> storyMaps,
+  ) async {
+    final db = await database;
+    final List<StoryModel> stories = [];
+
+    for (final story in storyMaps) {
+      final chaptersMap = await db.query(
+        _chapterTableName,
+        where: '$_chapterStoryId = ?',
+        whereArgs: [story[_storyId]],
+        orderBy: '$_chapterCreatedAt ASC',
+      );
+
+      final chapters = chaptersMap
+          .map((e) => StoryChapterModel.fromSql(e))
+          .toList();
+
+      stories.add(StoryModel.fromSql(story, chapters: chapters));
+    }
+
+    return stories;
+  }
+
+  Future<int> getAllStoriesCount({required String userId}) async {
+    final db = await database;
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery(
+        'SELECT COUNT(*) FROM $_storyTableName WHERE $_storyUserId = ?',
+        [userId],
+      ),
+    );
+    return count ?? 0;
+  }
+
+  Future<int> getDraftStoriesCount({required String userId}) async {
+    final db = await database;
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery(
+        'SELECT COUNT(*) FROM $_storyTableName WHERE $_storyUserId = ? AND $_storyIsPublished = 0',
+        [userId],
+      ),
+    );
+    return count ?? 0;
+  }
+
+  Future<int> getPublishedStoriesCount({required String userId}) async {
+    final db = await database;
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery(
+        'SELECT COUNT(*) FROM $_storyTableName WHERE $_storyUserId = ? AND $_storyIsPublished = 1',
+        [userId],
+      ),
+    );
+    return count ?? 0;
+  }
+
+  Future<int> getTotalWordsCount({required String userId}) async {
+    final db = await database;
+
+    final chapters = await db.rawQuery(
+      '''
+    SELECT c.$_chapterContent
+    FROM $_chapterTableName c
+    INNER JOIN $_storyTableName s
+    ON c.$_chapterStoryId = s.$_storyId
+    WHERE s.$_storyUserId = ?
+  ''',
+      [userId],
+    );
+
+    int totalWords = 0;
+
+    for (final chapter in chapters) {
+      final content = chapter[_chapterContent] as String? ?? '';
+      totalWords += content.trim().split(RegExp(r'\s+')).length;
+    }
+
+    return totalWords;
   }
 }

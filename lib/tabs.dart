@@ -5,8 +5,10 @@ import 'package:get/get.dart';
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/core/di/init_dependencies.dart';
 import 'package:lifeline/features/diary/presentation/view/diaries_view.dart';
+import 'package:lifeline/features/explore/presentation/view/explore_stories_view.dart';
 import 'package:lifeline/features/home/presentation/view/home_view.dart';
 import 'package:lifeline/features/profile/presentation/views/profile_view.dart';
+import 'package:lifeline/features/story/presentation/views/story_view.dart';
 import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
 
 class Tabs extends StatefulWidget {
@@ -29,7 +31,8 @@ class _TabsState extends State<Tabs> {
   List<Widget> get _pages => [
     HomeView(),
     DiariesView(),
-    const Center(child: Text('Stories Page')),
+    StoryView(),
+    ExploreStoriesView(),
     ProfileView(),
   ];
 
@@ -106,6 +109,14 @@ class _TabsState extends State<Tabs> {
                 color: AppColors.primary,
               ),
               label: 'Stories',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.compass),
+              activeIcon: Icon(
+                CupertinoIcons.compass,
+                color: AppColors.primary,
+              ),
+              label: 'Explore',
             ),
             BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.person),

@@ -60,20 +60,25 @@ class DiaryController extends GetxController {
     } else {
       diaries.add(diary);
     }
-
   }
 
- void searchDiaries(String query) {
-  searching.value = true;
+  void searchDiaries(String query) {
+    searching.value = true;
 
-  final q = query.trim().toLowerCase();
+    final q = query.trim().toLowerCase();
 
-  searchedDiaries.value = diaries.where((d) {
-    return d.title.toLowerCase().contains(q) ||
-           d.content.toLowerCase().contains(q);
-  }).toList();
-}
+    searchedDiaries.value = diaries.where((d) {
+      return d.title.toLowerCase().contains(q) ||
+          d.content.toLowerCase().contains(q);
+    }).toList();
+  }
 
+  int calculateTotalWordsCount() {
+    return diaries.fold(
+      0,
+      (previousValue, element) => previousValue + element.totalWordsCount,
+    );
+  }
 
   String formattedEffectiveDate(Timestamp? updatedAt, Timestamp createdAt) {
     final effective = updatedAt?.toDate() ?? createdAt.toDate();
