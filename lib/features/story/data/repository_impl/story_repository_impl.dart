@@ -8,6 +8,7 @@ import 'package:lifeline/features/story/data/data_source/local/story_local_data_
 import 'package:lifeline/features/story/data/data_source/remote/story_remote_data_source.dart';
 import 'package:lifeline/features/story/data/model/story_model.dart';
 import 'package:lifeline/features/story/domain/entity/story_entity.dart';
+import 'package:lifeline/features/story/domain/entity/story_stats.dart';
 import 'package:lifeline/features/story/domain/repository/story_repository.dart';
 
 class StoryRepositoryImpl implements StoryRepository {
@@ -175,6 +176,23 @@ class StoryRepositoryImpl implements StoryRepository {
       for (StoryModel story in result) {
         await localDataSource.createStory(data: story);
       }
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<StoryStatsEntity> getStoryStats({
+    required String storyId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.getStoryStats(storyId: storyId);
+
       return right(result);
     } catch (e) {
       return left(FirebaseFailure(message: e.toString()));

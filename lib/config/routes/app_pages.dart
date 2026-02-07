@@ -6,6 +6,7 @@ import 'package:lifeline/features/authentication/presentation/views/signup_view.
 import 'package:lifeline/features/diary/presentation/binding/create_diary_binding.dart';
 import 'package:lifeline/features/diary/presentation/binding/diary_binding.dart';
 import 'package:lifeline/features/diary/presentation/view/create_entry.dart';
+import 'package:lifeline/features/explore/presentation/binding/explore_binding.dart';
 import 'package:lifeline/features/profile/presentation/bindings/edit_profile_binding.dart';
 import 'package:lifeline/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:lifeline/features/story/presentation/bindings/create_story_binding.dart';
@@ -42,7 +43,12 @@ class AppPages {
     GetPage(
       name: Routes.tabs,
       page: () => const Tabs(),
-      bindings: [UserBinding(), DiaryBinding(), StoryBinding()],
+      bindings: [
+        UserBinding(),
+        DiaryBinding(),
+        StoryBinding(),
+        ExploreBinding(),
+      ],
     ),
     GetPage(
       name: Routes.writeDiary,

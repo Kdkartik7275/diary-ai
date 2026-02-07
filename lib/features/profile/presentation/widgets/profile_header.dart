@@ -98,7 +98,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: user.profileUrl != null
+              child: user.profileUrl != null && user.profileUrl!.isNotEmpty
                   ? ClipOval(
                       child: Image.network(
                         user.profileUrl!,

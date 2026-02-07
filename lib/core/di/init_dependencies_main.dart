@@ -10,6 +10,7 @@ class DependencyInjection {
     _initAuth();
     _initDiary();
     _initStory();
+    _initExplore();
   }
 }
 
@@ -124,4 +125,22 @@ void _initStory() {
   sl.registerLazySingleton(() => GetPublishedCount(repository: sl()));
   sl.registerLazySingleton(() => PublishStory(repository: sl()));
   sl.registerLazySingleton(() => GetPublishedStories(repository: sl()));
+  sl.registerLazySingleton(() => GetStoryStats(repository: sl()));
+}
+
+void _initExplore() {
+  // DATASOURCE
+  sl.registerLazySingleton<ExploreRemoteDataSource>(
+    () => ExploreRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
+  );
+
+  sl.registerLazySingleton<ExploreRepository>(
+    () => ExploreRepositoryImpl(
+      connectionChecker: sl<ConnectionChecker>(),
+      remoteDataSource: sl<ExploreRemoteDataSource>(),
+    ),
+  );
+  // USECASES
+  sl.registerLazySingleton(() => GetRecentlyAddedStory(repository: sl()));
+  sl.registerLazySingleton(() => GetTrendingStories(repository: sl()));
 }

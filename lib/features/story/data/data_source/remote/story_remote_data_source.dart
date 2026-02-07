@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lifeline/features/story/data/model/story_model.dart';
+import 'package:lifeline/features/story/data/model/story_stats_model.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class StoryRemoteDataSource {
   Future<StoryModel> createStory({required Map<String, dynamic> data});
   Future<StoryModel> editStory({required Map<String, dynamic> data});
+  Future<StoryStatsModel> getStoryStats({required String storyId});
   Future<StoryModel> publishStory({
     required String storyId,
     required String userId,
@@ -139,6 +141,26 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
       return stories;
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  @override
+  Future<StoryStatsModel> getStoryStats({required String storyId}) async {
+    try {
+      final statsDoc = await firestore.collection('stats').doc(storyId).get();
+
+      if (statsDoc.exists && statsDoc.data() != null) {
+        return StoryStatsModel.fromMap(
+          storyId: statsDoc.id,
+          data: statsDoc.data()!,
+        );
+      }
+
+      return StoryStatsModel.empty(storyId);
+    } catch (e, stack) {
+      debugPrint('Error fetching stats: $e');
+      debugPrintStack(stackTrace: stack);
+      rethrow;
     }
   }
 }
