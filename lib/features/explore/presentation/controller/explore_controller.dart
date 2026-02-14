@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:lifeline/core/di/init_dependencies.dart';
 import 'package:lifeline/core/snackbars/error_snackbar.dart';
 import 'package:lifeline/features/explore/domain/entity/recently_added_story.dart';
 import 'package:lifeline/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:lifeline/features/explore/domain/usecases/get_recently_added_story.dart';
 import 'package:lifeline/features/explore/domain/usecases/get_trending_stories.dart';
+import 'package:lifeline/features/story/data/model/story_stats_model.dart';
 import 'package:lifeline/features/story/domain/entity/story_stats.dart';
 import 'package:lifeline/features/story/domain/usecases/get_story_stats.dart';
 
@@ -24,6 +27,9 @@ class ExploreController extends GetxController {
   RxBool recentLoading = RxBool(false);
   RxBool trendingLoading = RxBool(false);
   RxString selectedGenre = RxString('');
+
+  final Map<String, StoryStatsEntity> _statsCache = {};
+  final Map<String, Future<StoryStatsEntity>> _pendingRequests = {};
 
   @override
   void onInit() {
@@ -61,17 +67,45 @@ class ExploreController extends GetxController {
   }
 
   Future<StoryStatsEntity> getStats({required String storyId}) async {
-    try {
-      final result = await getStoryStats.call(storyId);
-      return result.fold((error) => throw error.message, (stat) {
-        return stat;
-      });
-    } catch (e) {
-      throw e.toString();
+    if (_statsCache.containsKey(storyId)) {
+      return _statsCache[storyId]!;
     }
+
+    if (_pendingRequests.containsKey(storyId)) {
+      return _pendingRequests[storyId]!;
+    }
+
+    final future = (() async {
+      try {
+        final result = await getStoryStats.call(
+          GetStoryStatsParams(
+            storyId: storyId,
+            userId: sl<FirebaseAuth>().currentUser!.uid,
+          ),
+        );
+
+        final stats = result.fold(
+          (error) => throw error.message,
+          (stat) => stat,
+        );
+
+        _statsCache[storyId] = stats;
+        _pendingRequests.remove(storyId);
+
+        return stats;
+      } catch (e) {
+        _pendingRequests.remove(storyId);
+        return StoryStatsModel.empty(storyId);
+      }
+    })();
+
+    _pendingRequests[storyId] = future;
+    return future;
   }
 
   Future<void> refreshExplore() async {
     await Future.wait([fetchTrendingStories(), fetchRecentlyAddedStories()]);
+    _statsCache.clear();
+    _pendingRequests.clear();
   }
 }

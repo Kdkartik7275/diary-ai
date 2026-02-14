@@ -11,4 +11,5 @@ class Routes {
   static const storyType = '/storyType';
   static const settings = '/settings';
   static const editProfile = '/editProfile';
+  static const comments = '/comments';
 }

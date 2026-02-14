@@ -14,6 +14,7 @@ class StoryEntity {
 
   final Timestamp createdAt;
   final Timestamp? updatedAt;
+  final String? coverImageUrl;
 
   StoryEntity({
     required this.id,
@@ -26,6 +27,7 @@ class StoryEntity {
     this.isPublished = false,
     required this.generatedByAI,
     this.publishedAt,
+    this.coverImageUrl,
   });
 }
 

@@ -330,6 +330,8 @@ class CreateManualStory extends GetView<CreateStoryController> {
                                   focusedErrorBorder: InputBorder.none,
                                 ),
                                 maxLines: null,
+                                keyboardType: TextInputType.multiline,
+                                textInputAction: TextInputAction.newline,
                               );
                             }),
                           ),
@@ -371,7 +373,9 @@ class CreateManualStory extends GetView<CreateStoryController> {
                     onPressed: controller.wordCount.value == 0
                         ? null
                         : () => controller.isEdit.value
-                              ? controller.editExistingStory(isPublished: false)
+                              ? controller.editExistingStory(
+                                  isPublished: story?.isPublished ?? false,
+                                )
                               : controller.saveStory(isPublished: false),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
@@ -386,10 +390,19 @@ class CreateManualStory extends GetView<CreateStoryController> {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    child: Text(
-                      controller.isEdit.value ? 'Update Draft' : 'Save Draft',
-                      style: theme.titleLarge!.copyWith(color: AppColors.white),
-                    ),
+                    child: controller.uploading.value
+                        ? CircularProgressIndicator(
+                            color: AppColors.white,
+                            strokeWidth: 2,
+                          )
+                        : Text(
+                            controller.isEdit.value
+                                ? 'Update Draft'
+                                : 'Save Draft',
+                            style: theme.titleLarge!.copyWith(
+                              color: AppColors.white,
+                            ),
+                          ),
                   ),
                 ),
               ),

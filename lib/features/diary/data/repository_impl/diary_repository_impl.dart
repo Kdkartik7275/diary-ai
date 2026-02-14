@@ -77,4 +77,22 @@ class DiaryRepositoryImpl implements DiaryRepository {
       return left(FirebaseFailure(message: e.toString()));
     }
   }
+
+  @override
+  ResultFuture<List<DiaryEntity>> getDiariesByDateRange({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      final diaries = await localDataSource.getDiariesByDateRange(
+        userId: userId,
+        startDate: startDate,
+        endDate: endDate,
+      );
+      return right(diaries);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
 }

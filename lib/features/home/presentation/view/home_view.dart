@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/config/routes/app_routes.dart';
+import 'package:lifeline/core/empty/empty_diary.dart';
 import 'package:lifeline/features/diary/presentation/controller/diary_controller.dart';
 import 'package:lifeline/features/home/presentation/widgets/entry_item.dart';
 import 'package:lifeline/features/home/presentation/widgets/stat_card.dart';
@@ -22,6 +23,33 @@ class _HomeViewState extends State<HomeView> {
   late DiaryController diaryController;
   late StoryController storyController;
 
+  final dummyDiaries = [
+    {
+      "date": "2026-02-01",
+      "mood": "😔",
+      "content":
+          "Today felt heavy. I argued with my best friend and couldn't focus on anything.",
+    },
+    {
+      "date": "2026-02-02",
+      "mood": "😡",
+      "content":
+          "Work pressure was intense. I almost quit but decided to push through.",
+    },
+    {
+      "date": "2026-02-03",
+      "mood": "😊",
+      "content":
+          "We talked again and resolved our issues. Felt lighter and hopeful.",
+    },
+    {
+      "date": "2026-02-04",
+      "mood": "😌",
+      "content":
+          "Went for a long walk alone. Reflected on life and future goals.",
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +57,7 @@ class _HomeViewState extends State<HomeView> {
     diaryController = Get.find<DiaryController>();
     storyController = Get.find<StoryController>();
   }
+
 
   String getGreeting() {
     final hour = DateTime.now().hour;
@@ -125,6 +154,8 @@ class _HomeViewState extends State<HomeView> {
                             color: AppColors.primary,
                           ),
                         )
+                      : diaryController.recentDiaries.isEmpty
+                      ? const SizedBox.shrink()
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -145,19 +176,22 @@ class _HomeViewState extends State<HomeView> {
                         ),
                   if (diaryController.recentDiaries.length < 4)
                     SizedBox(height: 10),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: diaryController.recentDiaries.length,
-                    itemBuilder: (context, index) {
-                      final diary = diaryController.recentDiaries[index];
+                  if (diaryController.recentDiaries.isEmpty)
+                    EmptyDiaryState()
+                  else
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: diaryController.recentDiaries.length,
+                      itemBuilder: (context, index) {
+                        final diary = diaryController.recentDiaries[index];
 
-                      return HomeEntryItem(theme: theme, diary: diary);
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(height: height * .01);
-                    },
-                  ),
+                        return HomeEntryItem(theme: theme, diary: diary);
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return SizedBox(height: height * .01);
+                      },
+                    ),
                 ],
               ),
             ),

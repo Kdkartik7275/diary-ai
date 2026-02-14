@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:lifeline/features/diary/data/model/diary_model.dart';
 import 'package:lifeline/services/database/database_service.dart';
 
@@ -8,6 +9,11 @@ abstract interface class DiaryLocalDataSource {
   Future<bool> diaryExists({required String diaryId});
   Future<bool> isDiaryTableEmpty();
   Future<List<DiaryModel>> getAllDiaries({required String userId});
+  Future<List<DiaryModel>> getDiariesByDateRange({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  });
 }
 
 class DiaryLocalDataSourceImpl implements DiaryLocalDataSource {
@@ -70,6 +76,25 @@ class DiaryLocalDataSourceImpl implements DiaryLocalDataSource {
   }) async {
     try {
       await _db.updateDiary(data: data.toSQL(), diaryId: diaryId);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<List<DiaryModel>> getDiariesByDateRange({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      final data = await _db.getDiariesFromDateRange(
+        userId: userId,
+        startDate: startDate,
+        endDate: endDate,
+      );
+      debugPrint('Data fetched from DB: $data entries');
+      return data.map((diary) => DiaryModel.fromSQL(diary)).toList();
     } catch (e) {
       throw e.toString();
     }

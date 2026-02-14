@@ -3,6 +3,8 @@ import 'package:lifeline/features/authentication/presentation/bindings/login_bin
 import 'package:lifeline/features/authentication/presentation/bindings/signup_binding.dart';
 import 'package:lifeline/features/authentication/presentation/views/login_view.dart';
 import 'package:lifeline/features/authentication/presentation/views/signup_view.dart';
+import 'package:lifeline/features/comments/presentation/binding/comment_binding.dart';
+import 'package:lifeline/features/comments/presentation/view/comment_view.dart';
 import 'package:lifeline/features/diary/presentation/binding/create_diary_binding.dart';
 import 'package:lifeline/features/diary/presentation/binding/diary_binding.dart';
 import 'package:lifeline/features/diary/presentation/view/create_entry.dart';
@@ -10,6 +12,7 @@ import 'package:lifeline/features/explore/presentation/binding/explore_binding.d
 import 'package:lifeline/features/profile/presentation/bindings/edit_profile_binding.dart';
 import 'package:lifeline/features/profile/presentation/views/edit_profile_view.dart';
 import 'package:lifeline/features/story/presentation/bindings/create_story_binding.dart';
+import 'package:lifeline/features/story/presentation/bindings/generate_story_binding.dart';
 import 'package:lifeline/features/story/presentation/bindings/story_binding.dart';
 import 'package:lifeline/features/story/presentation/views/create_manual_story.dart';
 import 'package:lifeline/features/story/presentation/views/create_story_view.dart';
@@ -60,12 +63,17 @@ class AppPages {
       page: () => const EditProfileView(),
       binding: EditProfileBinding(),
     ),
-    GetPage(name: Routes.createStory, page: () => CreateStoryView()),
+    GetPage(name: Routes.createStory, page: () => CreateStoryView(),binding: GenerateStoryBinding()),
     GetPage(name: Routes.storyType, page: () => StoryTypeView()),
     GetPage(
       name: Routes.createStoryManually,
       page: () => CreateManualStory(),
       binding: CreateStoryBinding(),
+    ),
+    GetPage(
+      name: Routes.comments,
+      binding: CommentBinding(),
+      page: () => CommentView(),
     ),
   ];
 }

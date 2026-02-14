@@ -209,7 +209,9 @@ class ExploreStoriesView extends GetView<ExploreController> {
                                 controller.recentlyAddedStories[index];
                             return RecentlyAddedStoryCard(
                               authorName: story.authorName,
-                              title: story.story.title,
+                              authorId: story.authorId,
+                              authorProfileUrl: story.authorProfileUrl,
+                              story: story.story,
                             );
                           },
                           separatorBuilder: (BuildContext context, int index) {

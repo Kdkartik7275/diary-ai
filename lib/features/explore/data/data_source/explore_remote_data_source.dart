@@ -25,7 +25,7 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
           .collection('stories')
           .where('isPublished', isEqualTo: true)
           .where('publishedAt', isGreaterThanOrEqualTo: sevenDaysAgo)
-          .orderBy('publishedAt', descending: true)
+          .orderBy('publishedAt', descending: true).limit(10)
           .get();
 
       final List<RecentlyAddedStoryModel> stories = [];
@@ -66,16 +66,40 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
   @override
   Future<List<TrendingStoryModel>> getTrendingStories() async {
     try {
-      final storiesSnapshot = await firestore
-          .collection('stories')
-          .where('isPublished', isEqualTo: true)
-          .orderBy('publishedAt', descending: true)
-          .get();
+      final statsSnapshot = await firestore.collection('story_stats').limit(10).get();
+
+      final List<Map<String, dynamic>> rankedStats = [];
+
+      for (final doc in statsSnapshot.docs) {
+        final statsData = doc.data();
+
+        final storyId = statsData['storyId'];
+
+        final reads = statsData['reads'] ?? 0;
+        final likes = statsData['likes'] ?? 0;
+        final comments = statsData['commentsCount'] ?? 0;
+        final saved = statsData['saved'] ?? 0;
+
+        final score = reads + (likes * 2) + (comments * 2) + (saved * 3);
+
+        rankedStats.add({'storyId': storyId, 'score': score});
+      }
+
+      rankedStats.sort((a, b) => b['score'].compareTo(a['score']));
 
       final List<TrendingStoryModel> stories = [];
 
-      for (final doc in storiesSnapshot.docs) {
-        final story = StoryModel.fromMap(doc.data());
+      for (final stat in rankedStats) {
+        final storySnapshot = await firestore
+            .collection('stories')
+            .doc(stat['storyId'])
+            .get();
+
+        if (!storySnapshot.exists) continue;
+
+        final story = StoryModel.fromMap(
+          storySnapshot.data() as Map<String, dynamic>,
+        );
 
         final userSnapshot = await firestore
             .collection('users')
@@ -103,7 +127,7 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
       return stories;
     } catch (e) {
       debugPrint(e.toString());
-      throw Exception('Failed to fetch recently added stories: $e');
+      throw Exception('Failed to fetch trending stories: $e');
     }
   }
 }

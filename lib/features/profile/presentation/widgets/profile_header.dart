@@ -135,20 +135,20 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 maxLines: 1,
               ),
             ),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              child: Text(
-                "@${user.username}",
-                style: theme.titleSmall?.copyWith(
-                  color: AppColors.textLighter,
-                  fontWeight: FontWeight.w500,
-                  fontSize: isSmallScreen ? 14 : null,
+            if (user.username != null && user.username!.isNotEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: Text(
+                  "@${user.username}",
+                  style: theme.titleSmall?.copyWith(
+                    color: AppColors.textLighter,
+                    fontWeight: FontWeight.w500,
+                    fontSize: isSmallScreen ? 14 : null,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
               ),
-            ),
 
             if (user.bio != null && user.bio!.isNotEmpty) ...[
               SizedBox(height: isSmallScreen ? 10 : 10),

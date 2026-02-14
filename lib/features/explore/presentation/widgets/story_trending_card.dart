@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
+import 'package:lifeline/core/utils/helpers/functions.dart';
 import 'package:lifeline/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:lifeline/features/explore/presentation/controller/explore_controller.dart';
 import 'package:lifeline/features/explore/presentation/view/reading_view.dart';
@@ -50,11 +51,14 @@ class StoryTrendingCard extends GetView<ExploreController> {
               height: height * .16,
               width: width * .26,
               backgroundColor: AppColors.primary.withValues(alpha: .7),
-              child: Icon(
-                CupertinoIcons.book,
-                color: AppColors.white,
-                size: 40,
-              ),
+              child: story.coverImageUrl != null
+                  ? Image.network(
+                      height: height * .16,
+                      width: width * .26,
+                      story.coverImageUrl!,
+                      fit: BoxFit.cover,
+                    )
+                  : Icon(CupertinoIcons.book, color: AppColors.white, size: 40),
             ),
             SizedBox(width: 10),
             Expanded(
@@ -77,9 +81,9 @@ class StoryTrendingCard extends GetView<ExploreController> {
                       ),
                       SizedBox(width: 2),
                       TRoundedContainer(
-                        backgroundColor: const Color(
-                          0xFFB095FF,
-                        ).withValues(alpha: .2),
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: .2,
+                        ),
                         padding: EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 6,
@@ -88,7 +92,7 @@ class StoryTrendingCard extends GetView<ExploreController> {
                           story.tags.first,
                           style: theme.titleSmall!.copyWith(
                             fontWeight: FontWeight.normal,
-                            color: const Color(0xFFB095FF),
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
@@ -178,11 +182,11 @@ class StoryTrendingCard extends GetView<ExploreController> {
                           ),
                           BottomIcon(
                             icon: CupertinoIcons.time,
-                            value: '${stats.reads}k reads',
+                            value: '${formatCount(stats.reads)} reads',
                           ),
                           BottomIcon(
                             icon: CupertinoIcons.heart,
-                            value: '${stats.likes}k',
+                            value: formatCount(stats.likes),
                           ),
                         ],
                       );

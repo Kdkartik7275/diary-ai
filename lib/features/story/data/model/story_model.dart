@@ -17,9 +17,8 @@ class StoryChapterModel extends StoryChapterEntity {
       title: map['title'] as String,
       content: map['content'] as String,
       createdAt: map['createdAt'] is Timestamp
-    ? map['createdAt'] as Timestamp
-    : Timestamp.now(),
-
+          ? map['createdAt'] as Timestamp
+          : Timestamp.now(),
     );
   }
 
@@ -81,6 +80,7 @@ class StoryModel extends StoryEntity {
     super.isPublished = false,
     required super.generatedByAI,
     super.publishedAt,
+    super.coverImageUrl,
   });
 
   // From Map (Firestore)
@@ -101,6 +101,7 @@ class StoryModel extends StoryEntity {
       publishedAt: map['publishedAt'] as Timestamp?,
       createdAt: map['createdAt'] as Timestamp,
       updatedAt: map['updatedAt'] as Timestamp?,
+      coverImageUrl: map['coverImageUrl'] as String?,
     );
   }
 
@@ -119,10 +120,10 @@ class StoryModel extends StoryEntity {
       'publishedAt': publishedAt,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'coverImageUrl': coverImageUrl,
     };
   }
 
-  // From SQL (SQLite) - Note: chapters stored separately in related table
   factory StoryModel.fromSql(
     Map<String, dynamic> map, {
     List<StoryChapterModel>? chapters,
@@ -142,7 +143,12 @@ class StoryModel extends StoryEntity {
           ? Timestamp.fromMillisecondsSinceEpoch(map['publishedAt'] as int)
           : null,
       createdAt: Timestamp.fromMillisecondsSinceEpoch(map['createdAt'] as int),
-      updatedAt: Timestamp.fromMillisecondsSinceEpoch(map['updatedAt'] as int),
+      updatedAt: map['updatedAt'] != null
+          ? Timestamp.fromMillisecondsSinceEpoch(map['updatedAt'] as int)
+          : null,
+      coverImageUrl: map['coverImageUrl'] != null
+          ? map['coverImageUrl'] as String
+          : null,
     );
   }
 
@@ -158,6 +164,7 @@ class StoryModel extends StoryEntity {
       'publishedAt': publishedAt?.millisecondsSinceEpoch,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'updatedAt': updatedAt?.millisecondsSinceEpoch,
+      'coverImageUrl': coverImageUrl,
     };
   }
 
@@ -173,6 +180,7 @@ class StoryModel extends StoryEntity {
     Timestamp? publishedAt,
     Timestamp? createdAt,
     Timestamp? updatedAt,
+    String? coverImageUrl,
   }) {
     return StoryModel(
       id: id ?? this.id,
@@ -185,55 +193,7 @@ class StoryModel extends StoryEntity {
       publishedAt: publishedAt ?? this.publishedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
     );
-  }
-}
-
-// SQL Table Creation Helpers
-class StoryTableHelper {
-  static const String storyTable = 'stories';
-  static const String chapterTable = 'story_chapters';
-
-  static String createStoryTable() {
-    return '''
-      CREATE TABLE $storyTable (
-        id TEXT PRIMARY KEY,
-        userId TEXT NOT NULL,
-        title TEXT NOT NULL,
-        tags TEXT NOT NULL,
-        isPublished INTEGER NOT NULL DEFAULT 0,
-        generatedByAI INTEGER NOT NULL,
-        publishedAt INTEGER,
-        createdAt INTEGER NOT NULL,
-        updatedAt INTEGER NOT NULL
-      )
-    ''';
-  }
-
-  static String createChapterTable() {
-    return '''
-      CREATE TABLE $chapterTable (
-        id TEXT PRIMARY KEY,
-        storyId TEXT NOT NULL,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        createdAt INTEGER NOT NULL,
-        FOREIGN KEY (storyId) REFERENCES $storyTable (id) ON DELETE CASCADE
-      )
-    ''';
-  }
-
-  // Helper method to convert StoryChapterModel to SQL with storyId
-  static Map<String, dynamic> chapterToSql(
-    StoryChapterModel chapter,
-    String storyId,
-  ) {
-    return {
-      'id': chapter.id,
-      'storyId': storyId,
-      'title': chapter.title,
-      'content': chapter.content,
-      'createdAt': chapter.createdAt.millisecondsSinceEpoch,
-    };
   }
 }

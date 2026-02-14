@@ -1,13 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
+import 'package:lifeline/features/story/presentation/controller/generate_story_controller.dart';
 import 'package:lifeline/features/story/presentation/widgets/date_field.dart';
+import 'package:lifeline/features/story/presentation/widgets/generating_story.dart';
 import 'package:lifeline/features/story/presentation/widgets/genre_selector.dart';
 
-class CreateStoryView extends StatelessWidget {
+class CreateStoryView extends GetView<GenerateStoryController> {
   const CreateStoryView({super.key});
 
   @override
@@ -16,13 +19,14 @@ class CreateStoryView extends StatelessWidget {
     final width = size.width;
     final height = size.height;
     final theme = Theme.of(context).textTheme;
-    List tones = ['Emotional', 'Dramatic', 'Light', 'Humorous'];
+
+    List<String> tones = ['Emotional', 'Dramatic', 'Light', 'Humorous'];
+
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-
           children: [
             Text(
               'Create Your Story',
@@ -39,6 +43,7 @@ class CreateStoryView extends StatelessWidget {
             ),
             SizedBox(height: height * 0.02),
 
+            /// DATE RANGE
             _MainContainer(
               width: width,
               height: height,
@@ -49,14 +54,17 @@ class CreateStoryView extends StatelessWidget {
                   Expanded(
                     child: SizedBox(height: height * .05, child: DateField()),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: SizedBox(height: height * .05, child: DateField()),
                   ),
                 ],
               ),
             ),
+
             SizedBox(height: height * 0.02),
+
+            /// STORY STYLE
             _MainContainer(
               width: width,
               height: height,
@@ -64,7 +72,10 @@ class CreateStoryView extends StatelessWidget {
               icon: CupertinoIcons.wand_stars,
               child: const GenreSelector(),
             ),
+
             SizedBox(height: height * 0.02),
+
+            /// MAIN CHARACTER
             _MainContainer(
               width: width,
               height: height,
@@ -73,6 +84,7 @@ class CreateStoryView extends StatelessWidget {
               child: SizedBox(
                 height: height * .05,
                 child: TextField(
+                  onChanged: controller.setCharacter,
                   decoration: InputDecoration(
                     hintText: 'Enter main character name',
                     enabledBorder: OutlineInputBorder(
@@ -91,7 +103,10 @@ class CreateStoryView extends StatelessWidget {
                 ),
               ),
             ),
+
             SizedBox(height: height * 0.02),
+
+            /// STORY TONE
             _MainContainer(
               width: width,
               height: height,
@@ -109,43 +124,53 @@ class CreateStoryView extends StatelessWidget {
                 ),
                 itemBuilder: (_, index) {
                   final tone = tones[index];
-                  return TRoundedContainer(
-                    showBorder: true,
-                    radius: 16,
-                    alignment: Alignment.center,
-                    child: Text(
-                      tone,
-                      style: theme.titleLarge!.copyWith(
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  );
+
+                  return Obx(() {
+                    final isSelected = controller.selectedTone.value == tone;
+
+                    return GenreChip(
+                      label: tone,
+                      isSelected: isSelected,
+                      onTap: () => controller.setTone(tone),
+                    );
+                  });
                 },
               ),
             ),
+
             SizedBox(height: height * 0.03),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              height: height * .05,
-              width: width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                color: AppColors.primary,
-              ),
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(CupertinoIcons.wand_stars, color: AppColors.white),
-                  SizedBox(width: 10),
-                  Text(
-                    'Generate Story Book',
-                    style: theme.titleLarge!.copyWith(color: AppColors.white),
-                  ),
-                ],
+
+            InkWell(
+              onTap: () => controller.generateStory(DateTime.now(), DateTime.now()),
+              child: Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                height: height * .05,
+                width: width,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: AppColors.primary,
+                ),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      CupertinoIcons.wand_stars,
+                      color: AppColors.white,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Generate Story Book',
+                      style: theme.titleLarge!.copyWith(color: AppColors.white),
+                    ),
+                  ],
+                ),
               ),
             ),
+
             SizedBox(height: height * 0.05),
           ],
         ),
@@ -164,7 +189,6 @@ class _MainContainer extends StatelessWidget {
   });
 
   final double width;
-
   final double height;
   final String title;
   final IconData icon;
@@ -173,10 +197,10 @@ class _MainContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
+
     return TRoundedContainer(
       width: width,
-
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withValues(alpha: .07),

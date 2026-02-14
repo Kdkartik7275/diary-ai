@@ -11,6 +11,7 @@ class DependencyInjection {
     _initDiary();
     _initStory();
     _initExplore();
+    _initComments();
   }
 }
 
@@ -20,6 +21,9 @@ void _initFirebase() {
   sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
   sl.registerLazySingleton<StorageService>(() => StorageService());
+  sl.registerLazySingleton<AIStoryService>(
+    () => AIStoryService(apiKey: dotenv.env['OPENAI_API_KEY']!),
+  );
 }
 
 // ----------------------- CORE -----------------------
@@ -98,12 +102,17 @@ void _initDiary() {
   sl.registerLazySingleton(() => CreateDiary(repository: sl()));
   sl.registerLazySingleton(() => GetUserDiaries(repository: sl()));
   sl.registerLazySingleton(() => UpdateDiary(repository: sl()));
+  sl.registerLazySingleton(() => GetDiariesByRange(repository: sl()));
 }
 
 void _initStory() {
   // DATASOURCE
   sl.registerLazySingleton<StoryRemoteDataSource>(
-    () => StoryRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
+    () => StoryRemoteDataSourceImpl(
+      firestore: sl<FirebaseFirestore>(),
+      storageService: sl<StorageService>(),
+      aiStoryService: sl<AIStoryService>(),
+    ),
   );
   sl.registerLazySingleton<StoryLocalDataSource>(
     () => StoryLocalDataSourceImpl(),
@@ -126,6 +135,11 @@ void _initStory() {
   sl.registerLazySingleton(() => PublishStory(repository: sl()));
   sl.registerLazySingleton(() => GetPublishedStories(repository: sl()));
   sl.registerLazySingleton(() => GetStoryStats(repository: sl()));
+  sl.registerLazySingleton(() => LikeStory(repository: sl()));
+  sl.registerLazySingleton(() => UnlikeStory(sl()));
+  sl.registerLazySingleton(() => MarkStoryRead(repository: sl()));
+  sl.registerLazySingleton(() => UploadStoryCoverImage(repository: sl()));
+  sl.registerLazySingleton(() => GenerateStoryFromDiaries(repository: sl()));
 }
 
 void _initExplore() {
@@ -143,4 +157,27 @@ void _initExplore() {
   // USECASES
   sl.registerLazySingleton(() => GetRecentlyAddedStory(repository: sl()));
   sl.registerLazySingleton(() => GetTrendingStories(repository: sl()));
+}
+
+void _initComments() {
+  // DATASOURCE
+  sl.registerLazySingleton<CommentRemoteDataSource>(
+    () => CommentRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
+  );
+
+  sl.registerLazySingleton<CommentRepository>(
+    () => CommentRepositoryImpl(
+      connectionChecker: sl<ConnectionChecker>(),
+      remoteDataSource: sl<CommentRemoteDataSource>(),
+    ),
+  );
+  // USECASES
+  sl.registerLazySingleton(() => AddComment(repository: sl()));
+  sl.registerLazySingleton(() => LikeComment(repository: sl()));
+  sl.registerLazySingleton(() => UnlikeComment(repository: sl()));
+  sl.registerLazySingleton(() => GetComments(repository: sl()));
+  sl.registerLazySingleton(() => AddReply(repository: sl()));
+  sl.registerLazySingleton(() => GetReplies(repository: sl()));
+  sl.registerLazySingleton(() => LikeReply(repository: sl()));
+  sl.registerLazySingleton(() => UnlikeReply(repository: sl()));
 }

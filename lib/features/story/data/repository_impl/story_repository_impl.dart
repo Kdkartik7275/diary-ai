@@ -1,4 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
+import 'package:flutter/widgets.dart';
 import 'package:fpdart/fpdart.dart';
 
 import 'package:lifeline/config/constants/typedefs.dart';
@@ -54,10 +57,13 @@ class StoryRepositoryImpl implements StoryRepository {
 
       final result = await remoteDataSource.getUserDrafts(userId: userId);
       for (StoryModel story in result) {
+        debugPrint(story.toMap().toString());
         await localDataSource.createStory(data: story);
       }
       return right(result);
     } catch (e) {
+      debugPrint(e.toString());
+
       return left(FirebaseFailure(message: e.toString()));
     }
   }
@@ -185,13 +191,119 @@ class StoryRepositoryImpl implements StoryRepository {
   @override
   ResultFuture<StoryStatsEntity> getStoryStats({
     required String storyId,
+    required String userId,
   }) async {
     try {
       if (!await connectionChecker.isConnected) {
         return left(FirebaseFailure(message: 'No Internet Connection'));
       }
 
-      final result = await remoteDataSource.getStoryStats(storyId: storyId);
+      final result = await remoteDataSource.getStoryStats(
+        storyId: storyId,
+        userId: userId,
+      );
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<void> likeStory({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.likeStory(
+        storyId: storyId,
+        userId: userId,
+      );
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<void> markStoryRead({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.markStoryRead(
+        storyId: storyId,
+        userId: userId,
+      );
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<String?> uploadStoryCoverImage(File image) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return right(null);
+      }
+
+      final result = await remoteDataSource.uploadStoryCoverImage(image);
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<void> unlikeStory({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.unlikeStory(
+        storyId: storyId,
+        userId: userId,
+      );
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<Map<String, dynamic>> generateStoryFromDiaries({
+    required List<Map<String, dynamic>> diaries,
+    required String genre,
+    required String tone,
+    required String characterName,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.generateStoryFromDiaries(
+        diaries: diaries,
+        genre: genre,
+        tone: tone,
+        characterName: characterName,
+      );
 
       return right(result);
     } catch (e) {

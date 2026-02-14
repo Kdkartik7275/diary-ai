@@ -1,11 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import 'package:lifeline/config/constants/colors.dart';
+import 'package:lifeline/config/routes/app_routes.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
+import 'package:lifeline/core/di/init_dependencies.dart';
+import 'package:lifeline/core/utils/helpers/functions.dart';
+import 'package:lifeline/features/explore/presentation/controller/story_reading_controller.dart';
+import 'package:lifeline/features/story/data/model/story_stats_model.dart';
 import 'package:lifeline/features/story/domain/entity/story_entity.dart';
+import 'package:lifeline/features/story/domain/usecases/like_story.dart';
+import 'package:lifeline/features/story/domain/usecases/mark_story_read.dart';
+import 'package:lifeline/features/story/domain/usecases/unlike_story.dart';
 
 class StoryReadingView extends StatefulWidget {
   const StoryReadingView({
@@ -26,51 +35,23 @@ class StoryReadingView extends StatefulWidget {
 }
 
 class _StoryReadingViewState extends State<StoryReadingView> {
-  late final List<_ReaderPage> pages;
-  int currentPage = 0;
+  final controller = Get.put(
+    StoryReadingController(
+      likeStoryUseCase: sl<LikeStory>(),
+      markStoryReadUseCase: sl<MarkStoryRead>(),
+      unlikeStoryUseCase: sl<UnlikeStory>(),
+    ),
+  );
 
   @override
   void initState() {
     super.initState();
-    pages = _buildPages();
-  }
-
-  List<_ReaderPage> _buildPages() {
-    final result = <_ReaderPage>[];
-
-    for (int i = 0; i < widget.story.chapters.length; i++) {
-      final chapter = widget.story.chapters[i];
-      final chapterPages = _paginateContent(chapter.content);
-
-      for (final pageContent in chapterPages) {
-        result.add(
-          _ReaderPage(
-            chapterNumber: i + 1,
-            chapterTitle: chapter.title,
-            content: pageContent,
-          ),
-        );
-      }
-    }
-
-    return result;
-  }
-
-  List<String> _paginateContent(String content, {int wordsPerPage = 250}) {
-    final words = content.split(RegExp(r'\s+'));
-    final pages = <String>[];
-
-    for (int i = 0; i < words.length; i += wordsPerPage) {
-      pages.add(words.skip(i).take(wordsPerPage).join(' '));
-    }
-
-    return pages;
+    controller.initializeStory(story: widget.story);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
-    final page = pages[currentPage];
 
     return Scaffold(
       appBar: AppBar(),
@@ -154,28 +135,34 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                   ),
                 ),
                 SizedBox(width: 12),
-                Text(
-                  '${widget.story.chapters.length} chapters   •   ${2145} likes',
-                  style: theme.titleSmall!.copyWith(
-                    color: AppColors.textLighter,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                Obx(() {
+                  final likes = controller.stats?.likes ?? 0;
+                  return Text(
+                    '${widget.story.chapters.length} chapters   •   ${formatCount(likes)} ${likes > 1 ? 'likes' : 'like'}',
+                    style: theme.titleSmall!.copyWith(
+                      color: AppColors.textLighter,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  );
+                }),
               ],
             ),
             SizedBox(height: 12),
             Divider(height: 1, color: AppColors.border.withValues(alpha: .4)),
 
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Text(
-                'Chapter ${page.chapterNumber}: ${page.chapterTitle}',
-                textAlign: TextAlign.start,
-                style: theme.titleMedium!.copyWith(
-                  fontWeight: FontWeight.normal,
+            Obx(() {
+              final page = controller.currentReaderPage;
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: Text(
+                  'Chapter ${page.chapterNumber}: ${page.chapterTitle}',
+                  textAlign: TextAlign.start,
+                  style: theme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
 
             Expanded(
               child: Padding(
@@ -184,57 +171,63 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                   vertical: 12,
                 ),
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text(
-                        page.content,
-                        style: theme.titleLarge!.copyWith(
-                          height: 1.7,
-                          color: AppColors.textLighter,
+                  child: Obx(() {
+                    final page = controller.currentReaderPage;
+                    controller.markStoryRead(storyId: widget.story.id);
+                    return Column(
+                      children: [
+                        Text(
+                          page.content,
+
+                          style: theme.titleLarge!.copyWith(
+                            height: 1.7,
+                            color: AppColors.textLighter,
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 22),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              onPressed: currentPage > 0
-                                  ? () => setState(() => currentPage--)
-                                  : null,
-                              child: Text(
-                                'Previous',
-                                style: theme.titleSmall!.copyWith(
-                                  fontWeight: FontWeight.normal,
-                                  color: currentPage > 0
-                                      ? AppColors.primary
-                                      : AppColors.textLighter,
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 22),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton(
+                                onPressed: controller.canGoPrevious
+                                    ? controller.previousPage
+                                    : null,
+                                child: Text(
+                                  'Previous',
+                                  style: theme.titleSmall!.copyWith(
+                                    fontWeight: FontWeight.normal,
+                                    color: controller.canGoPrevious
+                                        ? AppColors.primary
+                                        : AppColors.textLighter,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Text(
-                              '${currentPage + 1} of ${pages.length}',
-                              style: theme.titleSmall,
-                            ),
-                            TextButton(
-                              onPressed: currentPage < pages.length - 1
-                                  ? () => setState(() => currentPage++)
-                                  : null,
-                              child: Text(
-                                'Next',
-                                style: theme.titleSmall!.copyWith(
-                                  fontWeight: FontWeight.normal,
-                                  color: currentPage < pages.length - 1
-                                      ? AppColors.primary
-                                      : AppColors.textLighter,
+                              Text(
+                                '${controller.currentPage + 1} of ${controller.pages.length}',
+                                style: theme.titleSmall,
+                              ),
+                              TextButton(
+                                onPressed: controller.canGoNext
+                                    ? controller.nextPage
+                                    : null,
+                                child: Text(
+                                  'Next',
+                                  style: theme.titleSmall!.copyWith(
+                                    fontWeight: FontWeight.normal,
+                                    color: controller.canGoNext
+                                        ? AppColors.primary
+                                        : AppColors.textLighter,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                        SizedBox(height: 100),
+                      ],
+                    );
+                  }),
                 ),
               ),
             ),
@@ -245,61 +238,130 @@ class _StoryReadingViewState extends State<StoryReadingView> {
         height: 80,
         padding: EdgeInsets.symmetric(vertical: 12),
         color: AppColors.white,
-
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              children: [
-                Icon(Icons.favorite_border, color: AppColors.border),
-                Text(
-                  '2134',
-                  style: theme.titleSmall!.copyWith(
-                    fontWeight: FontWeight.normal,
-                    color: AppColors.textLighter,
+        child: Obx(() {
+          if (controller.isLoadingStats) {
+            return _BottomStatsLoading();
+          }
+          final stats =
+              controller.stats ?? StoryStatsModel.empty(widget.story.id);
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      if (stats.isLikedByYou) {
+                        controller.unlikeStory(storyId: widget.story.id);
+                      } else {
+                        controller.likeStory(storyId: widget.story.id);
+                      }
+                    },
+                    child: Icon(
+                      stats.isLikedByYou
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: stats.isLikedByYou
+                          ? AppColors.primary
+                          : AppColors.border,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                Icon(CupertinoIcons.chat_bubble, color: AppColors.border),
-                Text(
-                  '214',
-                  style: theme.titleSmall!.copyWith(
-                    fontWeight: FontWeight.normal,
-                    color: AppColors.textLighter,
+                  Text(
+                    formatCount(stats.likes),
+                    style: theme.titleSmall!.copyWith(
+                      fontWeight: FontWeight.normal,
+                      color: AppColors.textLighter,
+                    ),
                   ),
+                ],
+              ),
+              InkWell(
+                onTap: () => Get.toNamed(
+                  Routes.comments,
+                  arguments: {
+                    'storyId': widget.story.id,
+                    'commentCount': stats.comments,
+                  },
                 ),
-              ],
-            ),
-            Column(
-              children: [
-                Icon(Icons.bookmark_border, color: AppColors.border),
-                Text(
-                  'Save',
-                  style: theme.titleSmall!.copyWith(
-                    fontWeight: FontWeight.normal,
-                    color: AppColors.textLighter,
+                child: Column(
+                  children: [
+                    Icon(CupertinoIcons.chat_bubble, color: AppColors.border),
+                    Text(
+                      formatCount(stats.comments),
+                      style: theme.titleSmall!.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: AppColors.textLighter,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  Icon(Icons.bookmark_border, color: AppColors.border),
+                  Text(
+                    'Save',
+                    style: theme.titleSmall!.copyWith(
+                      fontWeight: FontWeight.normal,
+                      color: AppColors.textLighter,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
+                ],
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
 }
 
-class _ReaderPage {
-  final String chapterTitle;
-  final String content;
-  final int chapterNumber;
+class _BottomStatsLoading extends StatelessWidget {
+  const _BottomStatsLoading();
 
-  const _ReaderPage({
-    required this.chapterTitle,
-    required this.content,
-    required this.chapterNumber,
-  });
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: const [
+        _BottomStatPlaceholder(),
+        _BottomStatPlaceholder(),
+        _BottomStatPlaceholder(),
+      ],
+    );
+  }
+}
+
+class _BottomStatPlaceholder extends StatelessWidget {
+  const _BottomStatPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _Box(width: 22, height: 22),
+        SizedBox(height: 6),
+        _Box(width: 32, height: 10),
+      ],
+    );
+  }
+}
+
+class _Box extends StatelessWidget {
+  final double width;
+  final double height;
+
+  const _Box({required this.width, required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(4),
+      ),
+    );
+  }
 }

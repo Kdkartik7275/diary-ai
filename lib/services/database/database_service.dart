@@ -53,6 +53,7 @@ class DataBaseService {
   final String _storyUserId = 'userId';
   final String _storyTitle = 'title';
   final String _storyTags = 'tags';
+  final String _storyCoverImageUrl = 'coverImageUrl';
   final String _storyIsPublished = 'isPublished';
   final String _storyGeneratedByAI = 'generatedByAI';
   final String _storyPublishedAt = 'publishedAt';
@@ -109,6 +110,7 @@ class DataBaseService {
     $_storyId TEXT PRIMARY KEY,
     $_storyUserId TEXT NOT NULL,
     $_storyTitle TEXT NOT NULL,
+    $_storyCoverImageUrl TEXT,
     $_storyTags TEXT NOT NULL,
     $_storyIsPublished INTEGER NOT NULL DEFAULT 0,
     $_storyGeneratedByAI INTEGER NOT NULL,
@@ -160,7 +162,7 @@ class DataBaseService {
 
     return await openDatabase(
       databasePath,
-      version: 8,
+      version: 9,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -310,6 +312,51 @@ class DataBaseService {
       return diaryData;
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getDiariesFromDateRange({
+    required String userId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    try {
+      final db = await database;
+
+      final startIso = DateTime(
+        startDate.year,
+        startDate.month,
+        startDate.day,
+      ).toIso8601String();
+
+      final endIso = DateTime(
+        endDate.year,
+        endDate.month,
+        endDate.day,
+        23,
+        59,
+        59,
+      ).toIso8601String();
+
+      final result = await db.rawQuery(
+        '''
+      SELECT *
+      FROM $_diaryTableName
+      WHERE $_diaryUserId = ?
+      AND (
+        ($_diaryCreatedAt BETWEEN ? AND ?)
+        OR
+        ($_diaryUpdatedAt IS NOT NULL AND $_diaryUpdatedAt BETWEEN ? AND ?)
+      )
+      ORDER BY $_diaryCreatedAt ASC
+      ''',
+        [userId, startIso, endIso, startIso, endIso],
+      );
+
+      return result;
+    } catch (e) {
+      debugPrint('Error fetching diaries by date range: $e');
+      return [];
     }
   }
 

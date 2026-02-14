@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
+import 'package:lifeline/core/empty/empty_diary.dart';
 import 'package:lifeline/features/diary/presentation/controller/diary_controller.dart';
 import 'package:lifeline/features/diary/presentation/widgets/diary_card.dart';
 
@@ -97,7 +98,7 @@ class DiariesView extends GetView<DiaryController> {
 
                                   contentPadding: const EdgeInsets.only(
                                     top: 5,
-                                    bottom:10,
+                                    bottom: 10,
                                     right: 16,
                                   ),
 
@@ -136,32 +137,43 @@ class DiariesView extends GetView<DiaryController> {
                       SizedBox(height: height * 0.02),
 
                       Expanded(
-                        child: RefreshIndicator(
-                          backgroundColor: AppColors.white,
-                          color: AppColors.primary,
-                          onRefresh: ()async{
-                          await  controller.getDiaries();
-                          },
-                          child: ListView.separated(
-                            itemCount: controller.searching.value
-                                ? controller.searchedDiaries.length
-                                : controller.diaries.length,
-                            itemBuilder: (context, index) {
-                              final diary = controller.searching.value
-                                  ? controller.searchedDiaries[index]
-                                  : controller.diaries[index];
-                              return DiaryCard(
-                                width: width,
-                                theme: theme,
-                                height: height,
-                                diary: diary,
-                              );
-                            },
-                            separatorBuilder: (BuildContext context, int index) {
-                              return SizedBox(height: height * .02);
-                            },
-                          ),
-                        ),
+                        child:
+                            (controller.diaries.isEmpty &&
+                                !controller.diariesLoading.value &&
+                                !controller.searching.value)
+                            ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const EmptyDiaryState(),
+                              ],
+                            )
+                            : RefreshIndicator(
+                                backgroundColor: AppColors.white,
+                                color: AppColors.primary,
+                                onRefresh: () async {
+                                  await controller.getDiaries();
+                                },
+                                child: ListView.separated(
+                                  itemCount: controller.searching.value
+                                      ? controller.searchedDiaries.length
+                                      : controller.diaries.length,
+                                  itemBuilder: (context, index) {
+                                    final diary = controller.searching.value
+                                        ? controller.searchedDiaries[index]
+                                        : controller.diaries[index];
+                                    return DiaryCard(
+                                      width: width,
+                                      theme: theme,
+                                      height: height,
+                                      diary: diary,
+                                    );
+                                  },
+                                  separatorBuilder:
+                                      (BuildContext context, int index) {
+                                        return SizedBox(height: height * .02);
+                                      },
+                                ),
+                              ),
                       ),
                     ],
                   ),

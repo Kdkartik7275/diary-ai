@@ -45,12 +45,17 @@ class _DraftPreviewState extends State<DraftPreview> {
     return result;
   }
 
-  List<String> _paginateContent(String content, {int wordsPerPage = 250}) {
-    final words = content.split(RegExp(r'\s+'));
+  List<String> _paginateContent(String content, {int charsPerPage = 1200}) {
     final pages = <String>[];
 
-    for (int i = 0; i < words.length; i += wordsPerPage) {
-      pages.add(words.skip(i).take(wordsPerPage).join(' '));
+    for (int i = 0; i < content.length; i += charsPerPage) {
+      int end = i + charsPerPage;
+
+      if (end > content.length) {
+        end = content.length;
+      }
+
+      pages.add(content.substring(i, end));
     }
 
     return pages;
@@ -114,7 +119,8 @@ class _DraftPreviewState extends State<DraftPreview> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      '${widget.story.chapters.length} chapters • ${widget.story.chapters.fold(0, (initial, current) => initial += current.content.length)} words',
+                      // ignore: avoid_types_as_parameter_names
+                      '${widget.story.chapters.length} chapters • ${widget.story.chapters.fold<int>(0, (sum, chapter) => sum + chapter.content.trim().split(RegExp(r'\s+')).length)} words',
                       style: theme.titleSmall!.copyWith(
                         color: AppColors.textLighter,
                         fontWeight: FontWeight.normal,
