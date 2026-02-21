@@ -6,9 +6,11 @@ import 'package:get/get.dart';
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
 import 'package:lifeline/core/utils/helpers/functions.dart';
+import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
 import 'package:lifeline/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:lifeline/features/explore/presentation/controller/explore_controller.dart';
 import 'package:lifeline/features/explore/presentation/view/reading_view.dart';
+import 'package:lifeline/features/explore/presentation/widgets/user_place_holder.dart';
 import 'package:lifeline/features/story/data/model/story_stats_model.dart';
 import 'package:lifeline/features/story/domain/entity/story_stats.dart';
 
@@ -29,9 +31,7 @@ class StoryTrendingCard extends GetView<ExploreController> {
       onTap: () => Get.to(
         () => StoryReadingView(
           story: trendingStory.story,
-          authorId: trendingStory.authorId,
-          authorName: trendingStory.authorName,
-          authorProfileUrl: trendingStory.authorProfileUrl,
+          authorId: trendingStory.story.userId,
         ),
       ),
       child: TRoundedContainer(
@@ -99,56 +99,79 @@ class StoryTrendingCard extends GetView<ExploreController> {
                     ],
                   ),
                   SizedBox(height: height * .01),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 14,
-                        backgroundColor: AppColors.primary.withValues(
-                          alpha: .3,
-                        ),
-                        child: trendingStory.authorProfileUrl != null
-                            ? ClipOval(
-                                child: Image.network(
-                                  trendingStory.authorProfileUrl!,
-                                  width: 28,
-                                  height: 28,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Center(
-                                      child: Text(
-                                        trendingStory.authorName.substring(
-                                          0,
-                                          2,
+                  FutureBuilder<StoryAuthorEntity>(
+                    future: controller.getStoryAuthor(
+                      userId: trendingStory.story.userId,
+                    ),
+                    builder:
+                        (
+                          context,
+                          AsyncSnapshot<StoryAuthorEntity> asyncSnapshot,
+                        ) {
+                          if (asyncSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return StoryUserLoading();
+                          }
+                          if (asyncSnapshot.hasError) {
+                            return Container();
+                          }
+                          if (!asyncSnapshot.hasData) {
+                            return Container();
+                          }
+
+                          final user = asyncSnapshot.data!;
+                          return Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 14,
+                                backgroundColor: AppColors.primary.withValues(
+                                  alpha: .3,
+                                ),
+                                child: user.profilePictureUrl != null
+                                    ? ClipOval(
+                                        child: Image.network(
+                                          user.profilePictureUrl!,
+                                          width: 28,
+                                          height: 28,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Center(
+                                                  child: Text(
+                                                    user.name.substring(0, 2),
+                                                    style: theme.titleSmall!
+                                                        .copyWith(
+                                                          color: AppColors.text,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
+                                                  ),
+                                                );
+                                              },
                                         ),
-                                        style: theme.titleSmall!.copyWith(
-                                          color: AppColors.text,
-                                          fontWeight: FontWeight.normal,
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          user.name.substring(0, 2),
+                                          style: theme.titleSmall!.copyWith(
+                                            color: AppColors.text,
+                                            fontWeight: FontWeight.normal,
+                                          ),
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
-                              )
-                            : Center(
-                                child: Text(
-                                  trendingStory.authorName.substring(0, 2),
-                                  style: theme.titleSmall!.copyWith(
-                                    color: AppColors.text,
-                                    fontWeight: FontWeight.normal,
-                                  ),
+                              ),
+
+                              SizedBox(width: 6),
+                              Text(
+                                user.name,
+                                style: theme.titleSmall!.copyWith(
+                                  color: AppColors.textLighter,
+                                  fontWeight: FontWeight.normal,
                                 ),
                               ),
-                      ),
-
-                      SizedBox(width: 6),
-                      Text(
-                        trendingStory.authorName,
-                        style: theme.titleSmall!.copyWith(
-                          color: AppColors.textLighter,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ],
+                            ],
+                          );
+                        },
                   ),
                   SizedBox(height: height * .01),
                   Text(

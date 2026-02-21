@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lifeline/features/explore/data/models/recently_added_story_model.dart';
+import 'package:lifeline/features/explore/data/models/story_author_model.dart';
 import 'package:lifeline/features/explore/data/models/trending_story_model.dart';
 import 'package:lifeline/features/story/data/model/story_model.dart';
 import 'package:lifeline/features/user/data/model/user_model.dart';
@@ -8,6 +9,7 @@ import 'package:lifeline/features/user/data/model/user_model.dart';
 abstract interface class ExploreRemoteDataSource {
   Future<List<RecentlyAddedStoryModel>> getRecentlyAddedStories();
   Future<List<TrendingStoryModel>> getTrendingStories();
+  Future<StoryAuthorModel> getStoryAuthor(String authorId);
 }
 
 class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
@@ -25,7 +27,8 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
           .collection('stories')
           .where('isPublished', isEqualTo: true)
           .where('publishedAt', isGreaterThanOrEqualTo: sevenDaysAgo)
-          .orderBy('publishedAt', descending: true).limit(10)
+          .orderBy('publishedAt', descending: true)
+          .limit(10)
           .get();
 
       final List<RecentlyAddedStoryModel> stories = [];
@@ -66,7 +69,10 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
   @override
   Future<List<TrendingStoryModel>> getTrendingStories() async {
     try {
-      final statsSnapshot = await firestore.collection('story_stats').limit(10).get();
+      final statsSnapshot = await firestore
+          .collection('story_stats')
+          .limit(10)
+          .get();
 
       final List<Map<String, dynamic>> rankedStats = [];
 
@@ -101,33 +107,41 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
           storySnapshot.data() as Map<String, dynamic>,
         );
 
-        final userSnapshot = await firestore
-            .collection('users')
-            .doc(story.userId)
-            .get();
-
-        if (!userSnapshot.exists) continue;
-
-        final user = UserModel.fromMap(
-          userSnapshot.data() as Map<String, dynamic>,
-        );
-
-        stories.add(
-          TrendingStoryModel.fromMap(
-            story: story,
-            author: {
-              'id': user.id,
-              'name': user.fullName,
-              'profileUrl': user.profileUrl,
-            },
-          ),
-        );
+        stories.add(TrendingStoryModel.fromMap(story: story));
       }
 
       return stories;
     } catch (e) {
       debugPrint(e.toString());
       throw Exception('Failed to fetch trending stories: $e');
+    }
+  }
+
+  @override
+  Future<StoryAuthorModel> getStoryAuthor(String authorId) async {
+    try {
+      final authorSnapshot = await firestore
+          .collection('users')
+          .doc(authorId)
+          .get();
+
+      if (!authorSnapshot.exists) {
+        throw Exception('Author not found');
+      }
+
+      final authorData = authorSnapshot.data() as Map<String, dynamic>;
+      final id = authorData['id'] as String;
+      final name = authorData['fullName'] as String;
+      final profileUrl = authorData['profileUrl'] as String?;
+
+      return StoryAuthorModel(
+        id: id,
+        name: name,
+        profilePictureUrl: profileUrl,
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Failed to fetch story author: $e');
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/config/routes/app_routes.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
+import 'package:lifeline/features/profile/presentation/views/upgrade_premium_view.dart';
 import 'package:lifeline/features/profile/presentation/widgets/personal_info_tile.dart';
 import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
 
@@ -101,7 +102,8 @@ class AccountDetailsView extends GetView<UserController> {
                     ),
                     Divider(color: AppColors.border.withValues(alpha: .3)),
                     GestureDetector(
-                      onTap: () => Get.toNamed(Routes.editProfile,arguments: user),
+                      onTap: () =>
+                          Get.toNamed(Routes.editProfile, arguments: user),
                       child: TRoundedContainer(
                         margin: EdgeInsets.symmetric(
                           horizontal: 12,
@@ -262,27 +264,30 @@ class AccountDetailsView extends GetView<UserController> {
                         ],
                       ),
                       SizedBox(height: height * 0.02),
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
-                        ),
-                        height: height * .05,
-                        width: width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primary.withValues(alpha: .4),
-                              AppColors.primary.withValues(alpha: .8),
-                            ],
+                      InkWell(
+                        onTap: () => Get.to(() => UpgradePremiumView()),
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
                           ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Upgrade to Premium',
-                          style: theme.titleLarge!.copyWith(
-                            color: AppColors.white,
+                          height: height * .05,
+                          width: width,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.primary.withValues(alpha: .4),
+                                AppColors.primary.withValues(alpha: .8),
+                              ],
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Upgrade to Premium',
+                            style: theme.titleLarge!.copyWith(
+                              color: AppColors.white,
+                            ),
                           ),
                         ),
                       ),

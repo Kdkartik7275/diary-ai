@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lifeline/core/animation/publish_success_dialog.dart';
 
 import 'package:lifeline/core/di/init_dependencies.dart';
 import 'package:lifeline/core/snackbars/error_snackbar.dart';
@@ -44,7 +45,6 @@ class StoryController extends GetxController {
     super.onInit();
     getUserPublishedStories();
     getDrafts();
-    
   }
 
   Future<void> publishUserStory({required String storyId}) async {
@@ -65,6 +65,8 @@ class StoryController extends GetxController {
 
         draftStoriesCount.value = (draftStoriesCount.value - 1).clamp(0, 9999);
         publishedStoriesCount.value += 1;
+        final context = Get.context!;
+        showPublishSuccessDialog(context, storyTitle: publishedStory.title);
       });
     } catch (e) {
       showErrorDialog(e.toString());
@@ -94,7 +96,7 @@ class StoryController extends GetxController {
     }
   }
 
-    Future<void> getUserPublishedStories() async {
+  Future<void> getUserPublishedStories() async {
     try {
       loading.value = true;
       final result = await getPublishedStories.call(

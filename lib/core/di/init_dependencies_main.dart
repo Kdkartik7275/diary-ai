@@ -12,6 +12,7 @@ class DependencyInjection {
     _initStory();
     _initExplore();
     _initComments();
+    _initSocial();
   }
 }
 
@@ -79,6 +80,7 @@ void _initUser() {
   sl.registerLazySingleton(() => SaveUser(repository: sl()));
   sl.registerLazySingleton(() => GetUser(repository: sl()));
   sl.registerLazySingleton(() => EditUser(repository: sl()));
+  sl.registerLazySingleton(() => GetUserStats(repository: sl()));
   sl.registerLazySingleton(() => UploadUserProfile(repository: sl()));
 }
 
@@ -157,6 +159,7 @@ void _initExplore() {
   // USECASES
   sl.registerLazySingleton(() => GetRecentlyAddedStory(repository: sl()));
   sl.registerLazySingleton(() => GetTrendingStories(repository: sl()));
+  sl.registerLazySingleton(() => GetStoryAuthor(repository: sl()));
 }
 
 void _initComments() {
@@ -180,4 +183,21 @@ void _initComments() {
   sl.registerLazySingleton(() => GetReplies(repository: sl()));
   sl.registerLazySingleton(() => LikeReply(repository: sl()));
   sl.registerLazySingleton(() => UnlikeReply(repository: sl()));
+}
+
+void _initSocial() {
+  // DATASOURCE
+  sl.registerLazySingleton<SocialRemoteDataSource>(
+    () => SocialRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
+  );
+
+  sl.registerLazySingleton<SocialRepository>(
+    () => SocialRepositoryImpl(
+      connectionChecker: sl<ConnectionChecker>(),
+      remoteDataSource: sl<SocialRemoteDataSource>(),
+    ),
+  );
+  // USECASES
+  sl.registerLazySingleton(() => FollowUser(repository: sl()));
+  sl.registerLazySingleton(() => GetFollowStatus(repository: sl()));
 }

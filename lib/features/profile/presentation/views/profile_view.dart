@@ -24,6 +24,8 @@ class ProfileView extends GetView<UserController> {
     return Scaffold(
       body: Obx(() {
         final user = controller.currentUser.value;
+        int followersCount = controller.userStats.value?.followersCount ?? 0;
+        int followingCount = controller.userStats.value?.followingCount ?? 0;
         int storiesTotalWordsCount = storyController.totalWordsCount.value;
         int publishedStories = storyController.publishedStoriesCount.value;
         int totalWordsCount =
@@ -33,7 +35,7 @@ class ProfileView extends GetView<UserController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProfileHeader(user: user),
+              ProfileHeader(user: user,followersCount: followersCount,followingCount: followingCount),
               ProfileStats(
                 publishedStoriesCount: publishedStories,
                 totalWordsCount: totalWordsCount,

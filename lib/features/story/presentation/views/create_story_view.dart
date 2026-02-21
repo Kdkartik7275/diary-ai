@@ -7,7 +7,6 @@ import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
 import 'package:lifeline/features/story/presentation/controller/generate_story_controller.dart';
 import 'package:lifeline/features/story/presentation/widgets/date_field.dart';
-import 'package:lifeline/features/story/presentation/widgets/generating_story.dart';
 import 'package:lifeline/features/story/presentation/widgets/genre_selector.dart';
 
 class CreateStoryView extends GetView<GenerateStoryController> {
@@ -141,7 +140,10 @@ class CreateStoryView extends GetView<GenerateStoryController> {
             SizedBox(height: height * 0.03),
 
             InkWell(
-              onTap: () => controller.generateStory(DateTime.now(), DateTime.now()),
+              onTap: () => controller.navigateToAnimation(
+                DateTime(2026, 02, 17),
+                DateTime(2026, 02, 17),
+              ),
               child: Container(
                 margin: const EdgeInsets.symmetric(
                   horizontal: 12,

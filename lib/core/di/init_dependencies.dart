@@ -32,7 +32,13 @@ import 'package:lifeline/features/explore/data/data_source/explore_remote_data_s
 import 'package:lifeline/features/explore/data/repo_impl/explore_repo_impl.dart';
 import 'package:lifeline/features/explore/domain/repository/explore_repository.dart';
 import 'package:lifeline/features/explore/domain/usecases/get_recently_added_story.dart';
+import 'package:lifeline/features/explore/domain/usecases/get_story_author.dart';
 import 'package:lifeline/features/explore/domain/usecases/get_trending_stories.dart';
+import 'package:lifeline/features/social/data/data_source/social_remote_data_source.dart';
+import 'package:lifeline/features/social/data/repository_impl/social_repository_impl.dart';
+import 'package:lifeline/features/social/domain/repository/social_repository.dart';
+import 'package:lifeline/features/social/domain/usecases/follow_user.dart';
+import 'package:lifeline/features/social/domain/usecases/get_follow_status.dart';
 import 'package:lifeline/features/story/data/data_source/local/story_local_data_source.dart';
 import 'package:lifeline/features/story/data/data_source/remote/story_remote_data_source.dart';
 import 'package:lifeline/features/story/data/repository_impl/story_repository_impl.dart';
@@ -57,6 +63,7 @@ import 'package:lifeline/features/user/data/repository_impl/user_repository_impl
 import 'package:lifeline/features/user/domain/repository/user_repository.dart';
 import 'package:lifeline/features/user/domain/usecases/edit_user.dart';
 import 'package:lifeline/features/user/domain/usecases/get_user.dart';
+import 'package:lifeline/features/user/domain/usecases/get_user_stats.dart';
 import 'package:lifeline/features/user/domain/usecases/save_user.dart';
 import 'package:lifeline/features/user/domain/usecases/upload_user_profile.dart';
 import 'package:lifeline/services/ai/ai_story_service.dart';

@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:lifeline/features/user/data/model/user_model.dart';
+import 'package:lifeline/features/user/data/model/user_stat_model.dart';
 import 'package:lifeline/services/storage/storage_service.dart';
 
 abstract interface class UserRemoteDataSource {
@@ -19,6 +20,7 @@ abstract interface class UserRemoteDataSource {
   Future<UserModel> getUserFromDatabase({required String userId});
   Future<UserModel> editUser({required Map<String, dynamic> userData});
   Future<String?> uploadUserProfile(File file);
+  Future<UserStatModel> getUserStats({required String userId});
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -46,6 +48,20 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       );
 
       await firestore.collection('users').doc(userId).set(user.toMap());
+      final userStat = UserStatModel(
+        userId: userId,
+        storiesCount: 0,
+        diariesCount: 0,
+        followersCount: 0,
+        followingCount: 0,
+        totalLikesReceived: 0,
+        totalReadsReceived: 0,
+        commentsCount: 0,
+      );
+      await firestore
+          .collection('users_stats')
+          .doc(userId)
+          .set(userStat.toMap());
 
       return user;
     } on FirebaseException catch (e) {
@@ -77,14 +93,24 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw e.toString();
     }
   }
-  
+
   @override
-  Future<String?> uploadUserProfile(File file) async{
-   try {
-     final url = await storageService.uploadFileData(file);
-     return url;
-   } catch (e) {
-     throw e.toString();
-   }
+  Future<String?> uploadUserProfile(File file) async {
+    try {
+      final url = await storageService.uploadFileData(file);
+      return url;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<UserStatModel> getUserStats({required String userId}) async {
+    try {
+      final doc = await firestore.collection('user_stats').doc(userId).get();
+      return UserStatModel.fromMap(doc.data()!, userId);
+    } catch (e) {
+      throw e.toString();
+    }
   }
 }

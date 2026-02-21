@@ -1,11 +1,29 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
+import 'package:lifeline/features/story/presentation/controller/generate_story_controller.dart';
 
 class GeneratingStoryView extends StatefulWidget {
-  const GeneratingStoryView({super.key});
+  const GeneratingStoryView({
+    super.key,
+    required this.startDate,
+    required this.endDate,
+    required this.genre,
+    required this.tone,
+    required this.characterName,
+  });
+
+  final DateTime startDate;
+  final DateTime endDate;
+  final String genre;
+  final String tone;
+  final String characterName;
 
   @override
   State<GeneratingStoryView> createState() => _GeneratingStoryViewState();
@@ -31,6 +49,8 @@ class _GeneratingStoryViewState extends State<GeneratingStoryView>
     'Crafting your narrative...',
     'Adding the finishing touches...',
   ];
+
+  final controller = Get.find<GenerateStoryController>();
 
   @override
   void initState() {
@@ -89,6 +109,13 @@ class _GeneratingStoryViewState extends State<GeneratingStoryView>
       }
     });
     _textController.forward();
+    controller.generateStory(
+      startDate: widget.startDate,
+      endDate: widget.endDate,
+      genre: widget.genre,
+      tone: widget.tone,
+      characterName: widget.characterName,
+    );
   }
 
   @override

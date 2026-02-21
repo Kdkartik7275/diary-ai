@@ -9,6 +9,7 @@ import 'package:lifeline/core/network/connection_checker.dart';
 import 'package:lifeline/features/user/data/data_source/user_local_data_source.dart';
 import 'package:lifeline/features/user/data/data_source/user_remote_data_source.dart';
 import 'package:lifeline/features/user/domain/entity/user_entity.dart';
+import 'package:lifeline/features/user/domain/entity/user_stats.dart';
 import 'package:lifeline/features/user/domain/repository/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
@@ -88,6 +89,19 @@ class UserRepositoryImpl implements UserRepository {
       }
       final url = await remoteDataSource.uploadUserProfile(file);
       return right(url);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<UserStats> getUserStats({required String userId}) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(FirebaseFailure(message: "No Internet Connection"));
+      }
+      final stats = await remoteDataSource.getUserStats(userId: userId);
+      return right(stats);
     } catch (e) {
       return left(FirebaseFailure(message: e.toString()));
     }

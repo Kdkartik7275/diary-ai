@@ -29,14 +29,8 @@ class RecentlyAddedStoryCard extends StatelessWidget {
     final height = size.height;
     final theme = Theme.of(context).textTheme;
     return GestureDetector(
-      onTap: () => Get.to(
-        () => StoryReadingView(
-          story: story,
-          authorId: authorId,
-          authorName: authorName,
-          authorProfileUrl: authorProfileUrl,
-        ),
-      ),
+      onTap: () =>
+          Get.to(() => StoryReadingView(story: story, authorId: authorId)),
       child: SizedBox(
         width: width * .30,
         child: Column(

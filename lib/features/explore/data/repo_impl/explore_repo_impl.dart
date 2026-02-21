@@ -4,6 +4,7 @@ import 'package:lifeline/core/errors/failure.dart';
 import 'package:lifeline/core/network/connection_checker.dart';
 import 'package:lifeline/features/explore/data/data_source/explore_remote_data_source.dart';
 import 'package:lifeline/features/explore/domain/entity/recently_added_story.dart';
+import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
 import 'package:lifeline/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:lifeline/features/explore/domain/repository/explore_repository.dart';
 
@@ -36,6 +37,19 @@ class ExploreRepositoryImpl implements ExploreRepository {
         return left(FirebaseFailure(message: 'No Internet Connection'));
       }
       final result = await remoteDataSource.getTrendingStories();
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<StoryAuthorEntity> getStoryAuthor(String authorId) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+      final result = await remoteDataSource.getStoryAuthor(authorId);
       return right(result);
     } catch (e) {
       return left(FirebaseFailure(message: e.toString()));

@@ -9,25 +9,29 @@ import 'package:lifeline/config/routes/app_routes.dart';
 import 'package:lifeline/core/containers/rounded_container.dart';
 import 'package:lifeline/core/di/init_dependencies.dart';
 import 'package:lifeline/core/utils/helpers/functions.dart';
+import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
+import 'package:lifeline/features/explore/presentation/controller/explore_controller.dart';
 import 'package:lifeline/features/explore/presentation/controller/story_reading_controller.dart';
+import 'package:lifeline/features/explore/presentation/widgets/user_place_holder.dart';
+import 'package:lifeline/features/social/presentation/controllers/follow_controller.dart';
 import 'package:lifeline/features/story/data/model/story_stats_model.dart';
 import 'package:lifeline/features/story/domain/entity/story_entity.dart';
 import 'package:lifeline/features/story/domain/usecases/like_story.dart';
 import 'package:lifeline/features/story/domain/usecases/mark_story_read.dart';
 import 'package:lifeline/features/story/domain/usecases/unlike_story.dart';
+import 'package:lifeline/features/user/domain/entity/user_entity.dart';
+import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
 
 class StoryReadingView extends StatefulWidget {
   const StoryReadingView({
     super.key,
     required this.story,
-    required this.authorName,
-    this.authorProfileUrl,
+
     required this.authorId,
   });
 
   final StoryEntity story;
-  final String authorName;
-  final String? authorProfileUrl;
+
   final String authorId;
 
   @override
@@ -35,17 +39,30 @@ class StoryReadingView extends StatefulWidget {
 }
 
 class _StoryReadingViewState extends State<StoryReadingView> {
-  final controller = Get.put(
-    StoryReadingController(
-      likeStoryUseCase: sl<LikeStory>(),
-      markStoryReadUseCase: sl<MarkStoryRead>(),
-      unlikeStoryUseCase: sl<UnlikeStory>(),
-    ),
-  );
+  late StoryReadingController controller;
+  late FollowController followController;
+  late UserEntity currentUser;
+  final ExploreController exploreController = Get.find<ExploreController>();
 
   @override
   void initState() {
     super.initState();
+    controller = Get.put(
+      StoryReadingController(
+        likeStoryUseCase: sl<LikeStory>(),
+        markStoryReadUseCase: sl<MarkStoryRead>(),
+        unlikeStoryUseCase: sl<UnlikeStory>(),
+      ),
+    );
+    followController = Get.put(
+      FollowController(followUserUseCase: sl(), getFollowStatusUseCase: sl()),
+    );
+    currentUser = Get.find<UserController>().currentUser.value!;
+
+    followController.checkFollowStatus(
+      currentUserId: currentUser.id,
+      targetUserId: widget.authorId,
+    );
     controller.initializeStory(story: widget.story);
   }
 
@@ -66,60 +83,156 @@ class _StoryReadingViewState extends State<StoryReadingView> {
               overflow: TextOverflow.ellipsis,
               style: theme.titleMedium!.copyWith(fontWeight: FontWeight.normal),
             ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(
-                radius: 14,
-                backgroundColor: AppColors.primary.withValues(alpha: .3),
-                child: widget.authorProfileUrl != null
-                    ? ClipOval(
-                        child: Image.network(
-                          widget.authorProfileUrl!,
-                          width: 28,
-                          height: 28,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Text(
-                                widget.authorName.substring(0, 2),
-                                style: theme.titleSmall!.copyWith(
-                                  color: AppColors.text,
-                                  fontWeight: FontWeight.normal,
+            FutureBuilder<StoryAuthorEntity>(
+              future: exploreController.getStoryAuthor(
+                userId: widget.story.userId,
+              ),
+              builder:
+                  (context, AsyncSnapshot<StoryAuthorEntity> asyncSnapshot) {
+                    if (asyncSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return StoryUserLoading();
+                    }
+                    if (asyncSnapshot.hasError) {
+                      return Container();
+                    }
+                    if (!asyncSnapshot.hasData) {
+                      return Container();
+                    }
+
+                    final user = asyncSnapshot.data!;
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        radius: 14,
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: .3,
+                        ),
+                        child: user.profilePictureUrl != null
+                            ? ClipOval(
+                                child: Image.network(
+                                  user.profilePictureUrl!,
+                                  width: 28,
+                                  height: 28,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Center(
+                                      child: Text(
+                                        user.name.substring(0, 2),
+                                        style: theme.titleSmall!.copyWith(
+                                          color: AppColors.text,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : Center(
+                                child: Text(
+                                  user.name.substring(0, 2),
+                                  style: theme.titleSmall!.copyWith(
+                                    color: AppColors.text,
+                                    fontWeight: FontWeight.normal,
+                                  ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
-                      )
-                    : Center(
-                        child: Text(
-                          widget.authorName.substring(0, 2),
-                          style: theme.titleSmall!.copyWith(
-                            color: AppColors.text,
-                            fontWeight: FontWeight.normal,
-                          ),
+                      ),
+                      title: Text(user.name, style: theme.titleLarge),
+                      subtitle: Text(
+                        DateFormat(
+                          'MMM dd, yyyy',
+                        ).format(widget.story.publishedAt!.toDate()),
+                        style: theme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.normal,
+                          color: AppColors.textLighter,
                         ),
                       ),
-              ),
-              title: Text(widget.authorName, style: theme.titleLarge),
-              subtitle: Text(
-                DateFormat(
-                  'MMM dd, yyyy',
-                ).format(widget.story.publishedAt!.toDate()),
-                style: theme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.normal,
-                  color: AppColors.textLighter,
-                ),
-              ),
-              trailing: ElevatedButton(
-                style: ButtonStyle(),
-                onPressed: () {},
-                child: Text(
-                  'Follow',
-                  style: theme.titleLarge!.copyWith(color: AppColors.white),
-                ),
-              ),
+                      trailing: currentUser.id == widget.authorId
+                          ? const SizedBox.shrink()
+                          : Obx(() {
+                              final isFollowing =
+                                  followController.isFollowing.value;
+                              final isFollowedBy =
+                                  followController.isFollowedBy.value;
+                              final isLoading =
+                                  followController.isLoading.value;
+
+                              String buttonText;
+                              Color backgroundColor;
+                              Color textColor;
+                              BorderSide? border;
+
+                              if (isFollowing) {
+                                buttonText = "Following";
+                                backgroundColor = AppColors.white;
+                                textColor = AppColors.primary;
+                                border = BorderSide(color: AppColors.primary);
+                              } else if (isFollowedBy) {
+                                buttonText = "Follow Back";
+                                backgroundColor = AppColors.primary;
+                                textColor = AppColors.white;
+                                border = BorderSide.none;
+                              } else {
+                                buttonText = "Follow";
+                                backgroundColor = AppColors.primary;
+                                textColor = AppColors.white;
+                                border = BorderSide.none;
+                              }
+
+                              return SizedBox(
+                                height: 36,
+                                child: ElevatedButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          followController.followUser(
+                                            currentUserAvatar:
+                                                currentUser.profileUrl ?? '',
+                                            currentUserId: currentUser.id,
+                                            currentUserName:
+                                                currentUser.fullName,
+                                            targetUserId: user.id,
+                                            targetUserName: user.name,
+                                            targetUserAvatar:
+                                                user.profilePictureUrl ?? '',
+                                          );
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    backgroundColor: backgroundColor,
+                                    foregroundColor: textColor,
+                                    side: border,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 18,
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: AppColors.primary,
+                                          ),
+                                        )
+                                      : Text(
+                                          buttonText,
+                                          style: theme.titleSmall!.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            color: textColor,
+                                          ),
+                                        ),
+                                ),
+                              );
+                            }),
+                    );
+                  },
             ),
+
             Row(
               children: [
                 TRoundedContainer(

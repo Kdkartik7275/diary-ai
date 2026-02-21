@@ -158,7 +158,9 @@ class _DraftPreviewState extends State<DraftPreview> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(
-              'Chapter ${page.chapterNumber}: ${page.chapterTitle}',
+              widget.story.generatedByAI
+                  ? page.chapterTitle
+                  : 'Chapter ${page.chapterNumber}: ${page.chapterTitle}',
               textAlign: TextAlign.start,
               style: theme.titleMedium!.copyWith(fontWeight: FontWeight.normal),
             ),

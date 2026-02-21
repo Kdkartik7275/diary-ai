@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lifeline/config/constants/colors.dart';
 import 'package:lifeline/features/profile/presentation/views/settings_view.dart';
+import 'package:lifeline/features/social/presentation/views/followers_followings_view.dart';
 import 'package:lifeline/features/user/domain/entity/user_entity.dart';
 
 class ProfileHeader extends StatefulWidget {
-  const ProfileHeader({super.key, required this.user});
+  const ProfileHeader({
+    super.key,
+    required this.user,
+    this.followersCount = 0,
+    this.followingCount = 0,
+  });
 
   final UserEntity? user;
+  final int followersCount;
+  final int followingCount;
 
   @override
   State<ProfileHeader> createState() => _ProfileHeaderState();
@@ -44,6 +52,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
         bottom: false,
         child: Column(
           children: [
+            // Settings button row
             Padding(
               padding: EdgeInsets.fromLTRB(
                 horizontalPadding,
@@ -84,6 +93,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               ),
             ),
 
+            // Avatar
             Container(
               height: avatarSize,
               width: avatarSize,
@@ -119,8 +129,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                     ),
             ),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
+            // Full name
             Padding(
               padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: Text(
@@ -135,6 +146,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 maxLines: 1,
               ),
             ),
+
+            // Username
             if (user.username != null && user.username!.isNotEmpty)
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -150,8 +163,51 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 ),
               ),
 
+            // Followers / Following row
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+                vertical: 14,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _followStat(
+                    label: 'Followers',
+                    count: widget.followersCount,
+                    theme: theme,
+                    onTap: () => Get.to(
+                      () => FollowersFollowingView(
+                        initialTab: 0,
+                        followersCount: widget.followersCount,
+                        followingCount: widget.followingCount,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 28,
+                    width: 1,
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    color: AppColors.border.withValues(alpha: 0.4),
+                  ),
+                  _followStat(
+                    label: 'Following',
+                    count: widget.followingCount,
+                    theme: theme,
+                    onTap: () => Get.to(
+                      () => FollowersFollowingView(
+                        initialTab: 1,
+                        followersCount: widget.followersCount,
+                        followingCount: widget.followingCount,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Bio
             if (user.bio != null && user.bio!.isNotEmpty) ...[
-              SizedBox(height: isSmallScreen ? 10 : 10),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: bioPadding),
                 child: Column(
@@ -206,10 +262,53 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                   ],
                 ),
               ),
+              const SizedBox(height: 14),
             ],
           ],
         ),
       ),
     );
+  }
+
+  Widget _followStat({
+    required String label,
+    required int count,
+    required TextTheme theme,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _formatCount(count),
+            style: theme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: theme.titleSmall?.copyWith(
+              color: AppColors.textLighter,
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatCount(int count) {
+    if (count >= 1000000) {
+      return '${(count / 1000000).toStringAsFixed(1)}M';
+    } else if (count >= 1000) {
+      return '${(count / 1000).toStringAsFixed(1)}K';
+    }
+    return count.toString();
   }
 }

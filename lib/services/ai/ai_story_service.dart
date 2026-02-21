@@ -16,9 +16,17 @@ class AIStoryService {
 
     final prompt =
         """
-You are a professional story writer.
+You are a professional novel writer.
 
-Generate a structured story JSON ONLY.
+Write a well-structured story in proper novel format.
+
+IMPORTANT WRITING RULES:
+- Each chapter MUST contain multiple paragraphs.
+- Each paragraph must be separated by a blank line.
+- Each chapter should contain at least 4–6 paragraphs.
+- Each paragraph should be 3–6 sentences long.
+- Do NOT write the entire chapter as a single paragraph.
+- Maintain emotional depth and descriptive storytelling.
 
 Character Name: $characterName
 Genre: $genre
@@ -27,14 +35,21 @@ Tone: $tone
 Diary Entries:
 ${jsonEncode(diaries)}
 
-Return JSON ONLY in this format:
+Return ONLY valid JSON in this exact format:
 {
  "title": "",
  "tags": [],
  "chapters":[
-   {"title":"","content":""}
+   {
+     "title":"",
+     "content":""
+   }
  ]
 }
+
+Do NOT include markdown.
+Do NOT include explanations.
+Return JSON only.
 """;
 
     final response = await http.post(
