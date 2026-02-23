@@ -38,6 +38,7 @@ class DataBaseService {
   final String _diaryMood = 'mood';
   final String _diaryCreatedAt = 'createdAt';
   final String _diaryUpdatedAt = 'updatedAt';
+  final String _diaryDeletedAt = 'deletedAt';
   final String _diaryTotalWordsCount = 'totalWordsCount';
   final String _readingTime = 'readingTime';
   final String _diaryIsFavourite = 'isFavorite';
@@ -95,6 +96,7 @@ class DataBaseService {
       $_diaryMood TEXT NOT NULL,
       $_diaryCreatedAt TEXT NOT NULL,
       $_diaryUpdatedAt TEXT,
+      $_diaryDeletedAt TEXT,
       $_diaryTotalWordsCount INTEGER NOT NULL,
       $_readingTime INTEGER NOT NULL,
       $_diaryIsFavourite INTEGER NOT NULL,
@@ -162,7 +164,7 @@ class DataBaseService {
 
     return await openDatabase(
       databasePath,
-      version: 9,
+      version: 10,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -306,7 +308,7 @@ class DataBaseService {
 
       final List<Map<String, dynamic>> diaryData = await db.query(
         _diaryTableName,
-        where: '$_diaryUserId = ?',
+        where: '$_diaryUserId = ? AND $_diaryDeletedAt IS NULL',
         whereArgs: [userId],
       );
       return diaryData;
@@ -412,6 +414,27 @@ class DataBaseService {
       );
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  Future<bool> softDeleteDiary({required String diaryId}) async {
+    try {
+      final db = await database;
+
+      final rowsUpdated = await db.update(
+        _diaryTableName,
+        {
+          _diaryDeletedAt: DateTime.now().toIso8601String(),
+          _diaryUpdatedAt: DateTime.now().toIso8601String(),
+        },
+        where: '$_diaryId = ?',
+        whereArgs: [diaryId],
+      );
+
+      return rowsUpdated > 0;
+    } catch (e) {
+      debugPrint('Error soft deleting diary: $e');
+      return false;
     }
   }
 

@@ -105,6 +105,7 @@ void _initDiary() {
   sl.registerLazySingleton(() => GetUserDiaries(repository: sl()));
   sl.registerLazySingleton(() => UpdateDiary(repository: sl()));
   sl.registerLazySingleton(() => GetDiariesByRange(repository: sl()));
+  sl.registerLazySingleton(() => DeleteDiary(repository: sl()));
 }
 
 void _initStory() {
@@ -200,4 +201,6 @@ void _initSocial() {
   // USECASES
   sl.registerLazySingleton(() => FollowUser(repository: sl()));
   sl.registerLazySingleton(() => GetFollowStatus(repository: sl()));
+  sl.registerLazySingleton(() => GetFollowers(repository: sl()));
+  sl.registerLazySingleton(() => GetFollowings(repository: sl()));
 }

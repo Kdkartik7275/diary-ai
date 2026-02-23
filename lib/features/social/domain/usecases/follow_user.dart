@@ -16,6 +16,8 @@ class FollowUser implements UseCaseWithParams<void, FollowUserParams> {
       targetUserId: params.targetUserId,
       targetUserName: params.targetUserName,
       targetUserAvatar: params.targetUserAvatar,
+      currentUserFullName: params.currentUserFullName,
+      targetUserFullName: params.targetUserFullName,
     );
   }
 }
@@ -27,6 +29,8 @@ class FollowUserParams {
   final String targetUserId;
   final String targetUserName;
   final String targetUserAvatar;
+  final String currentUserFullName;
+  final String targetUserFullName;
 
   FollowUserParams({
     required this.currentUserId,
@@ -35,5 +39,7 @@ class FollowUserParams {
     required this.targetUserId,
     required this.targetUserName,
     required this.targetUserAvatar,
+    required this.currentUserFullName,
+    required this.targetUserFullName,
   });
 }

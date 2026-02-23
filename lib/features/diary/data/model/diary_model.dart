@@ -19,6 +19,7 @@ class DiaryModel extends DiaryEntity {
     super.storyId,
     super.tags,
     super.updatedAt,
+    super.deletedAt,
   });
 
   Map<String, dynamic> toMap() {
@@ -37,6 +38,7 @@ class DiaryModel extends DiaryEntity {
       'isUsedInStory': isUsedInStory ?? false,
       'storyId': storyId,
       'tags': tags,
+      'deletedAt': deletedAt,
     };
   }
 
@@ -53,6 +55,7 @@ class DiaryModel extends DiaryEntity {
           : Timestamp.now(),
 
       updatedAt: map['updatedAt'] is Timestamp ? map['updatedAt'] : null,
+      deletedAt: map['deletedAt'] is Timestamp ? map['deletedAt'] : null,
 
       totalWordsCount: map['totalWordsCount'] ?? 0,
       readingTime: map['readingTime'] ?? 0,
@@ -83,6 +86,7 @@ class DiaryModel extends DiaryEntity {
       'isUsedInStory': (isUsedInStory ?? false) ? 1 : 0,
       'storyId': storyId,
       'tags': jsonEncode(tags),
+      'deletedAt': deletedAt?.toDate().toIso8601String(),
     };
   }
 
@@ -98,6 +102,9 @@ class DiaryModel extends DiaryEntity {
 
       updatedAt: map['updatedAt'] != null
           ? Timestamp.fromDate(DateTime.parse(map['updatedAt']))
+          : null,
+      deletedAt: map['deletedAt'] != null
+          ? Timestamp.fromDate(DateTime.parse(map['deletedAt']))
           : null,
 
       totalWordsCount: map['totalWordsCount'] ?? 0,

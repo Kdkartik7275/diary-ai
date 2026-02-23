@@ -1,20 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lifeline/features/social/data/model/follow_model.dart';
 import 'package:lifeline/features/social/data/model/follow_status_model.dart';
 
 abstract interface class SocialRemoteDataSource {
   Future<void> followUser({
     required String currentUserId,
-    required String currentUserName,
+    required String currentUserFullName,
     required String currentUserAvatar,
     required String targetUserId,
-    required String targetUserName,
+    required String targetUserFullName,
     required String targetUserAvatar,
+    required String currentUserName,
+    required String targetUserName,
   });
 
   Future<FollowStatusModel> getFollowStatus({
     required String currentUserId,
     required String targetUserId,
   });
+  Future<List<FollowModel>> getFollowers(String userId);
+  Future<List<FollowModel>> getFollowings(String userId);
 }
 
 class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
@@ -25,10 +30,13 @@ class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
   @override
   Future<void> followUser({
     required String currentUserId,
-    required String currentUserName,
+    required String currentUserFullName,
     required String currentUserAvatar,
-    required String targetUserId,
+    required String currentUserName,
     required String targetUserName,
+
+    required String targetUserId,
+    required String targetUserFullName,
     required String targetUserAvatar,
   }) async {
     final followingRef = firestore
@@ -53,14 +61,16 @@ class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
       if (alreadyFollowing.exists) return;
 
       tx.set(followingRef, {
-        'name': targetUserName,
+        'name': targetUserFullName,
         'avatar': targetUserAvatar,
+        'username': targetUserName,
         'followedAt': FieldValue.serverTimestamp(),
       });
 
       tx.set(followerRef, {
-        'name': currentUserName,
+        'name': currentUserFullName,
         'avatar': currentUserAvatar,
+        'username': currentUserName,
         'followedAt': FieldValue.serverTimestamp(),
       });
 
@@ -100,5 +110,57 @@ class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
       isFollowing: isFollowing,
       isFollowedBy: isFollowedBy,
     );
+  }
+
+  @override
+  Future<List<FollowModel>> getFollowers(String userId) async {
+    try {
+      final snapshot = await firestore
+          .collection('user_followers')
+          .doc(userId)
+          .collection('users')
+          .orderBy('followedAt', descending: true)
+          .get();
+
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+
+        return FollowModel(
+          id: doc.id,
+          fullName: data['name'] ?? '',
+          username: data['username'] ?? '',
+          profileUrl: data['avatar'],
+          isFollowingBack: false,
+        );
+      }).toList();
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<List<FollowModel>> getFollowings(String userId) async {
+    try {
+      final snapshot = await firestore
+          .collection('user_following')
+          .doc(userId)
+          .collection('users')
+          .orderBy('followedAt', descending: true)
+          .get();
+
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+
+        return FollowModel(
+          id: doc.id,
+          fullName: data['name'] ?? '',
+          username: data['username'] ?? '',
+          profileUrl: data['avatar'],
+          isFollowingBack: false,
+        );
+      }).toList();
+    } catch (e) {
+      throw e.toString();
+    }
   }
 }

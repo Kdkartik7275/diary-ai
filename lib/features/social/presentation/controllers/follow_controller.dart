@@ -1,15 +1,24 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:lifeline/core/di/init_dependencies.dart';
+import 'package:lifeline/core/snackbars/error_snackbar.dart';
 import 'package:lifeline/features/social/domain/entity/follow_entity.dart';
 import 'package:lifeline/features/social/domain/usecases/follow_user.dart';
 import 'package:lifeline/features/social/domain/usecases/get_follow_status.dart';
+import 'package:lifeline/features/social/domain/usecases/get_followers.dart';
+import 'package:lifeline/features/social/domain/usecases/get_followings.dart';
 
 class FollowController extends GetxController {
   final FollowUser followUserUseCase;
   final GetFollowStatus getFollowStatusUseCase;
+  final GetFollowers getFollowersUseCase;
+  final GetFollowings getFollowingsUseCase;
 
   FollowController({
     required this.followUserUseCase,
     required this.getFollowStatusUseCase,
+    required this.getFollowersUseCase,
+    required this.getFollowingsUseCase,
   });
 
   RxBool isFollowing = false.obs;
@@ -21,23 +30,25 @@ class FollowController extends GetxController {
 
   final RxSet<String> followingIds = <String>{}.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchFollowers();
-    fetchFollowing();
-  }
-
   Future<void> fetchFollowers() async {
     isLoading.value = true;
-    // TODO: Replace with your actual repository call
-    // e.g. final result = await _followRepository.getFollowers(userId);
-    await Future.delayed(const Duration(milliseconds: 600)); // simulate network
+    final result = await getFollowersUseCase.call(
+      sl<FirebaseAuth>().currentUser!.uid,
+    );
+    result.fold((err) => showErrorDialog(err.message), (r) {
+      followers.value = r;
+    });
     isLoading.value = false;
   }
 
   Future<void> fetchFollowing() async {
-    // TODO: Replace with your actual repository call
+    final result = await getFollowingsUseCase.call(
+      sl<FirebaseAuth>().currentUser!.uid,
+    );
+    result.fold((err) => showErrorDialog(err.message), (r) {
+      following.value = r;
+    });
+    isLoading.value = false;
   }
 
   Future<void> toggleFollow(FollowEntity user) async {
@@ -55,11 +66,13 @@ class FollowController extends GetxController {
 
   Future<void> followUser({
     required String currentUserId,
-    required String currentUserName,
+    required String currentUserFullName,
     required String currentUserAvatar,
     required String targetUserId,
-    required String targetUserName,
+    required String targetUserFullName,
     required String targetUserAvatar,
+    required String currentUserName,
+    required String targetUserName,
   }) async {
     isLoading.value = true;
     isFollowing.value = true;
@@ -70,6 +83,8 @@ class FollowController extends GetxController {
       targetUserId: targetUserId,
       targetUserName: targetUserName,
       targetUserAvatar: targetUserAvatar,
+      currentUserFullName: currentUserFullName,
+      targetUserFullName: targetUserFullName,
     );
 
     final result = await followUserUseCase.call(params);

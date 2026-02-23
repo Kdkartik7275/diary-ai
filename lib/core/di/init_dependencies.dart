@@ -25,6 +25,7 @@ import 'package:lifeline/features/diary/data/data_source/remote/diary_remote_dat
 import 'package:lifeline/features/diary/data/repository_impl/diary_repository_impl.dart';
 import 'package:lifeline/features/diary/domain/repository/diary_repository.dart';
 import 'package:lifeline/features/diary/domain/usecases/create_diary.dart';
+import 'package:lifeline/features/diary/domain/usecases/delete_diary.dart';
 import 'package:lifeline/features/diary/domain/usecases/get_diaries_by_range.dart';
 import 'package:lifeline/features/diary/domain/usecases/get_user_diaries.dart';
 import 'package:lifeline/features/diary/domain/usecases/update_diary.dart';
@@ -39,6 +40,8 @@ import 'package:lifeline/features/social/data/repository_impl/social_repository_
 import 'package:lifeline/features/social/domain/repository/social_repository.dart';
 import 'package:lifeline/features/social/domain/usecases/follow_user.dart';
 import 'package:lifeline/features/social/domain/usecases/get_follow_status.dart';
+import 'package:lifeline/features/social/domain/usecases/get_followers.dart';
+import 'package:lifeline/features/social/domain/usecases/get_followings.dart';
 import 'package:lifeline/features/story/data/data_source/local/story_local_data_source.dart';
 import 'package:lifeline/features/story/data/data_source/remote/story_remote_data_source.dart';
 import 'package:lifeline/features/story/data/repository_impl/story_repository_impl.dart';

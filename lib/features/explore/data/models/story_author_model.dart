@@ -5,6 +5,7 @@ class StoryAuthorModel extends StoryAuthorEntity {
     required super.id,
     required super.name,
     super.profilePictureUrl,
+    super.username,
   });
 
   factory StoryAuthorModel.fromMap({required Map<String, dynamic> map}) {

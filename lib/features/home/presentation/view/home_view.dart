@@ -23,33 +23,6 @@ class _HomeViewState extends State<HomeView> {
   late DiaryController diaryController;
   late StoryController storyController;
 
-  final dummyDiaries = [
-    {
-      "date": "2026-02-01",
-      "mood": "😔",
-      "content":
-          "Today felt heavy. I argued with my best friend and couldn't focus on anything.",
-    },
-    {
-      "date": "2026-02-02",
-      "mood": "😡",
-      "content":
-          "Work pressure was intense. I almost quit but decided to push through.",
-    },
-    {
-      "date": "2026-02-03",
-      "mood": "😊",
-      "content":
-          "We talked again and resolved our issues. Felt lighter and hopeful.",
-    },
-    {
-      "date": "2026-02-04",
-      "mood": "😌",
-      "content":
-          "Went for a long walk alone. Reflected on life and future goals.",
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -57,7 +30,6 @@ class _HomeViewState extends State<HomeView> {
     diaryController = Get.find<DiaryController>();
     storyController = Get.find<StoryController>();
   }
-
 
   String getGreeting() {
     final hour = DateTime.now().hour;

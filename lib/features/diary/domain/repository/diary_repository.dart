@@ -16,4 +16,6 @@ abstract interface class DiaryRepository {
     required Map<String, dynamic> data,
     required String diaryId,
   });
+
+  ResultVoid deleteDiary({required String diaryId});
 }

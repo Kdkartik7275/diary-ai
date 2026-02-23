@@ -4,13 +4,19 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lifeline/core/di/init_dependencies.dart';
 import 'package:lifeline/core/snackbars/error_snackbar.dart';
+import 'package:lifeline/core/snackbars/success_dialog.dart';
 import 'package:lifeline/features/diary/domain/entity/diary_entity.dart';
+import 'package:lifeline/features/diary/domain/usecases/delete_diary.dart';
 import 'package:lifeline/features/diary/domain/usecases/get_user_diaries.dart';
 
 class DiaryController extends GetxController {
   final GetUserDiaries getUserDiaries;
+  final DeleteDiary deleteDiaryUseCase;
 
-  DiaryController({required this.getUserDiaries});
+  DiaryController({
+    required this.getUserDiaries,
+    required this.deleteDiaryUseCase,
+  });
 
   RxList<DiaryEntity> diaries = RxList([]);
   RxList<DiaryEntity> searchedDiaries = RxList([]);
@@ -71,6 +77,20 @@ class DiaryController extends GetxController {
       return d.title.toLowerCase().contains(q) ||
           d.content.toLowerCase().contains(q);
     }).toList();
+  }
+
+  Future<void> deleteDiary({required String diaryId}) async {
+    try {
+      final result = await deleteDiaryUseCase.call(diaryId);
+
+      result.fold((err) => showErrorDialog(err.message), (r) {
+        diaries.removeWhere((diary)=> diary.id == diaryId);
+        showSuccessDialog("Diary moved to Trash.");
+        update();
+      });
+    } catch (e) {
+      showErrorDialog(e.toString());
+    }
   }
 
   int calculateTotalWordsCount() {

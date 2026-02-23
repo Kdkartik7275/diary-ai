@@ -133,11 +133,14 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
       final id = authorData['id'] as String;
       final name = authorData['fullName'] as String;
       final profileUrl = authorData['profileUrl'] as String?;
+      final username = authorData['username'] as String?;
 
       return StoryAuthorModel(
         id: id,
         name: name,
         profilePictureUrl: profileUrl,
+        username: username
+        
       );
     } catch (e) {
       debugPrint(e.toString());

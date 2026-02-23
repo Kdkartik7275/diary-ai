@@ -55,7 +55,12 @@ class _StoryReadingViewState extends State<StoryReadingView> {
       ),
     );
     followController = Get.put(
-      FollowController(followUserUseCase: sl(), getFollowStatusUseCase: sl()),
+      FollowController(
+        followUserUseCase: sl(),
+        getFollowStatusUseCase: sl(),
+        getFollowersUseCase: sl(),
+        getFollowingsUseCase: sl(),
+      ),
     );
     currentUser = Get.find<UserController>().currentUser.value!;
 
@@ -191,11 +196,14 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                                                 currentUser.profileUrl ?? '',
                                             currentUserId: currentUser.id,
                                             currentUserName:
-                                                currentUser.fullName,
+                                                currentUser.username ?? '',
                                             targetUserId: user.id,
-                                            targetUserName: user.name,
+                                            targetUserName: user.username ?? '',
                                             targetUserAvatar:
                                                 user.profilePictureUrl ?? '',
+                                            currentUserFullName:
+                                                currentUser.fullName,
+                                            targetUserFullName: user.name,
                                           );
                                         },
                                   style: ElevatedButton.styleFrom(

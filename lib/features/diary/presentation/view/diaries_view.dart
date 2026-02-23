@@ -166,6 +166,9 @@ class DiariesView extends GetView<DiaryController> {
                                       theme: theme,
                                       height: height,
                                       diary: diary,
+                                      onDelete: ()async{
+                                      await controller.deleteDiary(diaryId: diary.id);
+                                      },
                                     );
                                   },
                                   separatorBuilder:

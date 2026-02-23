@@ -1,159 +1,135 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
+
 import 'package:lifeline/features/social/domain/entity/follow_entity.dart';
-import 'package:lifeline/features/social/presentation/controllers/follow_controller.dart';
+import 'package:lifeline/features/social/presentation/views/user_profile_page.dart';
 
 class UserTile extends StatelessWidget {
   const UserTile({super.key, required this.user});
 
   final FollowEntity user;
 
+  static const _avatarColors = [
+    Color(0xFFE8E0FF),
+    Color(0xFFD6ECFF),
+    Color(0xFFFFE5D6),
+    Color(0xFFD6F5EF),
+    Color(0xFFFFD6E8),
+  ];
+
+  static const _avatarTextColors = [
+    Color(0xFF6B48D4),
+    Color(0xFF2D78CC),
+    Color(0xFFCC5500),
+    Color(0xFF1A8A72),
+    Color(0xFFCC2D6B),
+  ];
+
+  String get _initials {
+    final name = user.fullName.trim();
+    if (name.isEmpty) return '?';
+    final parts = name.split(RegExp(r'\s+'));
+    if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    return name[0].toUpperCase();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
-    final controller = Get.find<FollowController>();
+    final colorIndex = user.id.hashCode.abs() % _avatarColors.length;
+    final bgColor = _avatarColors[colorIndex];
+    final textColor = _avatarTextColors[colorIndex];
 
-    final avatarColors = [
-      const Color(0xFFB095FF),
-      const Color(0xFF8BC6FF),
-      const Color(0xFFFFB175),
-      const Color(0xFFC8B5FF),
-      const Color(0xFF98E4D4),
-    ];
-    final avatarColor = avatarColors[user.id.hashCode % avatarColors.length];
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Avatar
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [avatarColor, avatarColor.withValues(alpha: 0.75)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+    return GestureDetector(
+      onTap: () => Get.to(() => UserProfilePage(user: user)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFF0F0F0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-            child: user.profileUrl != null && user.profileUrl!.isNotEmpty
-                ? ClipOval(
-                    child: Image.network(
-                      user.profileUrl!,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => _AvatarFallback(
-                        name: user.fullName,
-                        color: avatarColor,
+          ],
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: bgColor),
+              child: user.profileUrl != null && user.profileUrl!.isNotEmpty
+                  ? ClipOval(
+                      child: Image.network(
+                        user.profileUrl!,
+                        width: 46,
+                        height: 46,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) =>
+                            _Initials(initials: _initials, color: textColor),
                       ),
-                    ),
-                  )
-                : _AvatarFallback(name: user.fullName, color: avatarColor),
-          ),
-
-          const SizedBox(width: 12),
-
-          // Name + username
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user.fullName,
-                  style: theme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                    letterSpacing: -0.3,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '@${user.username}',
-                  style: theme.bodySmall?.copyWith(
-                    color: Colors.black45,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ],
+                    )
+                  : _Initials(initials: _initials, color: textColor),
             ),
-          ),
-
-          const SizedBox(width: 8),
-
-          Obx(() {
-            final isFollowing = controller.isFollowingUser(user.id);
-            return GestureDetector(
-              onTap: () => controller.toggleFollow(user),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeInOut,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isFollowing ? Colors.white : AppColors.primary,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: isFollowing
-                        ? Colors.black.withValues(alpha: 0.12)
-                        : AppColors.primary,
-                    width: 1.2,
+      
+            const SizedBox(width: 12),
+      
+            // Name + username
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    user.fullName,
+                    style: theme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF111111),
+                      fontSize: 14,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                ),
-                child: Text(
-                  isFollowing ? 'Following' : 'Follow',
-                  style: theme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                    color: isFollowing ? Colors.black54 : Colors.white,
-                    letterSpacing: 0.2,
+                  const SizedBox(height: 2),
+                  Text(
+                    '@${user.username}',
+                    style: theme.bodySmall?.copyWith(
+                      color: const Color(0xFF999999),
+                      fontSize: 12,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                ),
+                ],
               ),
-            );
-          }),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _AvatarFallback extends StatelessWidget {
-  const _AvatarFallback({required this.name, required this.color});
+class _Initials extends StatelessWidget {
+  const _Initials({required this.initials, required this.color});
 
-  final String name;
+  final String initials;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        name.isNotEmpty ? name[0].toUpperCase() : '?',
+        initials,
         style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
+          color: color,
+          fontWeight: FontWeight.w700,
+          fontSize: 15,
         ),
       ),
     );

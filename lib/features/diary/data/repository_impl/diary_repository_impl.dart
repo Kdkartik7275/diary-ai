@@ -95,4 +95,18 @@ class DiaryRepositoryImpl implements DiaryRepository {
       return left(FirebaseFailure(message: e.toString()));
     }
   }
+
+  @override
+  ResultVoid deleteDiary({required String diaryId}) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+      await remoteDataSource.deleteDiary(diaryId: diaryId);
+      await localDataSource.deleteDiary(diaryId: diaryId);
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
 }

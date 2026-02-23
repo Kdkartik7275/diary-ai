@@ -9,6 +9,7 @@ abstract interface class DiaryRemoteDataSource {
     required String diaryId,
   });
   Future<List<DiaryModel>> getUserDiaries({required String userId});
+  Future<void> deleteDiary({required String diaryId});
 }
 
 class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
@@ -75,6 +76,18 @@ class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
       await firestore.collection('diaries').doc(diaryId).update(data);
       final doc = await firestore.collection('diaries').doc(diaryId).get();
       return DiaryModel.fromMap(doc.data()!);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<void> deleteDiary({required String diaryId}) async {
+    try {
+      await firestore.collection('diaries').doc(diaryId).update({
+        'deletedAt': Timestamp.now(),
+        'updatedAt': Timestamp.now(),
+      });
     } catch (e) {
       throw e.toString();
     }

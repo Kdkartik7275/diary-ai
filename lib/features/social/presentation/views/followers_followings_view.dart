@@ -33,8 +33,15 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
   void initState() {
     super.initState();
     controller = Get.put(
-      FollowController(followUserUseCase: sl(), getFollowStatusUseCase: sl()),
+      FollowController(
+        followUserUseCase: sl(),
+        getFollowStatusUseCase: sl(),
+        getFollowersUseCase: sl(),
+        getFollowingsUseCase: sl(),
+      ),
     );
+    controller.fetchFollowers();
+    controller.fetchFollowing();
     _tabController = TabController(
       length: 2,
       vsync: this,

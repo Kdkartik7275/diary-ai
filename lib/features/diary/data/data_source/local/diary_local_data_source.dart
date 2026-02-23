@@ -8,6 +8,8 @@ abstract interface class DiaryLocalDataSource {
   Future<void> updateDiary({required String diaryId, required DiaryModel data});
   Future<bool> diaryExists({required String diaryId});
   Future<bool> isDiaryTableEmpty();
+
+  Future<bool> deleteDiary({required String diaryId});
   Future<List<DiaryModel>> getAllDiaries({required String userId});
   Future<List<DiaryModel>> getDiariesByDateRange({
     required String userId,
@@ -98,5 +100,10 @@ class DiaryLocalDataSourceImpl implements DiaryLocalDataSource {
     } catch (e) {
       throw e.toString();
     }
+  }
+
+  @override
+  Future<bool> deleteDiary({required String diaryId}) async {
+    return await _db.softDeleteDiary(diaryId: diaryId);
   }
 }

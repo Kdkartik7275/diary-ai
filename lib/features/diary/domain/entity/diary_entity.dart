@@ -8,6 +8,7 @@ class DiaryEntity {
   final String mood;
   final Timestamp createdAt;
   final Timestamp? updatedAt;
+  final Timestamp? deletedAt;
 
   final List<String> tags;
 
@@ -28,6 +29,7 @@ class DiaryEntity {
     required this.mood,
     required this.createdAt,
     this.updatedAt,
+    this.deletedAt,
     this.tags = const [],
     required this.totalWordsCount,
     required this.readingTime,
