@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/utils/helpers/functions.dart';
-import 'package:lifeline/features/comments/domain/entity/comment_entity.dart';
-import 'package:lifeline/features/comments/presentation/controller/comments_controller.dart';
-import 'package:lifeline/features/comments/presentation/widget/more_options.dart';
-import 'package:lifeline/features/comments/presentation/widget/reply_tile.dart';
-import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
+import 'package:mindloom/features/comments/domain/entity/comment_entity.dart';
+import 'package:mindloom/features/comments/presentation/controller/comments_controller.dart';
+import 'package:mindloom/features/comments/presentation/widget/more_options.dart';
+import 'package:mindloom/features/comments/presentation/widget/reply_tile.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class CommentTile extends GetView<CommentsController> {
   const CommentTile({super.key, required this.comment, this.isReply = false});
@@ -29,6 +29,7 @@ class CommentTile extends GetView<CommentsController> {
             children: [
               CircleAvatar(
                 radius: isReply ? 16 : 22,
+                backgroundColor: AppColors.primary,
                 child: comment.userProfileUrl.isNotEmpty
                     ? ClipOval(
                         child: Image.network(
@@ -39,7 +40,7 @@ class CommentTile extends GetView<CommentsController> {
                           errorBuilder: (context, error, stackTrace) {
                             return Center(
                               child: Text(
-                                comment.userName.substring(0, 2),
+                                comment.userName.substring(0, 2).toUpperCase(),
                                 style: theme.titleSmall!.copyWith(
                                   color: AppColors.text,
                                   fontWeight: FontWeight.normal,
@@ -52,7 +53,7 @@ class CommentTile extends GetView<CommentsController> {
                       )
                     : Center(
                         child: Text(
-                          comment.userName.substring(0, 2),
+                          comment.userName.substring(0, 2).toUpperCase(),
                           style: theme.titleSmall!.copyWith(
                             color: AppColors.text,
                             fontWeight: FontWeight.normal,

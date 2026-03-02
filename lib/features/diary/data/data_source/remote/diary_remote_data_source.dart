@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/features/diary/data/model/diary_model.dart';
+import 'package:mindloom/features/diary/data/model/diary_model.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class DiaryRemoteDataSource {

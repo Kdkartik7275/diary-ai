@@ -4,6 +4,7 @@ class StoryStatsEntity {
   final int comments;
   final int likes;
   final int saved;
+  final int trendingScore;
   final bool isLikedByYou;
 
   StoryStatsEntity({
@@ -13,5 +14,6 @@ class StoryStatsEntity {
     required this.comments,
     required this.isLikedByYou,
     required this.saved,
+    required this.trendingScore,
   });
 }

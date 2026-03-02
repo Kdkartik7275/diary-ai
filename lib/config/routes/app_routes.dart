@@ -12,4 +12,5 @@ class Routes {
   static const settings = '/settings';
   static const editProfile = '/editProfile';
   static const comments = '/comments';
+  static const notification = '/notification';
 }

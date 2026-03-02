@@ -3,17 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/core/animation/publish_success_dialog.dart';
+import 'package:mindloom/core/animation/publish_success_dialog.dart';
 
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/domain/usecases/get_drafts_count.dart';
-import 'package:lifeline/features/story/domain/usecases/get_published_count.dart';
-import 'package:lifeline/features/story/domain/usecases/get_published_stories.dart';
-import 'package:lifeline/features/story/domain/usecases/get_user_drafts.dart';
-import 'package:lifeline/features/story/domain/usecases/publish_story.dart';
-import 'package:lifeline/features/story/domain/usecases/stories_total_wordcount.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/core/snackbars/success_dialog.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/usecases/delete_draft.dart';
+import 'package:mindloom/features/story/domain/usecases/get_drafts_count.dart';
+import 'package:mindloom/features/story/domain/usecases/get_published_count.dart';
+import 'package:mindloom/features/story/domain/usecases/get_published_stories.dart';
+import 'package:mindloom/features/story/domain/usecases/get_user_drafts.dart';
+import 'package:mindloom/features/story/domain/usecases/publish_story.dart';
+import 'package:mindloom/features/story/domain/usecases/stories_total_wordcount.dart';
 
 class StoryController extends GetxController {
   final GetUserDrafts getUserDrafts;
@@ -22,6 +24,7 @@ class StoryController extends GetxController {
   final GetPublishedCount publishedCount;
   final PublishStory publishStory;
   final GetPublishedStories getPublishedStories;
+  final DeleteDraft deleteDraftUseCase;
 
   StoryController({
     required this.getUserDrafts,
@@ -30,6 +33,7 @@ class StoryController extends GetxController {
     required this.publishedCount,
     required this.publishStory,
     required this.getPublishedStories,
+    required this.deleteDraftUseCase,
   });
   RxList<StoryEntity> drafts = RxList([]);
   RxList<StoryEntity> published = RxList([]);
@@ -93,6 +97,18 @@ class StoryController extends GetxController {
       showErrorDialog(e.toString());
     } finally {
       loading.value = false;
+    }
+  }
+
+  Future<void> deleteDraft({required String draftId}) async {
+    try {
+      drafts.removeWhere((element) => element.id == draftId);
+      showSuccessDialog("Story moved to Trash.");
+      update();
+      final result = await deleteDraftUseCase.call(draftId);
+      result.fold((err) => showErrorDialog(err.message), (r) {});
+    } catch (e) {
+      showErrorDialog(e.toString());
     }
   }
 

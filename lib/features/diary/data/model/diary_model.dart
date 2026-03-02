@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/features/diary/domain/entity/diary_entity.dart';
+import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
 
 class DiaryModel extends DiaryEntity {
   DiaryModel({

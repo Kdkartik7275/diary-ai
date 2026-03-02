@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/features/comments/domain/entity/comment_entity.dart';
-import 'package:lifeline/features/comments/domain/entity/reply_entity.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/features/comments/domain/entity/comment_entity.dart';
+import 'package:mindloom/features/comments/domain/entity/reply_entity.dart';
 
 abstract interface class CommentRepository {
   ResultFuture<CommentEntity> addComment({required Map<String, dynamic> data});

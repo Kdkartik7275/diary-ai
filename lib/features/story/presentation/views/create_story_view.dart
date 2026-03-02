@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/story/presentation/controller/generate_story_controller.dart';
-import 'package:lifeline/features/story/presentation/widgets/date_field.dart';
-import 'package:lifeline/features/story/presentation/widgets/genre_selector.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/story/presentation/controller/generate_story_controller.dart';
+import 'package:mindloom/features/story/presentation/widgets/date_field.dart';
+import 'package:mindloom/features/story/presentation/widgets/genre_selector.dart';
 
 class CreateStoryView extends GetView<GenerateStoryController> {
   const CreateStoryView({super.key});

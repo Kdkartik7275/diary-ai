@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 
 class UserModel extends UserEntity {
   UserModel({

@@ -1,7 +1,7 @@
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/usecases/usecases.dart';
-import 'package:lifeline/features/comments/domain/entity/comment_entity.dart';
-import 'package:lifeline/features/comments/domain/repository/comment_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/usecases/usecases.dart';
+import 'package:mindloom/features/comments/domain/entity/comment_entity.dart';
+import 'package:mindloom/features/comments/domain/repository/comment_repository.dart';
 
 class AddComment
     implements UseCaseWithParams<CommentEntity, Map<String, dynamic>> {

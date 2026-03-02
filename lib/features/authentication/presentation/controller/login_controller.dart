@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/routes/app_routes.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/features/authentication/domain/usecases/sign_in_email_usecase.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/features/authentication/domain/usecases/sign_in_email_usecase.dart';
 
 class LoginController extends GetxController {
   final SignInWithEmailAndPassword signInWithEmailAndPassword;

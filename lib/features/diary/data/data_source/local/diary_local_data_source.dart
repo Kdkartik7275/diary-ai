@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:lifeline/features/diary/data/model/diary_model.dart';
-import 'package:lifeline/services/database/database_service.dart';
+import 'package:mindloom/features/diary/data/model/diary_model.dart';
+import 'package:mindloom/services/database/database_service.dart';
 
 abstract interface class DiaryLocalDataSource {
   Future<void> createDiary({required DiaryModel data});

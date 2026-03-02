@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/core/snackbars/success_dialog.dart';
-import 'package:lifeline/core/utils/helpers/functions.dart';
-import 'package:lifeline/features/user/domain/entity/user_entity.dart';
-import 'package:lifeline/features/user/domain/usecases/edit_user.dart';
-import 'package:lifeline/features/user/domain/usecases/upload_user_profile.dart';
-import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/core/snackbars/success_dialog.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/features/user/domain/usecases/edit_user.dart';
+import 'package:mindloom/features/user/domain/usecases/upload_user_profile.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class EditProfileController extends GetxController {
   final EditUser editUser;

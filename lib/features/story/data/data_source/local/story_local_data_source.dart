@@ -1,5 +1,5 @@
-import 'package:lifeline/features/story/data/model/story_model.dart';
-import 'package:lifeline/services/database/database_service.dart';
+import 'package:mindloom/features/story/data/model/story_model.dart';
+import 'package:mindloom/services/database/database_service.dart';
 
 abstract interface class StoryLocalDataSource {
   Future<void> createStory({required StoryModel data});
@@ -29,7 +29,7 @@ class StoryLocalDataSourceImpl implements StoryLocalDataSource {
   @override
   Future<void> deleteStory({required String storyId}) async {
     try {
-      await _db.deleteStory(storyId);
+      await _db.softDeleteStory(storyId: storyId);
     } catch (e) {
       throw e.toString();
     }

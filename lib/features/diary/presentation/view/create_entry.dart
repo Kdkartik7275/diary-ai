@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/diary/domain/entity/diary_entity.dart';
-import 'package:lifeline/features/diary/presentation/controller/create_diary_controller.dart';
-import 'package:lifeline/features/diary/presentation/widgets/mood_selector.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
+import 'package:mindloom/features/diary/presentation/controller/create_diary_controller.dart';
+import 'package:mindloom/features/diary/presentation/widgets/mood_selector.dart';
 
 class CreateEntryView extends GetView<CreateDiaryController> {
   const CreateEntryView({super.key});

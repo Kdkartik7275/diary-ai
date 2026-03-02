@@ -1,26 +1,31 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/features/explore/presentation/controller/explore_controller.dart';
-import 'package:lifeline/features/story/data/model/story_stats_model.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/domain/entity/story_stats.dart';
-import 'package:lifeline/features/story/domain/usecases/like_story.dart';
-import 'package:lifeline/features/story/domain/usecases/mark_story_read.dart';
-import 'package:lifeline/features/story/domain/usecases/unlike_story.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
+import 'package:mindloom/features/notifications/domain/entity/app_notification.dart';
+import 'package:mindloom/features/notifications/domain/usecases/create_notification.dart';
+import 'package:mindloom/features/story/data/model/story_stats_model.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/entity/story_stats.dart';
+import 'package:mindloom/features/story/domain/usecases/like_story.dart';
+import 'package:mindloom/features/story/domain/usecases/mark_story_read.dart';
+import 'package:mindloom/features/story/domain/usecases/unlike_story.dart';
 
 class StoryReadingController extends GetxController {
   final LikeStory likeStoryUseCase;
   final UnlikeStory unlikeStoryUseCase;
   final MarkStoryRead markStoryReadUseCase;
+  final CreateNotification createNotificationUseCase;
 
   StoryReadingController({
     required this.likeStoryUseCase,
     required this.markStoryReadUseCase,
     required this.unlikeStoryUseCase,
+    required this.createNotificationUseCase,
   });
 
   final exploreController = Get.find<ExploreController>();
@@ -108,7 +113,13 @@ class StoryReadingController extends GetxController {
     }
   }
 
-  Future<void> likeStory({required String storyId}) async {
+  Future<void> likeStory({
+    required String storyId,
+    required String authorId,
+    required String storyTitle,
+    required String username,
+    String? storyImageURL,
+  }) async {
     final currentStats = _stats.value;
 
     if (currentStats?.isLikedByYou == true) return;
@@ -121,16 +132,26 @@ class StoryReadingController extends GetxController {
         comments: currentStats.comments,
         saved: currentStats.saved,
         isLikedByYou: true,
+        trendingScore: currentStats.trendingScore,
       );
     }
 
     try {
-      await likeStoryUseCase.call(
+      final result = await likeStoryUseCase.call(
         LikeStoryParams(
           userId: sl<FirebaseAuth>().currentUser!.uid,
           storyId: storyId,
         ),
       );
+      result.fold((err) => showErrorDialog('Something went wrong'), (_) async {
+        await createLikeStoryNotification(
+          authorId: authorId,
+          storyTitle: storyTitle,
+          username: username,
+          referenceId: storyId,
+          storyImage: storyImageURL,
+        );
+      });
     } catch (e) {
       if (currentStats != null) {
         _stats.value = currentStats;
@@ -152,6 +173,7 @@ class StoryReadingController extends GetxController {
         likes: currentStats.likes - 1,
         comments: currentStats.comments,
         saved: currentStats.saved,
+        trendingScore: currentStats.trendingScore,
         isLikedByYou: false,
       );
     }
@@ -166,6 +188,33 @@ class StoryReadingController extends GetxController {
         _stats.value = currentStats;
       }
 
+      showErrorDialog(e.toString());
+    }
+  }
+
+  Future<void> createLikeStoryNotification({
+    required String authorId,
+    required String storyTitle,
+    required String username,
+    String? storyImage,
+    String? referenceId,
+  }) async {
+    try {
+      final Map<String, dynamic> notifData = {
+        'userId': authorId,
+        'type': NotificationType.storyLiked,
+        'priority': NotificationPriority.normal,
+        'actionType': NotificationActionType.openStory,
+        'title': '$username liked your story',
+        'body': '"$storyTitle" received a new like.',
+        if (storyImage != null) 'imageUrl': storyImage,
+        if (referenceId != null) 'referenceId': referenceId,
+        'metaData': <String, dynamic>{},
+      };
+      final result = await createNotificationUseCase.call(notifData);
+      result.fold((err) => showErrorDialog(err.message), (success) {});
+    } catch (e) {
+      debugPrint(e.toString());
       showErrorDialog(e.toString());
     }
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lifeline/config/constants/colors.dart';
+import 'package:mindloom/config/constants/colors.dart';
 
 class TAppBarTheme {
   TAppBarTheme._();

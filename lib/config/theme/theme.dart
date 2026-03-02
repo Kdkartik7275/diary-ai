@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/theme/widget_theme/appbar_theme.dart';
-import 'package:lifeline/config/theme/widget_theme/elevated_button_theme.dart';
-import 'package:lifeline/config/theme/widget_theme/textfield_theme.dart';
-import 'package:lifeline/config/theme/widget_theme/texttheme.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/widget_theme/appbar_theme.dart';
+import 'package:mindloom/config/theme/widget_theme/elevated_button_theme.dart';
+import 'package:mindloom/config/theme/widget_theme/textfield_theme.dart';
+import 'package:mindloom/config/theme/widget_theme/texttheme.dart';
 
 
 

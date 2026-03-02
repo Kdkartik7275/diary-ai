@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/features/profile/presentation/views/settings_view.dart';
-import 'package:lifeline/features/social/presentation/views/followers_followings_view.dart';
-import 'package:lifeline/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/features/profile/presentation/views/settings_view.dart';
+import 'package:mindloom/features/social/presentation/views/followers_followings_view.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 
 class ProfileHeader extends StatefulWidget {
   const ProfileHeader({

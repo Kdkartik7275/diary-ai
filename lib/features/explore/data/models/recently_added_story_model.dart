@@ -1,5 +1,5 @@
-import 'package:lifeline/features/explore/domain/entity/recently_added_story.dart';
-import 'package:lifeline/features/story/data/model/story_model.dart';
+import 'package:mindloom/features/explore/domain/entity/recently_added_story.dart';
+import 'package:mindloom/features/story/data/model/story_model.dart';
 
 class RecentlyAddedStoryModel extends RecentlyAddedStoryEntity {
   RecentlyAddedStoryModel({

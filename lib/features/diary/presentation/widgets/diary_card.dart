@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/routes/app_routes.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/diary/domain/entity/diary_entity.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
 
 class DiaryCard extends StatelessWidget {
   const DiaryCard({

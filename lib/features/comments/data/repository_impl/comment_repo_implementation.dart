@@ -1,13 +1,13 @@
 // comment_repository_impl.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/errors/failure.dart';
-import 'package:lifeline/core/network/connection_checker.dart';
-import 'package:lifeline/features/comments/data/data_source/comment_remote_data_source.dart';
-import 'package:lifeline/features/comments/domain/entity/comment_entity.dart';
-import 'package:lifeline/features/comments/domain/entity/reply_entity.dart';
-import 'package:lifeline/features/comments/domain/repository/comment_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/errors/failure.dart';
+import 'package:mindloom/core/network/connection_checker.dart';
+import 'package:mindloom/features/comments/data/data_source/comment_remote_data_source.dart';
+import 'package:mindloom/features/comments/domain/entity/comment_entity.dart';
+import 'package:mindloom/features/comments/domain/entity/reply_entity.dart';
+import 'package:mindloom/features/comments/domain/repository/comment_repository.dart';
 
 class CommentRepositoryImpl implements CommentRepository {
   final CommentRemoteDataSource remoteDataSource;

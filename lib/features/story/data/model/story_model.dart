@@ -1,6 +1,6 @@
 // Model classes
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 
 class StoryChapterModel extends StoryChapterEntity {
   StoryChapterModel({
@@ -77,6 +77,7 @@ class StoryModel extends StoryEntity {
     required super.chapters,
     required super.createdAt,
     super.updatedAt,
+    super.deletedAt,
     super.isPublished = false,
     required super.generatedByAI,
     super.publishedAt,
@@ -101,6 +102,7 @@ class StoryModel extends StoryEntity {
       publishedAt: map['publishedAt'] as Timestamp?,
       createdAt: map['createdAt'] as Timestamp,
       updatedAt: map['updatedAt'] as Timestamp?,
+      deletedAt: map['deletedAt'] as Timestamp?,
       coverImageUrl: map['coverImageUrl'] as String?,
     );
   }
@@ -120,6 +122,7 @@ class StoryModel extends StoryEntity {
       'publishedAt': publishedAt,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'deletedAt': deletedAt,
       'coverImageUrl': coverImageUrl,
     };
   }
@@ -146,6 +149,9 @@ class StoryModel extends StoryEntity {
       updatedAt: map['updatedAt'] != null
           ? Timestamp.fromMillisecondsSinceEpoch(map['updatedAt'] as int)
           : null,
+      deletedAt: map['deletedAt'] != null
+          ? Timestamp.fromMillisecondsSinceEpoch(map['deletedAt'] as int)
+          : null,
       coverImageUrl: map['coverImageUrl'] != null
           ? map['coverImageUrl'] as String
           : null,
@@ -164,6 +170,7 @@ class StoryModel extends StoryEntity {
       'publishedAt': publishedAt?.millisecondsSinceEpoch,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'updatedAt': updatedAt?.millisecondsSinceEpoch,
+      'deletedAt': deletedAt?.millisecondsSinceEpoch ,
       'coverImageUrl': coverImageUrl,
     };
   }
@@ -180,6 +187,7 @@ class StoryModel extends StoryEntity {
     Timestamp? publishedAt,
     Timestamp? createdAt,
     Timestamp? updatedAt,
+    Timestamp? deletedAt,
     String? coverImageUrl,
   }) {
     return StoryModel(
@@ -193,6 +201,7 @@ class StoryModel extends StoryEntity {
       publishedAt: publishedAt ?? this.publishedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
       coverImageUrl: coverImageUrl ?? this.coverImageUrl,
     );
   }

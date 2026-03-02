@@ -4,23 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/routes/app_routes.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/utils/helpers/functions.dart';
-import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
-import 'package:lifeline/features/explore/presentation/controller/explore_controller.dart';
-import 'package:lifeline/features/explore/presentation/controller/story_reading_controller.dart';
-import 'package:lifeline/features/explore/presentation/widgets/user_place_holder.dart';
-import 'package:lifeline/features/social/presentation/controllers/follow_controller.dart';
-import 'package:lifeline/features/story/data/model/story_stats_model.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/domain/usecases/like_story.dart';
-import 'package:lifeline/features/story/domain/usecases/mark_story_read.dart';
-import 'package:lifeline/features/story/domain/usecases/unlike_story.dart';
-import 'package:lifeline/features/user/domain/entity/user_entity.dart';
-import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
+import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
+import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
+import 'package:mindloom/features/explore/presentation/controller/story_reading_controller.dart';
+import 'package:mindloom/features/explore/presentation/widgets/user_place_holder.dart';
+import 'package:mindloom/features/notifications/domain/usecases/create_notification.dart';
+import 'package:mindloom/features/social/presentation/controllers/follow_controller.dart';
+import 'package:mindloom/features/story/data/model/story_stats_model.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/usecases/like_story.dart';
+import 'package:mindloom/features/story/domain/usecases/mark_story_read.dart';
+import 'package:mindloom/features/story/domain/usecases/unlike_story.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class StoryReadingView extends StatefulWidget {
   const StoryReadingView({
@@ -52,22 +53,19 @@ class _StoryReadingViewState extends State<StoryReadingView> {
         likeStoryUseCase: sl<LikeStory>(),
         markStoryReadUseCase: sl<MarkStoryRead>(),
         unlikeStoryUseCase: sl<UnlikeStory>(),
+        createNotificationUseCase: sl<CreateNotification>(),
       ),
     );
-    followController = Get.put(
-      FollowController(
-        followUserUseCase: sl(),
-        getFollowStatusUseCase: sl(),
-        getFollowersUseCase: sl(),
-        getFollowingsUseCase: sl(),
-      ),
-    );
-    currentUser = Get.find<UserController>().currentUser.value!;
+    followController = Get.find<FollowController>();
 
-    followController.checkFollowStatus(
-      currentUserId: currentUser.id,
-      targetUserId: widget.authorId,
-    );
+    currentUser = Get.find<UserController>().currentUser.value!;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      followController.checkFollowStatus(
+        currentUserId: currentUser.id,
+        targetUserId: widget.authorId,
+      );
+    });
+
     controller.initializeStory(story: widget.story);
   }
 
@@ -375,7 +373,13 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                       if (stats.isLikedByYou) {
                         controller.unlikeStory(storyId: widget.story.id);
                       } else {
-                        controller.likeStory(storyId: widget.story.id);
+                        controller.likeStory(
+                          storyId: widget.story.id,
+                          authorId: widget.story.userId,
+                          storyTitle: widget.story.title,
+                          username: currentUser.fullName,
+                          storyImageURL: widget.story.coverImageUrl,
+                        );
                       }
                     },
                     child: Icon(
@@ -402,6 +406,8 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                   arguments: {
                     'storyId': widget.story.id,
                     'commentCount': stats.comments,
+                    'authorId':widget.story.userId,
+                    'storyTitle':widget.story.title
                   },
                 ),
                 child: Column(

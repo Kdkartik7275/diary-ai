@@ -1,11 +1,11 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/errors/failure.dart';
-import 'package:lifeline/core/network/connection_checker.dart';
-import 'package:lifeline/features/diary/data/data_source/local/diary_local_data_source.dart';
-import 'package:lifeline/features/diary/data/data_source/remote/diary_remote_data_source.dart';
-import 'package:lifeline/features/diary/domain/entity/diary_entity.dart';
-import 'package:lifeline/features/diary/domain/repository/diary_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/errors/failure.dart';
+import 'package:mindloom/core/network/connection_checker.dart';
+import 'package:mindloom/features/diary/data/data_source/local/diary_local_data_source.dart';
+import 'package:mindloom/features/diary/data/data_source/remote/diary_remote_data_source.dart';
+import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
+import 'package:mindloom/features/diary/domain/repository/diary_repository.dart';
 
 class DiaryRepositoryImpl implements DiaryRepository {
   final DiaryRemoteDataSource remoteDataSource;

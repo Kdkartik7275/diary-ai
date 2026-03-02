@@ -1,5 +1,5 @@
-import 'package:lifeline/features/explore/domain/entity/trending_story_entity.dart';
-import 'package:lifeline/features/story/data/model/story_model.dart';
+import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
+import 'package:mindloom/features/story/data/model/story_model.dart';
 
 class TrendingStoryModel extends TrendingStoryEntity {
   TrendingStoryModel({required super.story});

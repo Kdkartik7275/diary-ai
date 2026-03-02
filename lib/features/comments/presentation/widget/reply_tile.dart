@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/utils/helpers/functions.dart';
-import 'package:lifeline/features/comments/domain/entity/reply_entity.dart';
-import 'package:lifeline/features/comments/presentation/controller/comments_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
+import 'package:mindloom/features/comments/domain/entity/reply_entity.dart';
+import 'package:mindloom/features/comments/presentation/controller/comments_controller.dart';
 
 class ReplyTile extends GetView<CommentsController> {
   const ReplyTile({super.key, required this.reply});

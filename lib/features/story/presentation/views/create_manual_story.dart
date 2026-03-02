@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/constants/genres.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/presentation/controller/create_story_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/constants/genres.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/presentation/controller/create_story_controller.dart';
 
 class CreateManualStory extends GetView<CreateStoryController> {
   const CreateManualStory({super.key});

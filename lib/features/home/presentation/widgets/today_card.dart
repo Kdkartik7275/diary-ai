@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/routes/app_routes.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
 
 class TodayCard extends StatelessWidget {
   const TodayCard({

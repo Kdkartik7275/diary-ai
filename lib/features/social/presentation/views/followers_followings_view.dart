@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/features/social/presentation/controllers/follow_controller.dart';
-import 'package:lifeline/features/social/presentation/widgets/user_tile.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/features/social/presentation/controllers/follow_controller.dart';
+import 'package:mindloom/features/social/presentation/widgets/user_tile.dart';
 
 class FollowersFollowingView extends StatefulWidget {
   const FollowersFollowingView({
@@ -32,14 +31,7 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
   @override
   void initState() {
     super.initState();
-    controller = Get.put(
-      FollowController(
-        followUserUseCase: sl(),
-        getFollowStatusUseCase: sl(),
-        getFollowersUseCase: sl(),
-        getFollowingsUseCase: sl(),
-      ),
-    );
+    controller = Get.find<FollowController>();
     controller.fetchFollowers();
     controller.fetchFollowing();
     _tabController = TabController(
@@ -65,75 +57,71 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FC),
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverAppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            pinned: true,
-            leading: IconButton(
-              onPressed: () => Get.back(),
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF7F8FC),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 16,
-                  color: Colors.black87,
-                ),
-              ),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Get.back(),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF7F8FC),
+              borderRadius: BorderRadius.circular(10),
             ),
-            title: Text(
-              'Connections',
-              style: theme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
-                letterSpacing: 0.4,
-              ),
+            child: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 16,
+              color: Colors.black87,
             ),
-            centerTitle: true,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(50),
-              child: Column(
-                children: [
-                  TabBar(
-                    controller: _tabController,
-                    labelStyle: theme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                    unselectedLabelStyle: theme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                    ),
-                    labelColor: AppColors.primary,
-                    unselectedLabelColor: Colors.black45,
-                    indicatorColor: AppColors.primary,
-                    indicatorWeight: 2.5,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    dividerColor: Colors.black.withValues(alpha: 0.06),
-                    tabs: [
-                      Tab(text: 'Followers  ${widget.followersCount}'),
-                      Tab(text: 'Following  ${widget.followingCount}'),
-                    ],
-                  ),
+          ),
+        ),
+        title: Text(
+          'Connections',
+          style: theme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: Colors.black87,
+            letterSpacing: 0.4,
+          ),
+        ),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(50),
+          child: Column(
+            children: [
+              TabBar(
+                controller: _tabController,
+                labelStyle: theme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+                unselectedLabelStyle: theme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+                labelColor: AppColors.primary,
+                unselectedLabelColor: Colors.black45,
+                indicatorColor: AppColors.primary,
+                indicatorWeight: 2.5,
+                indicatorSize: TabBarIndicatorSize.label,
+                dividerColor: Colors.black.withValues(alpha: 0.06),
+                tabs: [
+                  Tab(text: 'Followers  ${widget.followersCount}'),
+                  Tab(text: 'Following  ${widget.followingCount}'),
                 ],
               ),
-            ),
-          ),
-        ],
-        body: Material(
-          color: AppColors.white,
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _FollowList(type: _ListType.followers, searchQuery: _searchQuery),
-              _FollowList(type: _ListType.following, searchQuery: _searchQuery),
             ],
           ),
+        ),
+      ),
+      body: Material(
+        color: AppColors.white,
+        child: TabBarView(
+          controller: _tabController,
+
+          children: [
+            _FollowList(type: _ListType.followers, searchQuery: _searchQuery),
+            _FollowList(type: _ListType.following, searchQuery: _searchQuery),
+          ],
         ),
       ),
     );
@@ -154,7 +142,12 @@ class _FollowList extends StatelessWidget {
 
     return Obx(() {
       if (controller.isLoading.value) {
-        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+        return const Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: AppColors.primary,
+          ),
+        );
       }
 
       final source = type == _ListType.followers
@@ -173,13 +166,24 @@ class _FollowList extends StatelessWidget {
         return _EmptyState(type: type, hasQuery: searchQuery.value.isNotEmpty);
       }
 
-      return ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        itemCount: filtered.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 10),
-        itemBuilder: (context, index) {
-          return UserTile(user: filtered[index]);
+      return RefreshIndicator(
+        backgroundColor: AppColors.white,
+        color: AppColors.primary,
+        onRefresh: () async {
+          if (type == _ListType.followers) {
+            await controller.fetchFollowers();
+          } else {
+            await controller.fetchFollowing();
+          }
         },
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          itemCount: filtered.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            return UserTile(user: filtered[index]);
+          },
+        ),
       );
     });
   }

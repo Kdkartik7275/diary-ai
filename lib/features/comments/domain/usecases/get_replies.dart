@@ -1,10 +1,10 @@
 // lib/features/comments/domain/usecases/get_replies.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/usecases/usecases.dart';
-import 'package:lifeline/features/comments/domain/entity/reply_entity.dart';
-import 'package:lifeline/features/comments/domain/repository/comment_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/usecases/usecases.dart';
+import 'package:mindloom/features/comments/domain/entity/reply_entity.dart';
+import 'package:mindloom/features/comments/domain/repository/comment_repository.dart';
 
 class GetReplies
     implements UseCaseWithParams<List<ReplyEntity>, GetRepliesParams> {

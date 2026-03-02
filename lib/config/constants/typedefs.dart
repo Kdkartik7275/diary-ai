@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:lifeline/core/errors/failure.dart';
+import 'package:mindloom/core/errors/failure.dart';
 
 typedef ResultFuture<T> = Future<Either<Failure, T>>;
 

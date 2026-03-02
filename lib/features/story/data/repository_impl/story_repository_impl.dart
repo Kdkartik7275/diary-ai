@@ -4,15 +4,15 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:fpdart/fpdart.dart';
 
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/errors/failure.dart';
-import 'package:lifeline/core/network/connection_checker.dart';
-import 'package:lifeline/features/story/data/data_source/local/story_local_data_source.dart';
-import 'package:lifeline/features/story/data/data_source/remote/story_remote_data_source.dart';
-import 'package:lifeline/features/story/data/model/story_model.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/domain/entity/story_stats.dart';
-import 'package:lifeline/features/story/domain/repository/story_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/errors/failure.dart';
+import 'package:mindloom/core/network/connection_checker.dart';
+import 'package:mindloom/features/story/data/data_source/local/story_local_data_source.dart';
+import 'package:mindloom/features/story/data/data_source/remote/story_remote_data_source.dart';
+import 'package:mindloom/features/story/data/model/story_model.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/entity/story_stats.dart';
+import 'package:mindloom/features/story/domain/repository/story_repository.dart';
 
 class StoryRepositoryImpl implements StoryRepository {
   final StoryRemoteDataSource remoteDataSource;
@@ -163,7 +163,7 @@ class StoryRepositoryImpl implements StoryRepository {
   }
 
   @override
-  ResultFuture<List<StoryEntity>> getUserPublisedStories({
+  ResultFuture<List<StoryEntity>> getPublisedStories({
     required String userId,
   }) async {
     try {
@@ -178,7 +178,7 @@ class StoryRepositoryImpl implements StoryRepository {
         return left(FirebaseFailure(message: 'No Internet Connection'));
       }
 
-      final result = await remoteDataSource.getUserPublished(userId: userId);
+      final result = await remoteDataSource.getPublisedStories(userId: userId);
       for (StoryModel story in result) {
         await localDataSource.createStory(data: story);
       }
@@ -303,6 +303,40 @@ class StoryRepositoryImpl implements StoryRepository {
         genre: genre,
         tone: tone,
         characterName: characterName,
+      );
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultVoid deleteDraft({required String storyId}) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      await remoteDataSource.deleteStory(storyId: storyId);
+      await localDataSource.deleteStory(storyId: storyId);
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
+    required String userId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.getPublishedStoriesByUser(
+        userId: userId,
       );
 
       return right(result);

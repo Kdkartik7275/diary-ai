@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lifeline/config/constants/colors.dart';
+import 'package:mindloom/config/constants/colors.dart';
 
 class EmptyPublishedStories extends StatelessWidget {
   const EmptyPublishedStories({super.key});

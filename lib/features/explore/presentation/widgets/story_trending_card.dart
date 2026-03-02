@@ -3,16 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/core/utils/helpers/functions.dart';
-import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
-import 'package:lifeline/features/explore/domain/entity/trending_story_entity.dart';
-import 'package:lifeline/features/explore/presentation/controller/explore_controller.dart';
-import 'package:lifeline/features/explore/presentation/view/reading_view.dart';
-import 'package:lifeline/features/explore/presentation/widgets/user_place_holder.dart';
-import 'package:lifeline/features/story/data/model/story_stats_model.dart';
-import 'package:lifeline/features/story/domain/entity/story_stats.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
+import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
+import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
+import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
+import 'package:mindloom/features/explore/presentation/view/reading_view.dart';
+import 'package:mindloom/features/explore/presentation/widgets/user_place_holder.dart';
+import 'package:mindloom/features/story/data/model/story_stats_model.dart';
+import 'package:mindloom/features/story/domain/entity/story_stats.dart';
 
 class StoryTrendingCard extends GetView<ExploreController> {
   const StoryTrendingCard({super.key, required this.trendingStory});
@@ -178,9 +178,11 @@ class StoryTrendingCard extends GetView<ExploreController> {
                     story.chapters.first.content,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
+                    softWrap: true,
                     style: theme.titleSmall!.copyWith(
                       color: AppColors.textLighter,
                       fontWeight: FontWeight.normal,
+                      fontSize: 12
                     ),
                   ),
                   SizedBox(height: height * .01),

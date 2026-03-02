@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/presentation/controller/story_controller.dart';
-import 'package:lifeline/features/story/presentation/views/draft_preview.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/presentation/controller/story_controller.dart';
+import 'package:mindloom/features/story/presentation/views/draft_preview.dart';
 
 class DraftStoryCard extends GetView<StoryController> {
   const DraftStoryCard({

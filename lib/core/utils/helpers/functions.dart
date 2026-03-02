@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
 
 Future<File?> pickImage({bool camera = false}) async {
   try {

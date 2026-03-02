@@ -1,7 +1,7 @@
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/usecases/usecases.dart';
-import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
-import 'package:lifeline/features/explore/domain/repository/explore_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/usecases/usecases.dart';
+import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
+import 'package:mindloom/features/explore/domain/repository/explore_repository.dart';
 
 class GetStoryAuthor implements UseCaseWithParams<StoryAuthorEntity, String> {
   final ExploreRepository repository;

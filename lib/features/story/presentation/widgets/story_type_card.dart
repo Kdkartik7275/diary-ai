@@ -2,9 +2,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/story/presentation/views/story_type_view.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/story/presentation/views/story_type_view.dart';
 
 class StoryTypeCard extends StatelessWidget {
   final String title;

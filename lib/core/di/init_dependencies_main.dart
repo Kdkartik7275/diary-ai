@@ -13,6 +13,7 @@ class DependencyInjection {
     _initExplore();
     _initComments();
     _initSocial();
+    _initNotification();
   }
 }
 
@@ -137,12 +138,14 @@ void _initStory() {
   sl.registerLazySingleton(() => GetPublishedCount(repository: sl()));
   sl.registerLazySingleton(() => PublishStory(repository: sl()));
   sl.registerLazySingleton(() => GetPublishedStories(repository: sl()));
+  sl.registerLazySingleton(() => GetPublishedStoriesByUser(repository: sl()));
   sl.registerLazySingleton(() => GetStoryStats(repository: sl()));
   sl.registerLazySingleton(() => LikeStory(repository: sl()));
   sl.registerLazySingleton(() => UnlikeStory(sl()));
   sl.registerLazySingleton(() => MarkStoryRead(repository: sl()));
   sl.registerLazySingleton(() => UploadStoryCoverImage(repository: sl()));
   sl.registerLazySingleton(() => GenerateStoryFromDiaries(repository: sl()));
+  sl.registerLazySingleton(() => DeleteDraft(repository: sl()));
 }
 
 void _initExplore() {
@@ -203,4 +206,22 @@ void _initSocial() {
   sl.registerLazySingleton(() => GetFollowStatus(repository: sl()));
   sl.registerLazySingleton(() => GetFollowers(repository: sl()));
   sl.registerLazySingleton(() => GetFollowings(repository: sl()));
+}
+
+void _initNotification() {
+  // DATASOURCE
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
+  );
+
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(
+      connectionChecker: sl<ConnectionChecker>(),
+      remoteDataSource: sl<NotificationRemoteDataSource>(),
+    ),
+  );
+  // USECASES
+  sl.registerLazySingleton(() => CreateNotification(repository: sl()));
+  sl.registerLazySingleton(() => GetUserNotification(repository: sl()));
+  sl.registerLazySingleton(() => MarkNotificationAsRead(repository: sl()));
 }

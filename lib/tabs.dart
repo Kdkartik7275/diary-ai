@@ -2,14 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/features/diary/presentation/view/diaries_view.dart';
-import 'package:lifeline/features/explore/presentation/view/explore_stories_view.dart';
-import 'package:lifeline/features/home/presentation/view/home_view.dart';
-import 'package:lifeline/features/profile/presentation/views/profile_view.dart';
-import 'package:lifeline/features/story/presentation/views/story_view.dart';
-import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/features/diary/presentation/view/diaries_view.dart';
+import 'package:mindloom/features/explore/presentation/view/explore_stories_view.dart';
+import 'package:mindloom/features/home/presentation/view/home_view.dart';
+import 'package:mindloom/features/profile/presentation/views/profile_view.dart';
+import 'package:mindloom/features/story/presentation/views/story_view.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class Tabs extends StatefulWidget {
   const Tabs({super.key});

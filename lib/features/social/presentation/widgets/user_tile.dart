@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:lifeline/features/social/domain/entity/follow_entity.dart';
-import 'package:lifeline/features/social/presentation/views/user_profile_page.dart';
+import 'package:mindloom/features/social/domain/entity/follow_entity.dart';
+import 'package:mindloom/features/social/presentation/views/user_profile_page.dart';
 
 class UserTile extends StatelessWidget {
   const UserTile({super.key, required this.user});
@@ -41,7 +41,7 @@ class UserTile extends StatelessWidget {
     final textColor = _avatarTextColors[colorIndex];
 
     return GestureDetector(
-      onTap: () => Get.to(() => UserProfilePage(user: user)),
+      onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(

@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/routes/app_routes.dart';
-import 'package:lifeline/core/utils/validators/vallidators.dart';
-import 'package:lifeline/features/authentication/presentation/controller/login_controller.dart';
-import 'package:lifeline/features/authentication/presentation/widgets/auth_button.dart';
-import 'package:lifeline/features/authentication/presentation/widgets/auth_field.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/core/utils/validators/vallidators.dart';
+import 'package:mindloom/features/authentication/presentation/controller/login_controller.dart';
+import 'package:mindloom/features/authentication/presentation/widgets/auth_button.dart';
+import 'package:mindloom/features/authentication/presentation/widgets/auth_field.dart';
 
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});

@@ -1,16 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/features/explore/domain/entity/recently_added_story.dart';
-import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
-import 'package:lifeline/features/explore/domain/entity/trending_story_entity.dart';
-import 'package:lifeline/features/explore/domain/usecases/get_recently_added_story.dart';
-import 'package:lifeline/features/explore/domain/usecases/get_story_author.dart';
-import 'package:lifeline/features/explore/domain/usecases/get_trending_stories.dart';
-import 'package:lifeline/features/story/data/model/story_stats_model.dart';
-import 'package:lifeline/features/story/domain/entity/story_stats.dart';
-import 'package:lifeline/features/story/domain/usecases/get_story_stats.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/features/explore/domain/entity/recently_added_story.dart';
+import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
+import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
+import 'package:mindloom/features/explore/domain/usecases/get_recently_added_story.dart';
+import 'package:mindloom/features/explore/domain/usecases/get_story_author.dart';
+import 'package:mindloom/features/explore/domain/usecases/get_trending_stories.dart';
+import 'package:mindloom/features/story/data/model/story_stats_model.dart';
+import 'package:mindloom/features/story/domain/entity/story_stats.dart';
+import 'package:mindloom/features/story/domain/usecases/get_story_stats.dart';
 
 class ExploreController extends GetxController {
   final GetRecentlyAddedStory getRecentlyAddedStory;
@@ -36,7 +36,7 @@ class ExploreController extends GetxController {
   final Map<String, StoryAuthorEntity> _authorsCache = {};
   final Map<String, Future<StoryStatsEntity>> _pendingRequests = {};
 
-  @override
+  @override 
   void onInit() {
     super.onInit();
     fetchRecentlyAddedStories();

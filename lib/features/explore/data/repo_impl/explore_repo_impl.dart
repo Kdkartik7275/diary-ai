@@ -1,12 +1,12 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/errors/failure.dart';
-import 'package:lifeline/core/network/connection_checker.dart';
-import 'package:lifeline/features/explore/data/data_source/explore_remote_data_source.dart';
-import 'package:lifeline/features/explore/domain/entity/recently_added_story.dart';
-import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
-import 'package:lifeline/features/explore/domain/entity/trending_story_entity.dart';
-import 'package:lifeline/features/explore/domain/repository/explore_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/errors/failure.dart';
+import 'package:mindloom/core/network/connection_checker.dart';
+import 'package:mindloom/features/explore/data/data_source/explore_remote_data_source.dart';
+import 'package:mindloom/features/explore/domain/entity/recently_added_story.dart';
+import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
+import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
+import 'package:mindloom/features/explore/domain/repository/explore_repository.dart';
 
 class ExploreRepositoryImpl implements ExploreRepository {
   final ExploreRemoteDataSource remoteDataSource;

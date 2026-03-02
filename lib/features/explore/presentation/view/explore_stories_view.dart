@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/constants/genres.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/explore/presentation/controller/explore_controller.dart';
-import 'package:lifeline/features/explore/presentation/widgets/recently_added_story.dart';
-import 'package:lifeline/features/explore/presentation/widgets/story_trending_card.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/constants/genres.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
+import 'package:mindloom/features/explore/presentation/widgets/recently_added_story.dart';
+import 'package:mindloom/features/explore/presentation/widgets/story_trending_card.dart';
 
 class ExploreStoriesView extends GetView<ExploreController> {
   const ExploreStoriesView({super.key});

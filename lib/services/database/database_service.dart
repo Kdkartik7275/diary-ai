@@ -1,5 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:lifeline/features/story/data/model/story_model.dart';
+import 'package:mindloom/features/story/data/model/story_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -60,6 +61,7 @@ class DataBaseService {
   final String _storyPublishedAt = 'publishedAt';
   final String _storyCreatedAt = 'createdAt';
   final String _storyUpdatedAt = 'updatedAt';
+  final String _storyDeletedAt = 'deletedAt';
 
   final String _chapterTableName = 'story_chapters';
   final String _chapterId = 'id';
@@ -118,7 +120,8 @@ class DataBaseService {
     $_storyGeneratedByAI INTEGER NOT NULL,
     $_storyPublishedAt INTEGER,
     $_storyCreatedAt INTEGER NOT NULL,
-    $_storyUpdatedAt INTEGER
+    $_storyUpdatedAt INTEGER,
+    $_storyDeletedAt INTEGER
   )
 ''');
 
@@ -164,7 +167,7 @@ class DataBaseService {
 
     return await openDatabase(
       databasePath,
-      version: 10,
+      version: 12,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -498,7 +501,8 @@ class DataBaseService {
 
     final stories = await db.query(
       _storyTableName,
-      where: '$_storyUserId = ? AND $_storyIsPublished = 0',
+      where:
+          '$_storyUserId = ? AND $_storyIsPublished = 0 AND $_storyDeletedAt IS NULL',
       whereArgs: [userId],
       orderBy: '$_storyCreatedAt DESC',
     );
@@ -528,16 +532,6 @@ class DataBaseService {
       orderBy: '$_storyUpdatedAt DESC',
     );
     return _mapStoriesWithChapters(result);
-  }
-
-  Future<void> deleteStory(String storyId) async {
-    final db = await database;
-
-    await db.delete(
-      _storyTableName,
-      where: '$_storyId = ?',
-      whereArgs: [storyId],
-    );
   }
 
   Future<bool> isStoryTableEmpty() async {
@@ -629,5 +623,26 @@ class DataBaseService {
     }
 
     return totalWords;
+  }
+
+  Future<bool> softDeleteStory({required String storyId}) async {
+    try {
+      final db = await database;
+
+      final rowsUpdated = await db.update(
+        _storyTableName,
+        {
+          _storyDeletedAt: Timestamp.now().millisecondsSinceEpoch,
+          _storyUpdatedAt: Timestamp.now().millisecondsSinceEpoch,
+        },
+        where: '$_storyId = ?',
+        whereArgs: [storyId],
+      );
+
+      return rowsUpdated > 0;
+    } catch (e) {
+      debugPrint('Error soft deleting Story: $e');
+      return false;
+    }
   }
 }

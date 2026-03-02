@@ -1,4 +1,4 @@
-import 'package:lifeline/features/user/domain/entity/user_stats.dart';
+import 'package:mindloom/features/user/domain/entity/user_stats.dart';
 
 class UserStatModel extends UserStats {
   UserStatModel({

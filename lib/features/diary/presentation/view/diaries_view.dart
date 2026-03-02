@@ -2,11 +2,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/core/empty/empty_diary.dart';
-import 'package:lifeline/features/diary/presentation/controller/diary_controller.dart';
-import 'package:lifeline/features/diary/presentation/widgets/diary_card.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/core/empty/empty_diary.dart';
+import 'package:mindloom/features/diary/presentation/controller/diary_controller.dart';
+import 'package:mindloom/features/diary/presentation/widgets/diary_card.dart';
 
 class DiariesView extends GetView<DiaryController> {
   const DiariesView({super.key});

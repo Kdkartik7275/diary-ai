@@ -1,11 +1,11 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/errors/failure.dart';
-import 'package:lifeline/core/network/connection_checker.dart';
-import 'package:lifeline/features/social/data/data_source/social_remote_data_source.dart';
-import 'package:lifeline/features/social/domain/entity/follow_entity.dart';
-import 'package:lifeline/features/social/domain/entity/follow_status.dart';
-import 'package:lifeline/features/social/domain/repository/social_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/errors/failure.dart';
+import 'package:mindloom/core/network/connection_checker.dart';
+import 'package:mindloom/features/social/data/data_source/social_remote_data_source.dart';
+import 'package:mindloom/features/social/domain/entity/follow_entity.dart';
+import 'package:mindloom/features/social/domain/entity/follow_status.dart';
+import 'package:mindloom/features/social/domain/repository/social_repository.dart';
 
 class SocialRepositoryImpl implements SocialRepository {
   final SocialRemoteDataSource remoteDataSource;

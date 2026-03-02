@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/features/social/data/model/follow_model.dart';
-import 'package:lifeline/features/social/data/model/follow_status_model.dart';
+import 'package:mindloom/features/social/data/model/follow_model.dart';
+import 'package:mindloom/features/social/data/model/follow_status_model.dart';
 
 abstract interface class SocialRemoteDataSource {
   Future<void> followUser({

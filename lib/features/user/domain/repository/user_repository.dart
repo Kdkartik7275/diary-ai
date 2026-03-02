@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/features/user/domain/entity/user_entity.dart';
-import 'package:lifeline/features/user/domain/entity/user_stats.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/features/user/domain/entity/user_stats.dart';
 
 abstract interface class UserRepository {
   ResultFuture<UserEntity> saveUserToDatabase({

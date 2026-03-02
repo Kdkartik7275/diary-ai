@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/routes/app_routes.dart';
-import 'package:lifeline/features/diary/presentation/controller/diary_controller.dart';
-import 'package:lifeline/features/profile/presentation/widgets/profile_header.dart';
-import 'package:lifeline/features/profile/presentation/widgets/profile_stats.dart';
-import 'package:lifeline/features/profile/presentation/widgets/quick_action_tile.dart';
-import 'package:lifeline/features/story/presentation/controller/story_controller.dart';
-import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/features/diary/presentation/controller/diary_controller.dart';
+import 'package:mindloom/features/profile/presentation/widgets/profile_header.dart';
+import 'package:mindloom/features/profile/presentation/widgets/profile_stats.dart';
+import 'package:mindloom/features/profile/presentation/widgets/quick_action_tile.dart';
+import 'package:mindloom/features/story/presentation/controller/story_controller.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class ProfileView extends GetView<UserController> {
   const ProfileView({super.key});

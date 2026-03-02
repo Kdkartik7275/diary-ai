@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/domain/entity/story_stats.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/entity/story_stats.dart';
 
 abstract interface class StoryRepository {
   ResultFuture<StoryEntity> createStory({required Map<String, dynamic> data});
@@ -32,11 +32,16 @@ abstract interface class StoryRepository {
     required String storyId,
     required String userId,
   });
+
+  ResultVoid deleteDraft({required String storyId});
   ResultFuture<void> markStoryRead({
     required String storyId,
     required String userId,
   });
-  ResultFuture<List<StoryEntity>> getUserPublisedStories({
+  ResultFuture<List<StoryEntity>> getPublisedStories({
+    required String userId,
+  });
+   ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
     required String userId,
   });
 

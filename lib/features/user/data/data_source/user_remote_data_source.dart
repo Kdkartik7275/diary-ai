@@ -5,9 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:lifeline/features/user/data/model/user_model.dart';
-import 'package:lifeline/features/user/data/model/user_stat_model.dart';
-import 'package:lifeline/services/storage/storage_service.dart';
+import 'package:mindloom/features/user/data/model/user_model.dart';
+import 'package:mindloom/features/user/data/model/user_stat_model.dart';
+import 'package:mindloom/services/storage/storage_service.dart';
 
 abstract interface class UserRemoteDataSource {
   Future<UserModel> saveUserToDatabase({

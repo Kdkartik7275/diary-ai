@@ -1,6 +1,6 @@
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/features/social/domain/entity/follow_entity.dart';
-import 'package:lifeline/features/social/domain/entity/follow_status.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/features/social/domain/entity/follow_entity.dart';
+import 'package:mindloom/features/social/domain/entity/follow_status.dart';
 
 abstract interface class SocialRepository {
   ResultVoid followUser({

@@ -1,7 +1,7 @@
 // lib/features/comments/data/models/reply_model.dart
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/features/comments/domain/entity/reply_entity.dart';
+import 'package:mindloom/features/comments/domain/entity/reply_entity.dart';
 
 class ReplyModel extends ReplyEntity {
   const ReplyModel({

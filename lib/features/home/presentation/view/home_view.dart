@@ -1,15 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/routes/app_routes.dart';
-import 'package:lifeline/core/empty/empty_diary.dart';
-import 'package:lifeline/features/diary/presentation/controller/diary_controller.dart';
-import 'package:lifeline/features/home/presentation/widgets/entry_item.dart';
-import 'package:lifeline/features/home/presentation/widgets/stat_card.dart';
-import 'package:lifeline/features/home/presentation/widgets/today_card.dart';
-import 'package:lifeline/features/story/presentation/controller/story_controller.dart';
-import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/core/empty/empty_diary.dart';
+import 'package:mindloom/features/diary/presentation/controller/diary_controller.dart';
+import 'package:mindloom/features/home/presentation/widgets/animated_notification_bell.dart';
+import 'package:mindloom/features/home/presentation/widgets/entry_item.dart';
+import 'package:mindloom/features/home/presentation/widgets/stat_card.dart';
+import 'package:mindloom/features/home/presentation/widgets/today_card.dart';
+import 'package:mindloom/features/notifications/presentation/controller/app_notification_controller.dart';
+import 'package:mindloom/features/story/presentation/controller/story_controller.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -22,6 +24,7 @@ class _HomeViewState extends State<HomeView> {
   late UserController controller;
   late DiaryController diaryController;
   late StoryController storyController;
+  late AppNotificationController notificationController;
 
   @override
   void initState() {
@@ -29,6 +32,7 @@ class _HomeViewState extends State<HomeView> {
     controller = Get.find<UserController>();
     diaryController = Get.find<DiaryController>();
     storyController = Get.find<StoryController>();
+    notificationController = Get.find<AppNotificationController>();
   }
 
   String getGreeting() {
@@ -77,6 +81,14 @@ class _HomeViewState extends State<HomeView> {
               ),
             ],
           ),
+          actions: [
+            Obx(() {
+              return AnimatedNotificationBell(
+                unreadCount: notificationController.unreadCount,
+                onTap: () => Get.toNamed(Routes.notification),
+              );
+            }),
+          ],
         ),
         body: SafeArea(
           child: Padding(
@@ -100,7 +112,7 @@ class _HomeViewState extends State<HomeView> {
                         child: StatCard(
                           icon: Icons.trending_up_rounded,
                           label: "Writing Streak",
-                          value: "12 Days",
+                          value: "0 Days",
                           theme: theme,
                         ),
                       ),

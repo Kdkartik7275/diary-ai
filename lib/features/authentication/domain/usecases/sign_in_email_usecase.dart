@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/usecases/usecases.dart';
-import 'package:lifeline/features/authentication/domain/repository/authentication_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/usecases/usecases.dart';
+import 'package:mindloom/features/authentication/domain/repository/authentication_repository.dart';
 
 class SignInWithEmailAndPassword
     implements UseCaseWithParams<UserCredential?, SignInWithEmailParams> {

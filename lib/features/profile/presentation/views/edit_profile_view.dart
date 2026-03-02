@@ -3,10 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/profile/presentation/controller/edit_profile_controller.dart';
-import 'package:lifeline/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/profile/presentation/controller/edit_profile_controller.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});

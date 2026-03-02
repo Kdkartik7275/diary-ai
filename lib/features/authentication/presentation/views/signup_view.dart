@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/core/utils/validators/vallidators.dart';
-import 'package:lifeline/features/authentication/presentation/controller/signup_controller.dart';
-import 'package:lifeline/features/authentication/presentation/widgets/auth_button.dart';
-import 'package:lifeline/features/authentication/presentation/widgets/auth_field.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/utils/validators/vallidators.dart';
+import 'package:mindloom/features/authentication/presentation/controller/signup_controller.dart';
+import 'package:mindloom/features/authentication/presentation/widgets/auth_button.dart';
+import 'package:mindloom/features/authentication/presentation/widgets/auth_field.dart';
 
 class SignUpView extends GetView<SignUpController> {
   const SignUpView({super.key});

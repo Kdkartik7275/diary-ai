@@ -1,6 +1,6 @@
 // comment_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/features/comments/domain/entity/comment_entity.dart';
+import 'package:mindloom/features/comments/domain/entity/comment_entity.dart';
 
 class CommentModel extends CommentEntity {
   CommentModel({

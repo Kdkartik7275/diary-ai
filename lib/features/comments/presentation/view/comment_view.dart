@@ -2,10 +2,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/features/comments/presentation/controller/comments_controller.dart';
-import 'package:lifeline/features/comments/presentation/widget/comment_tile.dart';
-import 'package:lifeline/features/user/presentation/controller/user_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/features/comments/presentation/controller/comments_controller.dart';
+import 'package:mindloom/features/comments/presentation/widget/comment_tile.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class CommentView extends StatefulWidget {
   const CommentView({super.key});
@@ -17,6 +17,8 @@ class CommentView extends StatefulWidget {
 class _CommentViewState extends State<CommentView> {
   late CommentsController controller;
   late String storyId;
+  late String authorId;
+  late String storyTitle;
   late int commentCount;
   late ScrollController _scrollController;
 
@@ -26,6 +28,8 @@ class _CommentViewState extends State<CommentView> {
     controller = Get.find<CommentsController>();
     final args = Get.arguments as Map<String, dynamic>;
     storyId = args['storyId'] ?? '';
+    storyTitle = args['storyTitle'] ?? '';
+    authorId = args['authorId'] ?? '';
     commentCount = args['commentCount'] ?? 0;
 
     _scrollController = ScrollController();
@@ -291,6 +295,9 @@ class _CommentViewState extends State<CommentView> {
                                         userName: user.fullName,
                                         userProfileUrl: user.profileUrl ?? '',
                                         userId: user.id,
+                                        notifTo:
+                                            ctrl.replyingTo.value?.userId ?? '',
+                                        storyTitle: storyTitle,
                                       );
                                     } else {
                                       await ctrl.addComment(
@@ -299,6 +306,8 @@ class _CommentViewState extends State<CommentView> {
                                         userName: user.fullName,
                                         userProfileUrl: user.profileUrl ?? '',
                                         userId: user.id,
+                                        authorId: authorId,
+                                        storyTitle: storyTitle,
                                       );
                                     }
                                     ctrl.contentController.clear();

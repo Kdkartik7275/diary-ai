@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:lifeline/features/onboarding/presentation/controller/onboarding_controller.dart';
+import 'package:mindloom/features/onboarding/presentation/controller/onboarding_controller.dart';
 
 class OnboardingBinding  implements Bindings{
   @override

@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lifeline/features/story/data/model/story_model.dart';
-import 'package:lifeline/features/story/data/model/story_stats_model.dart';
-import 'package:lifeline/services/ai/ai_story_service.dart';
-import 'package:lifeline/services/storage/storage_service.dart';
+import 'package:mindloom/features/story/data/model/story_model.dart';
+import 'package:mindloom/features/story/data/model/story_stats_model.dart';
+import 'package:mindloom/services/ai/ai_story_service.dart';
+import 'package:mindloom/services/storage/storage_service.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class StoryRemoteDataSource {
@@ -17,6 +17,7 @@ abstract interface class StoryRemoteDataSource {
     required String characterName,
   });
   Future<StoryModel> editStory({required Map<String, dynamic> data});
+  Future<void> deleteStory({required String storyId});
   Future<StoryStatsModel> getStoryStats({
     required String storyId,
     required String userId,
@@ -31,7 +32,8 @@ abstract interface class StoryRemoteDataSource {
     required String userId,
   });
   Future<List<StoryModel>> getUserDrafts({required String userId});
-  Future<List<StoryModel>> getUserPublished({required String userId});
+  Future<List<StoryModel>> getPublisedStories({required String userId});
+  Future<List<StoryModel>> getPublishedStoriesByUser({required String userId});
   Future<String?> uploadStoryCoverImage(File image);
 }
 
@@ -121,6 +123,8 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }) async {
     try {
       final docRef = firestore.collection('stories').doc(storyId);
+      final statsRef = firestore.collection('story_stats').doc(storyId);
+
       final storyDoc = await docRef.get();
 
       if (!storyDoc.exists) {
@@ -138,6 +142,14 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
         'publishedAt': Timestamp.now(),
         'updatedAt': Timestamp.now(),
       });
+      await statsRef.set({
+        'storyId': storyId,
+        'reads': 0,
+        'likes': 0,
+        'comments': 0,
+        'saved': 0,
+        'trendingScore': 1,
+      });
 
       final updatedDoc = await docRef.get();
 
@@ -148,7 +160,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }
 
   @override
-  Future<List<StoryModel>> getUserPublished({required String userId}) async {
+  Future<List<StoryModel>> getPublisedStories({required String userId}) async {
     try {
       final storiesDoc = await firestore
           .collection('stories')
@@ -196,6 +208,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
         reads: statsData['reads'] ?? 0,
         likes: statsData['likes'] ?? 0,
         comments: statsData['commentsCount'] ?? 0,
+        trendingScore: statsData['trendingScore'] ?? 0,
         saved: statsData['saved'] ?? 0,
         isLikedByYou: likeDoc.exists,
       );
@@ -232,6 +245,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
           'likes': FieldValue.increment(1),
         }, SetOptions(merge: true));
       });
+      await _updateTrendingScore(storyId: storyId, likesDelta: 1);
     } catch (e) {
       throw e.toString();
     }
@@ -263,6 +277,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
           'reads': FieldValue.increment(1),
         }, SetOptions(merge: true));
       });
+      await _updateTrendingScore(storyId: storyId, readsDelta: 1);
     } catch (e) {
       rethrow;
     }
@@ -326,6 +341,69 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
       return response;
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  @override
+  Future<void> deleteStory({required String storyId}) async {
+    try {
+      await firestore.collection('stories').doc(storyId).update({
+        'deletedAt': Timestamp.now(),
+        'updatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  @override
+  Future<List<StoryModel>> getPublishedStoriesByUser({
+    required String userId,
+  }) async {
+    try {
+      final storiesDoc = await firestore
+          .collection('stories')
+          .where('userId', isEqualTo: userId)
+          .where('isPublished', isEqualTo: true)
+          .where('publishedAt', isNotEqualTo: null)
+          .orderBy('publishedAt', descending: true)
+          .limit(10)
+          .get();
+
+      if (storiesDoc.docs.isEmpty) {
+        return [];
+      }
+
+      List<StoryModel> stories = storiesDoc.docs
+          .map((story) => StoryModel.fromMap(story.data()))
+          .toList();
+      return stories;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> _updateTrendingScore({
+    required String storyId,
+    int readsDelta = 0,
+    int likesDelta = 0,
+    int commentsDelta = 0,
+    int savedDelta = 0,
+  }) async {
+    try {
+      final docRef = firestore.collection('story_stats').doc(storyId);
+
+      final int scoreDelta =
+          (readsDelta * 1) +
+          (likesDelta * 2) +
+          (commentsDelta * 2) +
+          (savedDelta * 3);
+
+      await docRef.set({
+        'trendingScore': FieldValue.increment(scoreDelta),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint('Failed to update trending score: $e');
     }
   }
 }

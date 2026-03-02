@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/usecases/usecases.dart';
-import 'package:lifeline/features/user/domain/entity/user_entity.dart';
-import 'package:lifeline/features/user/domain/repository/user_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/usecases/usecases.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/features/user/domain/repository/user_repository.dart';
 
 class SaveUser implements UseCaseWithParams<UserEntity, SaveUserParams> {
   final UserRepository repository;

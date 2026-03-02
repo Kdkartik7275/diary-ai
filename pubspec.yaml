@@ -1,4 +1,4 @@
-name: lifeline
+name: mindloom
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -52,6 +52,9 @@ dependencies:
   flutter_dotenv: ^6.0.0
   image_picker: ^1.2.1
   lottie: ^3.3.2
+  firebase_messaging: ^16.1.1
+  flutter_local_notifications: ^20.1.0
+  googleapis_auth: ^2.0.0
 
 
 dev_dependencies:
@@ -63,7 +66,7 @@ dev_dependencies:
 flutter_native_splash:
   
   color: "#FFFFFF"
-  image: assets/icons/logo.png
+  image: assets/icons/logo_new.png
   android: true
   ios: true
   web: false

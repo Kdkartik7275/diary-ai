@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:lifeline/core/containers/rounded_container.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
 
 class QuickActionTile extends StatelessWidget {
   const QuickActionTile({

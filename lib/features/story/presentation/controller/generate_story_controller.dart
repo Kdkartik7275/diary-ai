@@ -2,15 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/snackbars/success_dialog.dart';
-import 'package:lifeline/features/diary/domain/usecases/get_diaries_by_range.dart';
-import 'package:lifeline/features/story/data/model/story_model.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/domain/usecases/create_story.dart';
-import 'package:lifeline/features/story/domain/usecases/generate_story_from_diaries.dart';
-import 'package:lifeline/features/story/presentation/views/draft_preview.dart';
-import 'package:lifeline/features/story/presentation/widgets/generating_story.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/snackbars/success_dialog.dart';
+import 'package:mindloom/features/diary/domain/usecases/get_diaries_by_range.dart';
+import 'package:mindloom/features/story/data/model/story_model.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/usecases/create_story.dart';
+import 'package:mindloom/features/story/domain/usecases/generate_story_from_diaries.dart';
+import 'package:mindloom/features/story/presentation/views/draft_preview.dart';
+import 'package:mindloom/features/story/presentation/widgets/generating_story.dart';
 import 'package:uuid/uuid.dart';
 
 class GenerateStoryController extends GetxController {

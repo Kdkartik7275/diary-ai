@@ -7,15 +7,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/core/snackbars/success_dialog.dart';
-import 'package:lifeline/core/utils/helpers/functions.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
-import 'package:lifeline/features/story/domain/usecases/create_story.dart';
-import 'package:lifeline/features/story/domain/usecases/edit_story.dart';
-import 'package:lifeline/features/story/domain/usecases/upload_story_image.dart';
-import 'package:lifeline/features/story/presentation/controller/story_controller.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/core/snackbars/success_dialog.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/usecases/create_story.dart';
+import 'package:mindloom/features/story/domain/usecases/edit_story.dart';
+import 'package:mindloom/features/story/domain/usecases/upload_story_image.dart';
+import 'package:mindloom/features/story/presentation/controller/story_controller.dart';
 
 class Chapter {
   final String id;

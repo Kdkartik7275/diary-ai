@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/features/story/presentation/controller/generate_story_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/features/story/presentation/controller/generate_story_controller.dart';
 
 class GenreSelector extends StatelessWidget {
   const GenreSelector({super.key});

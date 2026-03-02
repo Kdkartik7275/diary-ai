@@ -1,24 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/features/social/domain/entity/follow_entity.dart';
-import 'package:lifeline/features/social/domain/usecases/follow_user.dart';
-import 'package:lifeline/features/social/domain/usecases/get_follow_status.dart';
-import 'package:lifeline/features/social/domain/usecases/get_followers.dart';
-import 'package:lifeline/features/social/domain/usecases/get_followings.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/features/notifications/domain/entity/app_notification.dart';
+import 'package:mindloom/features/notifications/domain/usecases/create_notification.dart';
+import 'package:mindloom/features/social/domain/entity/follow_entity.dart';
+import 'package:mindloom/features/social/domain/usecases/follow_user.dart';
+import 'package:mindloom/features/social/domain/usecases/get_follow_status.dart';
+import 'package:mindloom/features/social/domain/usecases/get_followers.dart';
+import 'package:mindloom/features/social/domain/usecases/get_followings.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class FollowController extends GetxController {
   final FollowUser followUserUseCase;
   final GetFollowStatus getFollowStatusUseCase;
   final GetFollowers getFollowersUseCase;
   final GetFollowings getFollowingsUseCase;
+  final CreateNotification createNotificationUseCase;
 
   FollowController({
     required this.followUserUseCase,
     required this.getFollowStatusUseCase,
     required this.getFollowersUseCase,
     required this.getFollowingsUseCase,
+    required this.createNotificationUseCase,
   });
 
   RxBool isFollowing = false.obs;
@@ -29,6 +34,8 @@ class FollowController extends GetxController {
   final RxList<FollowEntity> following = <FollowEntity>[].obs;
 
   final RxSet<String> followingIds = <String>{}.obs;
+
+  final userController = Get.find<UserController>();
 
   Future<void> fetchFollowers() async {
     isLoading.value = true;
@@ -51,17 +58,6 @@ class FollowController extends GetxController {
     isLoading.value = false;
   }
 
-  Future<void> toggleFollow(FollowEntity user) async {
-    if (followingIds.contains(user.id)) {
-      followingIds.remove(user.id);
-      following.removeWhere((u) => u.id == user.id);
-    } else {
-      followingIds.add(user.id);
-      following.add(user);
-    }
-    // TODO: Call your repository to persist the change
-  }
-
   bool isFollowingUser(String userId) => followingIds.contains(userId);
 
   Future<void> followUser({
@@ -74,7 +70,6 @@ class FollowController extends GetxController {
     required String currentUserName,
     required String targetUserName,
   }) async {
-    isLoading.value = true;
     isFollowing.value = true;
     final params = FollowUserParams(
       currentUserId: currentUserId,
@@ -95,7 +90,13 @@ class FollowController extends GetxController {
         isFollowing.value = false;
       },
       (_) {
+        userController.updateFollowingCount(1);
         isLoading.value = false;
+        sendFollowNotification(
+          to: targetUserId,
+          username: currentUserFullName,
+          referenceId: currentUserId,
+        );
       },
     );
   }
@@ -122,5 +123,28 @@ class FollowController extends GetxController {
       },
     );
     isLoading.value = false;
+  }
+
+  Future<void> sendFollowNotification({
+    required String to,
+    required String username,
+    String? referenceId,
+  }) async {
+    try {
+      final Map<String, dynamic> notifData = {
+        'userId': to,
+        'type': NotificationType.newFollower,
+        'priority': NotificationPriority.normal,
+        'actionType': NotificationActionType.openProfile,
+        'title': '$username started following you',
+        'body': 'See their profile and discover their stories.',
+        if (referenceId != null) 'referenceId': referenceId,
+        'metaData': <String, dynamic>{},
+      };
+      final result = await createNotificationUseCase.call(notifData);
+      result.fold((err) => showErrorDialog(err.message), (success) {});
+    } catch (e) {
+      throw e.toString();
+    }
   }
 }

@@ -2,12 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/config/routes/app_routes.dart';
-import 'package:lifeline/core/containers/rounded_container.dart';
-import 'package:lifeline/features/profile/presentation/views/account_details.dart';
-import 'package:lifeline/features/profile/presentation/widgets/setting_section.dart';
-import 'package:lifeline/services/database/database_service.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/profile/presentation/views/account_details.dart';
+import 'package:mindloom/features/profile/presentation/widgets/setting_section.dart';
+import 'package:mindloom/services/database/database_service.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});

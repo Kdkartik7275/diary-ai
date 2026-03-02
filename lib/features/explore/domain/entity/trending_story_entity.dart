@@ -1,4 +1,4 @@
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 
 class TrendingStoryEntity {
   final StoryEntity story;

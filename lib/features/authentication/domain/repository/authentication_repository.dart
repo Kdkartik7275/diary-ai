@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 
 abstract interface class AuthenticationRepository {
   ResultFuture<void> signInWithGoogle();

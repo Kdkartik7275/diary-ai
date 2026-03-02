@@ -1,5 +1,5 @@
 
-import 'package:lifeline/config/constants/typedefs.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
 
 abstract interface class UseCaseWithParams<Type, Params> {
   ResultFuture<Type> call(Params params);

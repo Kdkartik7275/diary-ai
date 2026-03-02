@@ -3,18 +3,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/features/comments/domain/entity/comment_entity.dart';
-import 'package:lifeline/features/comments/domain/entity/reply_entity.dart';
-import 'package:lifeline/features/comments/domain/usecases/add_comment.dart';
-import 'package:lifeline/features/comments/domain/usecases/add_reply.dart';
-import 'package:lifeline/features/comments/domain/usecases/get_comments.dart';
-import 'package:lifeline/features/comments/domain/usecases/get_replies.dart';
-import 'package:lifeline/features/comments/domain/usecases/like_comment.dart';
-import 'package:lifeline/features/comments/domain/usecases/like_reply.dart';
-import 'package:lifeline/features/comments/domain/usecases/unlike_comment.dart';
-import 'package:lifeline/features/comments/domain/usecases/unlike_reply.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/features/comments/domain/entity/comment_entity.dart';
+import 'package:mindloom/features/comments/domain/entity/reply_entity.dart';
+import 'package:mindloom/features/comments/domain/usecases/add_comment.dart';
+import 'package:mindloom/features/comments/domain/usecases/add_reply.dart';
+import 'package:mindloom/features/comments/domain/usecases/get_comments.dart';
+import 'package:mindloom/features/comments/domain/usecases/get_replies.dart';
+import 'package:mindloom/features/comments/domain/usecases/like_comment.dart';
+import 'package:mindloom/features/comments/domain/usecases/like_reply.dart';
+import 'package:mindloom/features/comments/domain/usecases/unlike_comment.dart';
+import 'package:mindloom/features/comments/domain/usecases/unlike_reply.dart';
+import 'package:mindloom/features/notifications/domain/entity/app_notification.dart';
+import 'package:mindloom/features/notifications/domain/usecases/create_notification.dart';
 
 class CommentsController extends GetxController {
   final AddComment addCommentUseCase;
@@ -25,6 +27,7 @@ class CommentsController extends GetxController {
   final LikeReply likeReplyUseCase;
   final UnlikeComment unlikeCommentUseCase;
   final UnlikeReply unlikeReplyUseCase;
+  final CreateNotification createNotificationUseCase;
 
   CommentsController({
     required this.addCommentUseCase,
@@ -35,6 +38,7 @@ class CommentsController extends GetxController {
     required this.likeReplyUseCase,
     required this.unlikeCommentUseCase,
     required this.unlikeReplyUseCase,
+    required this.createNotificationUseCase,
   });
 
   final TextEditingController contentController = TextEditingController();
@@ -43,7 +47,6 @@ class CommentsController extends GetxController {
   final RxBool isLoadingMore = false.obs;
   final RxBool hasMoreComments = true.obs;
 
-  // Reply functionality
   final Rx<CommentEntity?> replyingTo = Rx<CommentEntity?>(null);
   final RxSet<String> expandedCommentIds = <String>{}.obs;
   final RxMap<String, List<ReplyEntity>> repliesMap =
@@ -133,6 +136,8 @@ class CommentsController extends GetxController {
     required String userName,
     required String userProfileUrl,
     required String userId,
+    required String authorId,
+    required String storyTitle,
   }) async {
     if (content.trim().isEmpty) return;
 
@@ -150,8 +155,15 @@ class CommentsController extends GetxController {
       (failure) {
         showErrorDialog('Failed to add comment');
       },
-      (comment) {
+      (comment) async {
         comments.insert(0, comment);
+        await sendNotification(
+          to: authorId,
+          username: userName,
+          title: '$userName commented on your story',
+          body: 'They said: "${preview(content)}"',
+          referenceId: storyId,
+        );
       },
     );
   }
@@ -163,6 +175,8 @@ class CommentsController extends GetxController {
     required String userName,
     required String userProfileUrl,
     required String userId,
+    required String notifTo,
+    required String storyTitle,
   }) async {
     if (content.trim().isEmpty) return;
 
@@ -183,7 +197,7 @@ class CommentsController extends GetxController {
         (failure) {
           showErrorDialog('Failed to add reply');
         },
-        (reply) {
+        (reply) async {
           final currentReplies = repliesMap[commentId] ?? [];
           repliesMap[commentId] = [reply, ...currentReplies];
 
@@ -204,11 +218,22 @@ class CommentsController extends GetxController {
             );
             comments[index] = updatedComment;
           }
+          await sendNotification(
+            to: notifTo,
+            username: userName,
+            title: '$userName replied to your comment',
+            body: 'They replied: "${preview(content)}"',
+            referenceId: parentComment.storyId,
+          );
         },
       );
     } catch (e) {
       showErrorDialog('Failed to add reply: ${e.toString()}');
     }
+  }
+
+  String preview(String text) {
+    return text.length > 50 ? '${text.substring(0, 50)}...' : text;
   }
 
   Future<void> likeComment({required String commentId}) async {
@@ -448,5 +473,30 @@ class CommentsController extends GetxController {
 
   List<ReplyEntity> getRepliesForComment(String commentId) {
     return repliesMap[commentId] ?? [];
+  }
+
+  Future<void> sendNotification({
+    required String to,
+    required String username,
+    required String title,
+    required String body,
+    String? referenceId,
+  }) async {
+    try {
+      final Map<String, dynamic> notifData = {
+        'userId': to,
+        'type': NotificationType.storyCommented,
+        'priority': NotificationPriority.normal,
+        'actionType': NotificationActionType.openStory,
+        'title': title,
+        'body': body,
+        if (referenceId != null) 'referenceId': referenceId,
+        'metaData': <String, dynamic>{},
+      };
+      final result = await createNotificationUseCase.call(notifData);
+      result.fold((err) => showErrorDialog(err.message), (success) {});
+    } catch (e) {
+      throw e.toString();
+    }
   }
 }

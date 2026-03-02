@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/core/snackbars/error_snackbar.dart';
-import 'package:lifeline/core/snackbars/success_dialog.dart';
-import 'package:lifeline/features/diary/domain/entity/diary_entity.dart';
-import 'package:lifeline/features/diary/domain/usecases/delete_diary.dart';
-import 'package:lifeline/features/diary/domain/usecases/get_user_diaries.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
+import 'package:mindloom/core/snackbars/success_dialog.dart';
+import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
+import 'package:mindloom/features/diary/domain/usecases/delete_diary.dart';
+import 'package:mindloom/features/diary/domain/usecases/get_user_diaries.dart';
 
 class DiaryController extends GetxController {
   final GetUserDiaries getUserDiaries;

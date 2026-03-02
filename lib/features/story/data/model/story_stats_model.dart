@@ -1,4 +1,4 @@
-import 'package:lifeline/features/story/domain/entity/story_stats.dart';
+import 'package:mindloom/features/story/domain/entity/story_stats.dart';
 
 class StoryStatsModel extends StoryStatsEntity {
   StoryStatsModel({
@@ -8,6 +8,7 @@ class StoryStatsModel extends StoryStatsEntity {
     required super.comments,
     required super.saved,
     required super.isLikedByYou,
+    required super.trendingScore,
   });
 
   factory StoryStatsModel.fromMap({
@@ -20,6 +21,7 @@ class StoryStatsModel extends StoryStatsEntity {
       likes: data['likes'] ?? 0,
       comments: data['commentsCount'] ?? 0,
       saved: data['saved'] ?? 0,
+      trendingScore: data['trendingScore'] ?? 0,
 
       isLikedByYou: data['isLikedByYou'] ?? false,
     );
@@ -32,6 +34,7 @@ class StoryStatsModel extends StoryStatsEntity {
       likes: 0,
       comments: 0,
       saved: 0,
+      trendingScore: 0,
       isLikedByYou: false,
     );
   }

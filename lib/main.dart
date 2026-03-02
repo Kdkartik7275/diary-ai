@@ -1,16 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:lifeline/config/routes/app_routes.dart';
-import 'package:lifeline/config/theme/theme.dart';
-import 'package:lifeline/core/di/init_dependencies.dart';
-import 'package:lifeline/firebase_options.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/config/theme/theme.dart';
+import 'package:mindloom/core/di/init_dependencies.dart';
+import 'package:mindloom/firebase_options.dart';
+import 'package:mindloom/services/push_notification/notification_service.dart';
 import 'config/routes/app_pages.dart';
+
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+}
 
 Future<String> resolveInitialRoute() async {
   const storage = FlutterSecureStorage();
@@ -31,16 +37,21 @@ Future<String> resolveInitialRoute() async {
   return Routes.login;
 }
 
-void main() async {
+Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   await dotenv.load(fileName: ".env");
 
   DependencyInjection.init();
+
+  await NotificationService.instance.init();
+
+  await NotificationService.instance.getFcmToken();
 
   final initialRoute = await resolveInitialRoute();
 
@@ -57,7 +68,7 @@ class LifelineApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: "Lifeline",
+      title: "Mindloom",
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       initialRoute: initialRoute,

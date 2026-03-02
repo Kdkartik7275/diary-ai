@@ -1,4 +1,4 @@
-import 'package:lifeline/features/explore/domain/entity/story_author_entity.dart';
+import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
 
 class StoryAuthorModel extends StoryAuthorEntity {
   StoryAuthorModel({

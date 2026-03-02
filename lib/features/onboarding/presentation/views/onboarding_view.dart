@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/features/onboarding/presentation/controller/onboarding_controller.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/features/onboarding/presentation/controller/onboarding_controller.dart';
 
 class OnboardingView extends GetView<OnboardingController> {
   const OnboardingView({super.key});

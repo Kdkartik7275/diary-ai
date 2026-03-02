@@ -1,5 +1,5 @@
-import 'package:lifeline/features/user/data/model/user_model.dart';
-import 'package:lifeline/services/database/database_service.dart';
+import 'package:mindloom/features/user/data/model/user_model.dart';
+import 'package:mindloom/services/database/database_service.dart';
 
 abstract interface class UserLocalDataSource {
   Future<void> insertUser({required Map<String, dynamic> data});

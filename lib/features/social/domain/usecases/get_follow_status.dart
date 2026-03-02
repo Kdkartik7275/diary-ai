@@ -1,7 +1,7 @@
-import 'package:lifeline/config/constants/typedefs.dart';
-import 'package:lifeline/core/usecases/usecases.dart';
-import 'package:lifeline/features/social/domain/entity/follow_status.dart';
-import 'package:lifeline/features/social/domain/repository/social_repository.dart';
+import 'package:mindloom/config/constants/typedefs.dart';
+import 'package:mindloom/core/usecases/usecases.dart';
+import 'package:mindloom/features/social/domain/entity/follow_status.dart';
+import 'package:mindloom/features/social/domain/repository/social_repository.dart';
 
 class GetFollowStatus implements UseCaseWithParams<FollowStatusEntity, Map<String, String>> {
   final SocialRepository repository;

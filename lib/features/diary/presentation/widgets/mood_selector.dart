@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
-import 'package:lifeline/config/constants/colors.dart';
+import 'package:mindloom/config/constants/colors.dart';
 
 class MoodSelector extends StatefulWidget {
   final String? initialEmoji; 

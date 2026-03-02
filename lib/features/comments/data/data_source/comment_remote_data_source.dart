@@ -1,7 +1,8 @@
 // comment_remote_data_source.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lifeline/features/comments/data/model/comment_model.dart';
-import 'package:lifeline/features/comments/data/model/reply_model.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:mindloom/features/comments/data/model/comment_model.dart';
+import 'package:mindloom/features/comments/data/model/reply_model.dart';
 import 'package:uuid/uuid.dart';
 
 abstract interface class CommentRemoteDataSource {
@@ -84,7 +85,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
           'commentsCount': FieldValue.increment(1),
         }, SetOptions(merge: true));
       });
-
+      await _updateTrendingScore(storyId: data['storyId'], commentsDelta: 1);
       return CommentModel.fromMap(commentData);
     } catch (e) {
       throw e.toString();
@@ -366,6 +367,30 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       });
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  Future<void> _updateTrendingScore({
+    required String storyId,
+    int readsDelta = 0,
+    int likesDelta = 0,
+    int commentsDelta = 0,
+    int savedDelta = 0,
+  }) async {
+    try {
+      final docRef = firestore.collection('story_stats').doc(storyId);
+
+      final int scoreDelta =
+          (readsDelta * 1) +
+          (likesDelta * 2) +
+          (commentsDelta * 2) +
+          (savedDelta * 3);
+
+      await docRef.set({
+        'trendingScore': FieldValue.increment(scoreDelta),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint('Failed to update trending score: $e');
     }
   }
 }

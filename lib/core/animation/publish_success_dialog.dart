@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:lifeline/config/constants/colors.dart';
+import 'package:mindloom/config/constants/colors.dart';
 
 Future<void> showPublishSuccessDialog(
   BuildContext context, {
@@ -16,7 +16,7 @@ Future<void> showPublishSuccessDialog(
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       final curved = CurvedAnimation(
         parent: animation,
-        curve: Curves.easeOutBack,
+        curve: Curves.easeOutBack, 
       );
       return ScaleTransition(
         scale: Tween<double>(begin: .85, end: 1).animate(curved),
@@ -33,6 +33,7 @@ const _primary = AppColors.primary;
 const _primaryDark = Color.fromRGBO(210, 90, 78, 1);
 const _green = Color.fromRGBO(0, 109, 24, 1);
 const _textLighter = AppColors.textLighter;
+
 class _PublishSuccessDialog extends StatefulWidget {
   const _PublishSuccessDialog({required this.storyTitle});
   final String storyTitle;

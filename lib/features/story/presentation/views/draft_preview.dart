@@ -2,8 +2,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:lifeline/config/constants/colors.dart';
-import 'package:lifeline/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 
 class DraftPreview extends StatefulWidget {
   const DraftPreview({super.key, required this.story});

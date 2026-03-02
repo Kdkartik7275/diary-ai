@@ -1,4 +1,4 @@
-import 'package:lifeline/features/social/domain/entity/follow_entity.dart';
+import 'package:mindloom/features/social/domain/entity/follow_entity.dart';
 
 class FollowModel extends FollowEntity {
   FollowModel({

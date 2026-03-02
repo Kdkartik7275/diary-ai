@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:lifeline/core/exceptions/firebase_auth_exceptions.dart';
-import 'package:lifeline/core/exceptions/firebase_exception.dart';
-import 'package:lifeline/core/exceptions/format_exceptions.dart';
-import 'package:lifeline/core/exceptions/platform_exceptions.dart';
+import 'package:mindloom/core/exceptions/firebase_auth_exceptions.dart';
+import 'package:mindloom/core/exceptions/firebase_exception.dart';
+import 'package:mindloom/core/exceptions/format_exceptions.dart';
+import 'package:mindloom/core/exceptions/platform_exceptions.dart';
 
 abstract class AuthRemoteDataSource {
   Future<void> signInWithGoogle();
