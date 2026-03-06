@@ -11,6 +11,10 @@ abstract interface class SocialLocalDataSource {
     required String userId,
     required String followingId,
   });
+  Future<void> insertFollowings({
+    required String userId,
+    required List<String> followingIds,
+  });
 
   Future<List<String>> getFollowings({required String userId});
 
@@ -57,5 +61,13 @@ class SocialLocalDataSourceImpl implements SocialLocalDataSource {
   @override
   Future<bool> isFollowingTableEmpty() async {
     return await _db.isFollowingsTableEmpty();
+  }
+
+  @override
+  Future<void> insertFollowings({
+    required String userId,
+    required List<String> followingIds,
+  }) async {
+    await _db.insertFollowings(userId: userId, followingIds: followingIds);
   }
 }

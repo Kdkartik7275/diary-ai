@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
@@ -110,8 +111,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               ),
               child: user.profileUrl != null && user.profileUrl!.isNotEmpty
                   ? ClipOval(
-                      child: Image.network(
-                        user.profileUrl!,
+                      child: CachedNetworkImage(
+                        imageUrl: user.profileUrl!,
                         fit: BoxFit.cover,
                         width: avatarSize,
                         height: avatarSize,

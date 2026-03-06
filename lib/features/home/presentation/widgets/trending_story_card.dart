@@ -34,6 +34,7 @@ class TrendingStoryCard extends StatelessWidget {
         height: height * .2,
         width: width / 1.6,
         margin: EdgeInsets.all(12),
+        padding: EdgeInsets.only(bottom: 6),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(16),

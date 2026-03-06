@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -106,17 +107,17 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                   onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
-                    radius: 14,
+                    radius: 18,
                     backgroundColor: AppColors.primary.withValues(alpha: .3),
                     child:
                         (user.profileUrl != null && user.profileUrl!.isNotEmpty)
                         ? ClipOval(
-                            child: Image.network(
-                              user.profileUrl!,
-                              width: 28,
-                              height: 28,
+                            child: CachedNetworkImage(
+                              imageUrl: user.profileUrl!,
+                              width: 36,
+                              height: 36,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
+                              errorWidget: (context, error, stackTrace) {
                                 return Center(
                                   child: Text(
                                     nameInitials(user.fullName),
@@ -164,17 +165,17 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                           BorderSide? border;
 
                           if (isFollowing) {
-                            buttonText = "Following";
+                            buttonText = 'Following';
                             backgroundColor = AppColors.white;
                             textColor = AppColors.primary;
                             border = BorderSide(color: AppColors.primary);
                           } else if (isFollowedBy) {
-                            buttonText = "Follow Back";
+                            buttonText = 'Follow Back';
                             backgroundColor = AppColors.primary;
                             textColor = AppColors.white;
                             border = BorderSide.none;
                           } else {
-                            buttonText = "Follow";
+                            buttonText = 'Follow';
                             backgroundColor = AppColors.primary;
                             textColor = AppColors.white;
                             border = BorderSide.none;

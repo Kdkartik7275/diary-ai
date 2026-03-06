@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
@@ -49,8 +50,8 @@ class TrendingStoryAuthorDetails extends StatelessWidget {
 
                 child: user.profileUrl != null
                     ? ClipOval(
-                        child: Image.network(
-                          user.profileUrl!,
+                        child: CachedNetworkImage(
+                          imageUrl: user.profileUrl!,
 
                           width: 36,
 
@@ -58,19 +59,17 @@ class TrendingStoryAuthorDetails extends StatelessWidget {
 
                           fit: BoxFit.cover,
 
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Text(
-                                nameInitials(user.fullName),
+                          errorWidget: (context, url, error) => Center(
+                            child: Text(
+                              nameInitials(user.fullName),
 
-                                style: theme.titleSmall!.copyWith(
-                                  color: AppColors.text,
+                              style: theme.titleSmall!.copyWith(
+                                color: AppColors.text,
 
-                                  fontWeight: FontWeight.normal,
-                                ),
+                                fontWeight: FontWeight.normal,
                               ),
-                            );
-                          },
+                            ),
+                          ),
                         ),
                       )
                     : Center(

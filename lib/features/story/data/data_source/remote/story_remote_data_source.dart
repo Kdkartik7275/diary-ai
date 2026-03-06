@@ -409,24 +409,32 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }
 
   @override
-  @override
   Future<List<StoryModel>> getUserFeed({required String userId}) async {
     try {
       final db = DataBaseService.instance;
 
-      final followings = await db.getFollowings(userId);
+      List<String> followings = await db.getFollowings(userId);
 
-      List<String> userIds = followings.map((e) => e).toList();
-      userIds.add(userId);
+      if (followings.isEmpty) {
+        final snapshot = await firestore
+            .collection('user_following')
+            .doc(userId)
+            .collection('users')
+            .get();
 
-      if (userIds.isEmpty) return [];
+        followings = snapshot.docs.map((e) => e.id).toList();
+
+        await db.insertFollowings(userId: userId, followingIds: followings);
+      }
+
+      final userIds = [...followings, userId];
 
       List<StoryModel> stories = [];
 
       for (int i = 0; i < userIds.length; i += 10) {
         final chunk = userIds.sublist(
           i,
-          i + 10 > userIds.length ? userIds.length : i + 10,
+          (i + 10 > userIds.length) ? userIds.length : i + 10,
         );
 
         final snapshot = await firestore
@@ -438,7 +446,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
             .get();
 
         stories.addAll(
-          snapshot.docs.map((doc) => StoryModel.fromMap(doc.data())).toList(),
+          snapshot.docs.map((e) => StoryModel.fromMap(e.data())).toList(),
         );
       }
 
@@ -452,6 +460,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
 
         return bTime.compareTo(aTime);
       });
+
       return stories;
     } catch (e) {
       debugPrint(e.toString());

@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
@@ -127,16 +128,31 @@ class _UserProfilePageState extends State<UserProfilePage>
           CircleAvatar(
             radius: 42,
             backgroundColor: AppColors.primary,
-            backgroundImage:
-                user.profileUrl != null && user.profileUrl!.isNotEmpty
-                ? NetworkImage(user.profileUrl!)
-                : null,
+
             child: (user.profileUrl == null || user.profileUrl!.isEmpty)
                 ? Text(
                     user.fullName[0].toUpperCase(),
                     style: tt.headlineMedium?.copyWith(color: AppColors.white),
                   )
-                : null,
+                : ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: user.profileUrl!,
+                      width: 84,
+                      height: 84,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, error, stackTrace) {
+                        return Center(
+                          child: Text(
+                            nameInitials(user.fullName),
+                            style: tt.titleSmall!.copyWith(
+                              color: AppColors.text,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           ),
           const SizedBox(height: 14),
           // Name

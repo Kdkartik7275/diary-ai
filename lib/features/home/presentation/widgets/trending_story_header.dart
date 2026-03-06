@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mindloom/config/constants/colors.dart';
@@ -43,9 +44,8 @@ class TrendingStoryHeader extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
 
-                  child: Image.network(
-                    story.story.coverImageUrl!,
-
+                  child: CachedNetworkImage(
+                    imageUrl: story.story.coverImageUrl!,
                     height: height * .2,
 
                     width: width,

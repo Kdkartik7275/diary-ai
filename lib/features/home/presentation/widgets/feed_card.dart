@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -55,8 +56,8 @@ class FeedCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
 
                 child: story.coverImageUrl != null
-                    ? Image.network(
-                        story.coverImageUrl!,
+                    ? CachedNetworkImage(
+                        imageUrl: story.coverImageUrl!,
 
                         height: height * .16,
 
@@ -121,8 +122,8 @@ class FeedCard extends StatelessWidget {
 
                                 child: user.profileUrl != null
                                     ? ClipOval(
-                                        child: Image.network(
-                                          user.profileUrl!,
+                                        child: CachedNetworkImage(
+                                          imageUrl: user.profileUrl!,
 
                                           width: 36,
 
@@ -130,7 +131,7 @@ class FeedCard extends StatelessWidget {
 
                                           fit: BoxFit.cover,
 
-                                          errorBuilder:
+                                          errorWidget:
                                               (context, error, stackTrace) {
                                                 return Center(
                                                   child: Text(

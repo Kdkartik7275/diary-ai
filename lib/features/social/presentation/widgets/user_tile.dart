@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
@@ -76,12 +77,12 @@ class UserTile extends GetView<UserController> {
                   ),
                   child: user.profileUrl != null && user.profileUrl!.isNotEmpty
                       ? ClipOval(
-                          child: Image.network(
-                            user.profileUrl!,
+                          child: CachedNetworkImage(
+                            imageUrl: user.profileUrl!,
                             width: 46,
                             height: 46,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => _Initials(
+                            errorWidget: (_, _, _) => _Initials(
                               initials: nameInitials(user.fullName),
                               color: textColor,
                             ),

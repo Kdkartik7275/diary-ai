@@ -725,4 +725,23 @@ CREATE TABLE $_followingsTable (
 
     return count == null || count == 0;
   }
+
+  Future<void> insertFollowings({
+    required String userId,
+    required List<String> followingIds,
+  }) async {
+    final db = await database;
+
+    final batch = db.batch();
+
+    for (final followingId in followingIds) {
+      batch.insert(_followingsTable, {
+        _followingUserId: userId,
+        _followingId: followingId,
+        _followingCreatedAt: DateTime.now().millisecondsSinceEpoch,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+
+    await batch.commit(noResult: true);
+  }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 
-import '../../../../config/routes/app_routes.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
 
 class OnboardingController extends GetxController {
   var currentPage = 0.obs;
@@ -17,7 +17,8 @@ class OnboardingController extends GetxController {
   }
 
   void setCurrentPage(int index) async {
-    if (index < 2) {
+     
+    if (index <= 2) {
       currentPage.value = index;
       pageController.animateToPage(
         index,

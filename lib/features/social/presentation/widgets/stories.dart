@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -127,10 +128,10 @@ class UserStoryCard extends StatelessWidget {
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(16),
                         ),
-                        child: Image.network(
+                        child: CachedNetworkImage(
                           height: double.infinity,
                           width: double.infinity,
-                          story.coverImageUrl!,
+                          imageUrl: story.coverImageUrl!,
                           fit: BoxFit.cover,
                         ),
                       )

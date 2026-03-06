@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -41,10 +42,10 @@ class RecentlyAddedStoryCard extends StatelessWidget {
               width: width * .30,
               backgroundColor: AppColors.primary.withValues(alpha: .7),
               child: story.coverImageUrl != null
-                  ? Image.network(
+                  ? CachedNetworkImage(
                       height: height * .16,
                       width: width * .30,
-                      story.coverImageUrl!,
+                      imageUrl: story.coverImageUrl!,
                       fit: BoxFit.cover,
                     )
                   : Icon(CupertinoIcons.book, color: AppColors.white, size: 40),

@@ -88,12 +88,10 @@ class SocialRepositoryImpl implements SocialRepository {
       bool isFollwingEmpty = await localDataSource.isFollowingTableEmpty();
       final followers = await remoteDataSource.getFollowings(userId);
       if (isFollwingEmpty) {
-        for (var follower in followers) {
-          await localDataSource.addFollowing(
-            followingId: follower.id,
-            userId: userId,
-          );
-        }
+        await localDataSource.insertFollowings(
+          userId: userId,
+          followingIds: followers.map((follower) => follower.id).toList(),
+        );
       }
 
       return right(followers);
