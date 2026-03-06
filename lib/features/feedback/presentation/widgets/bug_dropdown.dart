@@ -81,7 +81,7 @@ class _MenuItem extends StatelessWidget {
               label,
               style: theme.titleLarge?.copyWith(
                 fontWeight: FontWeight.normal,
-                fontSize: 14
+                fontSize: 14,
               ),
             ),
           ),

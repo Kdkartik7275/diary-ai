@@ -19,7 +19,7 @@ class TTextFormFieldTheme {
       fontWeight: FontWeight.w400,
       color: AppColors.hintText,
     ),
-    filled: true ,
+    filled: true,
     fillColor: AppColors.white,
     errorStyle: const TextStyle().copyWith(fontStyle: FontStyle.normal),
     border: OutlineInputBorder(

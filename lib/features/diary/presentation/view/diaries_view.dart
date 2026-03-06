@@ -142,11 +142,9 @@ class DiariesView extends GetView<DiaryController> {
                                 !controller.diariesLoading.value &&
                                 !controller.searching.value)
                             ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const EmptyDiaryState(),
-                              ],
-                            )
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [const EmptyDiaryState()],
+                              )
                             : RefreshIndicator(
                                 backgroundColor: AppColors.white,
                                 color: AppColors.primary,
@@ -166,8 +164,10 @@ class DiariesView extends GetView<DiaryController> {
                                       theme: theme,
                                       height: height,
                                       diary: diary,
-                                      onDelete: ()async{
-                                      await controller.deleteDiary(diaryId: diary.id);
+                                      onDelete: () async {
+                                        await controller.deleteDiary(
+                                          diaryId: diary.id,
+                                        );
                                       },
                                     );
                                   },

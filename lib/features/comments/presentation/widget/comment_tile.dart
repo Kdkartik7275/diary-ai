@@ -351,7 +351,6 @@ class CommentTile extends GetView<CommentsController> {
   }
 }
 
-
 class _CommentLoading extends StatelessWidget {
   const _CommentLoading({required this.isReply});
 
@@ -402,6 +401,7 @@ class _CommentLoading extends StatelessWidget {
     );
   }
 }
+
 class _CommentError extends StatelessWidget {
   const _CommentError({required this.isReply});
 
@@ -418,6 +418,7 @@ class _CommentError extends StatelessWidget {
     );
   }
 }
+
 class _CommentEmpty extends StatelessWidget {
   const _CommentEmpty({required this.isReply});
 

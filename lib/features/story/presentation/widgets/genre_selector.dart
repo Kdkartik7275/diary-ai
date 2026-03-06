@@ -43,8 +43,7 @@ class GenreSelector extends StatelessWidget {
           itemCount: visibleGenres.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
@@ -54,8 +53,7 @@ class GenreSelector extends StatelessWidget {
             final genre = visibleGenres[index];
 
             return Obx(() {
-              final isSelected =
-                  controller.selectedGenre.value == genre;
+              final isSelected = controller.selectedGenre.value == genre;
 
               return GenreChip(
                 label: genre,
@@ -72,8 +70,7 @@ class GenreSelector extends StatelessWidget {
           child: GestureDetector(
             onTap: () => _showAllGenres(context, controller),
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(20),
@@ -144,12 +141,9 @@ class GenreSelector extends StatelessWidget {
                     children: [
                       Text(
                         'Choose Your Story Style',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(
-                              fontWeight: FontWeight.normal,
-                            ),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.normal,
+                        ),
                       ),
                       const Spacer(),
                       GestureDetector(
@@ -173,16 +167,15 @@ class GenreSelector extends StatelessWidget {
 
                 Expanded(
                   child: GridView.builder(
-                    padding:
-                        const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                     itemCount: genres.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: 2.8,
-                    ),
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 2.8,
+                        ),
                     itemBuilder: (_, index) {
                       final genre = genres[index];
 

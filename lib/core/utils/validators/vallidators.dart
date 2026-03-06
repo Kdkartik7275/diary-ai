@@ -51,7 +51,10 @@ class TValidator {
     return null;
   }
 
-  static String? validateConfirmPassword(String? password, String? confirmPassword) {
+  static String? validateConfirmPassword(
+    String? password,
+    String? confirmPassword,
+  ) {
     if (confirmPassword == null || confirmPassword.isEmpty) {
       return 'Confirm password is required.';
     }

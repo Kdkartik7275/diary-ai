@@ -30,9 +30,10 @@ class TCircularContainer extends StatelessWidget {
       width: width,
       margin: margin,
       decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: backgroundColor,
-          border: showBorder ? Border.all(color: borderColor) : null),
+        shape: BoxShape.circle,
+        color: backgroundColor,
+        border: showBorder ? Border.all(color: borderColor) : null,
+      ),
       child: child,
     );
   }

@@ -3,7 +3,8 @@ import 'package:mindloom/core/usecases/usecases.dart';
 import 'package:mindloom/features/social/domain/entity/follow_status.dart';
 import 'package:mindloom/features/social/domain/repository/social_repository.dart';
 
-class GetFollowStatus implements UseCaseWithParams<FollowStatusEntity, Map<String, String>> {
+class GetFollowStatus
+    implements UseCaseWithParams<FollowStatusEntity, Map<String, String>> {
   final SocialRepository repository;
 
   GetFollowStatus({required this.repository});

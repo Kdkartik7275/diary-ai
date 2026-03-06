@@ -130,7 +130,10 @@ class SignUpView extends GetView<SignUpController> {
                                 CupertinoIcons.lock_rotation,
                               ),
                               validator: (value) =>
-                                  TValidator.validateConfirmPassword(controller.password.value.text, value),
+                                  TValidator.validateConfirmPassword(
+                                    controller.password.value.text,
+                                    value,
+                                  ),
                               controller: controller.confirmPassword.value,
                               hintText: "Confirm password",
                               obsecure: controller.obsecureConfirm.value,

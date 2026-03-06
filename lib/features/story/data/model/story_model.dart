@@ -170,7 +170,7 @@ class StoryModel extends StoryEntity {
       'publishedAt': publishedAt?.millisecondsSinceEpoch,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'updatedAt': updatedAt?.millisecondsSinceEpoch,
-      'deletedAt': deletedAt?.millisecondsSinceEpoch ,
+      'deletedAt': deletedAt?.millisecondsSinceEpoch,
       'coverImageUrl': coverImageUrl,
     };
   }

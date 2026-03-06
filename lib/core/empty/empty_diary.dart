@@ -19,12 +19,12 @@ class EmptyDiaryState extends StatelessWidget {
               width: 200,
               height: 200,
             ),
-        
+
             Text(
               "Your story starts here",
               style: theme.titleMedium!.copyWith(fontWeight: FontWeight.w500),
             ),
-        
+
             Text(
               "Write your first entry and begin your journey.",
               style: theme.titleSmall!.copyWith(

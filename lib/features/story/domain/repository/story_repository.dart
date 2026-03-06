@@ -38,10 +38,8 @@ abstract interface class StoryRepository {
     required String storyId,
     required String userId,
   });
-  ResultFuture<List<StoryEntity>> getPublisedStories({
-    required String userId,
-  });
-   ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
+  ResultFuture<List<StoryEntity>> getPublisedStories({required String userId});
+  ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
     required String userId,
   });
 
@@ -50,4 +48,6 @@ abstract interface class StoryRepository {
   ResultFuture<int> getPublishedCount({required String userId});
 
   ResultFuture<String?> uploadStoryCoverImage(File image);
+
+  ResultFuture<List<StoryEntity>> getUserFeed({required String userId});
 }

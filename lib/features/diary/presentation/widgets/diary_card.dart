@@ -134,7 +134,7 @@ class DiaryCard extends StatelessWidget {
                       const SizedBox(width: 14),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: (){
+                          onPressed: () {
                             Get.back();
                             onDelete();
                           },

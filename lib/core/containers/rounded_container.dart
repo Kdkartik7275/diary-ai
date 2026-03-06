@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:mindloom/config/constants/colors.dart';
 
-
 class TRoundedContainer extends StatelessWidget {
   const TRoundedContainer({
     super.key,
@@ -44,7 +43,7 @@ class TRoundedContainer extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
-        
+
         color: backgroundColor,
         border: showBorder
             ? Border.all(color: borderColor, width: borderWidth)

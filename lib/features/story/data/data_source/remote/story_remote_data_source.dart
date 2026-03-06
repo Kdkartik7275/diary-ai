@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mindloom/features/story/data/model/story_model.dart';
 import 'package:mindloom/features/story/data/model/story_stats_model.dart';
 import 'package:mindloom/services/ai/ai_story_service.dart';
+import 'package:mindloom/services/database/database_service.dart';
 import 'package:mindloom/services/storage/storage_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -32,21 +33,21 @@ abstract interface class StoryRemoteDataSource {
     required String userId,
   });
   Future<List<StoryModel>> getUserDrafts({required String userId});
+  Future<List<StoryModel>> getUserFeed({required String userId});
   Future<List<StoryModel>> getPublisedStories({required String userId});
   Future<List<StoryModel>> getPublishedStoriesByUser({required String userId});
   Future<String?> uploadStoryCoverImage(File image);
 }
 
 class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
-  final FirebaseFirestore firestore;
-  final StorageService storageService;
-  final AIStoryService aiStoryService;
-
   StoryRemoteDataSourceImpl({
     required this.firestore,
     required this.storageService,
     required this.aiStoryService,
   });
+  final FirebaseFirestore firestore;
+  final StorageService storageService;
+  final AIStoryService aiStoryService;
   @override
   Future<StoryModel> createStory({required Map<String, dynamic> data}) async {
     try {
@@ -404,6 +405,57 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
       }, SetOptions(merge: true));
     } catch (e) {
       debugPrint('Failed to update trending score: $e');
+    }
+  }
+
+  @override
+  @override
+  Future<List<StoryModel>> getUserFeed({required String userId}) async {
+    try {
+      final db = DataBaseService.instance;
+
+      final followings = await db.getFollowings(userId);
+
+      List<String> userIds = followings.map((e) => e).toList();
+      userIds.add(userId);
+
+      if (userIds.isEmpty) return [];
+
+      List<StoryModel> stories = [];
+
+      for (int i = 0; i < userIds.length; i += 10) {
+        final chunk = userIds.sublist(
+          i,
+          i + 10 > userIds.length ? userIds.length : i + 10,
+        );
+
+        final snapshot = await firestore
+            .collection('stories')
+            .where('userId', whereIn: chunk)
+            .where('isPublished', isEqualTo: true)
+            .orderBy('publishedAt', descending: true)
+            .limit(20)
+            .get();
+
+        stories.addAll(
+          snapshot.docs.map((doc) => StoryModel.fromMap(doc.data())).toList(),
+        );
+      }
+
+      stories.sort((a, b) {
+        final aTime = a.publishedAt;
+        final bTime = b.publishedAt;
+
+        if (aTime == null && bTime == null) return 0;
+        if (aTime == null) return 1;
+        if (bTime == null) return -1;
+
+        return bTime.compareTo(aTime);
+      });
+      return stories;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw e.toString();
     }
   }
 }

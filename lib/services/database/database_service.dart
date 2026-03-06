@@ -5,10 +5,9 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DataBaseService {
+  DataBaseService._constructor();
   static Database? _db;
   static final DataBaseService instance = DataBaseService._constructor();
-
-  DataBaseService._constructor();
 
   Future<Database> get database async {
     if (_db != null) return _db!;
@@ -69,6 +68,13 @@ class DataBaseService {
   final String _chapterTitle = 'title';
   final String _chapterContent = 'content';
   final String _chapterCreatedAt = 'createdAt';
+
+  // -------- FOLLOWINGS TABLE --------
+
+  final String _followingsTable = 'followings';
+  final String _followingUserId = 'userId';
+  final String _followingId = 'followingId';
+  final String _followingCreatedAt = 'createdAt';
 
   Future<void> _onCreate(Database db, int version) async {
     // USER TABLE
@@ -137,10 +143,18 @@ class DataBaseService {
       ON DELETE CASCADE
   )
 ''');
+    await db.execute('''
+CREATE TABLE $_followingsTable (
+  $_followingUserId TEXT NOT NULL,
+  $_followingId TEXT NOT NULL,
+  $_followingCreatedAt INTEGER,
+  PRIMARY KEY ($_followingUserId, $_followingId)
+)
+''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    debugPrint("Upgrading DB from $oldVersion to $newVersion");
+    debugPrint('Upgrading DB from $oldVersion to $newVersion');
 
     bool needsRecreate = false;
 
@@ -149,25 +163,25 @@ class DataBaseService {
     }
 
     if (needsRecreate) {
-      await db.execute("DROP TABLE IF EXISTS $_diaryTableName");
-      await db.execute("DROP TABLE IF EXISTS $_userTableName");
-      await db.execute("DROP TABLE IF EXISTS $_chapterTableName");
-      await db.execute("DROP TABLE IF EXISTS $_storyTableName");
+      await db.execute('DROP TABLE IF EXISTS $_diaryTableName');
+      await db.execute('DROP TABLE IF EXISTS $_userTableName');
+      await db.execute('DROP TABLE IF EXISTS $_chapterTableName');
+      await db.execute('DROP TABLE IF EXISTS $_storyTableName');
 
       // Create fresh tables
       await _onCreate(db, newVersion);
 
-      debugPrint("Database schema recreated successfully");
+      debugPrint('Database schema recreated successfully');
     }
   }
 
   Future<Database> _initDatabase() async {
     final databaseDirPath = await getDatabasesPath();
-    final databasePath = join(databaseDirPath, "master_db.db");
+    final databasePath = join(databaseDirPath, 'master_db.db');
 
     return await openDatabase(
       databasePath,
-      version: 12,
+      version: 13,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -644,5 +658,71 @@ class DataBaseService {
       debugPrint('Error soft deleting Story: $e');
       return false;
     }
+  }
+
+  // ------------------- SOCIAL DB METHODS ------------------------
+
+  Future<void> addFollowing({
+    required String userId,
+    required String followingId,
+  }) async {
+    final db = await database;
+
+    await db.insert(_followingsTable, {
+      _followingUserId: userId,
+      _followingId: followingId,
+      _followingCreatedAt: DateTime.now().millisecondsSinceEpoch,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> removeFollowing({
+    required String userId,
+    required String followingId,
+  }) async {
+    final db = await database;
+
+    await db.delete(
+      _followingsTable,
+      where: '$_followingUserId = ? AND $_followingId = ?',
+      whereArgs: [userId, followingId],
+    );
+  }
+
+  Future<List<String>> getFollowings(String userId) async {
+    final db = await database;
+
+    final result = await db.query(
+      _followingsTable,
+      columns: [_followingId],
+      where: '$_followingUserId = ?',
+      whereArgs: [userId],
+    );
+
+    return result.map((e) => e[_followingId] as String).toList();
+  }
+
+  Future<bool> isFollowing({
+    required String userId,
+    required String followingId,
+  }) async {
+    final db = await database;
+
+    final result = await db.query(
+      _followingsTable,
+      where: '$_followingUserId = ? AND $_followingId = ?',
+      whereArgs: [userId, followingId],
+    );
+
+    return result.isNotEmpty;
+  }
+
+  Future<bool> isFollowingsTableEmpty() async {
+    final db = await database;
+
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery('SELECT COUNT(*) FROM $_followingsTable'),
+    );
+
+    return count == null || count == 0;
   }
 }

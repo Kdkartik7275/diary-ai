@@ -532,11 +532,11 @@ void showTagSheet(BuildContext context, CreateDiaryController controller) {
                       ),
                       onPressed: () async {
                         Get.back();
-                        if(controller.isEdit.value){
+                        if (controller.isEdit.value) {
                           await controller.updateEntry();
+                        } else {
+                          await controller.createEntry();
                         }
-                        else{await controller.createEntry();}
-                        
                       },
                       child: Text(
                         controller.selectedTags.isEmpty

@@ -100,7 +100,7 @@ class TodayCard extends StatelessWidget {
                       ),
                     ),
                     InkWell(
-                      onTap:()=> Get.toNamed(Routes.writeDiary),
+                      onTap: () => Get.toNamed(Routes.writeDiary),
                       child: Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: width * 0.04,

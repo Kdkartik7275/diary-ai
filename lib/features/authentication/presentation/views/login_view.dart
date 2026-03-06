@@ -77,9 +77,7 @@ class LoginView extends GetView<LoginController> {
                             controller: controller.email.value,
                             hintText: 'Enter your email',
                             inputFormatters: [
-                              FilteringTextInputFormatter.deny(
-                                RegExp(r"\s"),
-                              ),
+                              FilteringTextInputFormatter.deny(RegExp(r"\s")),
                             ],
                           ),
                           SizedBox(height: isTablet ? 18 : 12),
@@ -90,9 +88,9 @@ class LoginView extends GetView<LoginController> {
                               prefixIcon: const Icon(CupertinoIcons.lock),
                               validator: (value) =>
                                   TValidator.validateEmptyText(
-                                'Password',
-                                value,
-                              ),
+                                    'Password',
+                                    value,
+                                  ),
                               controller: controller.password.value,
                               hintText: 'Enter your Password',
                               obsecure: controller.obsecure.value,
@@ -106,9 +104,7 @@ class LoginView extends GetView<LoginController> {
                                 ),
                               ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.deny(
-                                  RegExp(r"\s"),
-                                ),
+                                FilteringTextInputFormatter.deny(RegExp(r"\s")),
                               ],
                             ),
                           ),
@@ -147,23 +143,17 @@ class LoginView extends GetView<LoginController> {
                           children: [
                             TextSpan(
                               text: 'Don’t have an account? ',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
+                              style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(
                                     color: Colors.black,
                                     fontSize: isTablet ? 16 : 14,
                                   ),
                             ),
                             TextSpan(
-                                 recognizer: TapGestureRecognizer()
-                              ..onTap = () => Get.toNamed(
-                               Routes.signup
-                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => Get.toNamed(Routes.signup),
                               text: 'Sign up',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
+                              style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(
                                     color: AppColors.primary,
                                     fontSize: isTablet ? 18 : 16,

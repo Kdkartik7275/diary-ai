@@ -122,12 +122,13 @@ class SettingsView extends StatelessWidget {
             SizedBox(height: height * 0.03),
 
             InkWell(
-              onTap: ()async{
-                  await DataBaseService.instance.deleteUser(userId: FirebaseAuth.instance.currentUser!.uid);
-               await FirebaseAuth.instance.signOut();
-             
-               Get.offAllNamed(Routes.login);
+              onTap: () async {
+                await DataBaseService.instance.deleteUser(
+                  userId: FirebaseAuth.instance.currentUser!.uid,
+                );
+                await FirebaseAuth.instance.signOut();
 
+                Get.offAllNamed(Routes.login);
               },
               child: TRoundedContainer(
                 width: width,

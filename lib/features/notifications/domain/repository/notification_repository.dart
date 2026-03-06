@@ -7,5 +7,8 @@ abstract interface class NotificationRepository {
   ResultFuture<List<AppNotification>> getUserNotifications({
     required String userId,
   });
-  ResultVoid markNotificationAsRead({required String notifId,required String userId});
+  ResultVoid markNotificationAsRead({
+    required String notifId,
+    required String userId,
+  });
 }

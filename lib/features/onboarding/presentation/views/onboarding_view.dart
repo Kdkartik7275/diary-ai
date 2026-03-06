@@ -17,11 +17,7 @@ class OnboardingView extends GetView<OnboardingController> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.white,
-           
-              AppColors.primary.withValues(alpha: .05),
-            ],
+            colors: [Colors.white, AppColors.primary.withValues(alpha: .05)],
           ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 22.0),
@@ -31,7 +27,7 @@ class OnboardingView extends GetView<OnboardingController> {
             const Spacer(),
             Expanded(
               child: PageView(
-                 controller: controller.pageController,
+                controller: controller.pageController,
                 onPageChanged: controller.setCurrentPage,
                 children: [
                   OnboardingItem(
@@ -89,7 +85,6 @@ class OnboardingView extends GetView<OnboardingController> {
                 ),
                 onPressed: () {
                   controller.setCurrentPage(controller.currentPage.value + 1);
-            
                 },
                 child: Text(
                   controller.currentPage.value == 2 ? 'Get Started' : 'Next',

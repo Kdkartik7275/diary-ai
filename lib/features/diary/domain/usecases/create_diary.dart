@@ -3,8 +3,7 @@ import 'package:mindloom/core/usecases/usecases.dart';
 import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
 import 'package:mindloom/features/diary/domain/repository/diary_repository.dart';
 
-class CreateDiary
-    implements UseCaseWithParams<void, Map<String, dynamic>> {
+class CreateDiary implements UseCaseWithParams<void, Map<String, dynamic>> {
   final DiaryRepository repository;
 
   CreateDiary({required this.repository});

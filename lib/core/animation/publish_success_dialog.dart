@@ -16,7 +16,7 @@ Future<void> showPublishSuccessDialog(
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       final curved = CurvedAnimation(
         parent: animation,
-        curve: Curves.easeOutBack, 
+        curve: Curves.easeOutBack,
       );
       return ScaleTransition(
         scale: Tween<double>(begin: .85, end: 1).animate(curved),

@@ -14,7 +14,6 @@ class UserModel extends UserEntity {
     super.profileUrl,
     super.location,
     super.phone,
-    
   });
 
   UserModel copyWith({
@@ -45,7 +44,6 @@ class UserModel extends UserEntity {
     );
   }
 
-
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -57,8 +55,8 @@ class UserModel extends UserEntity {
       'email': email,
       'profileUrl': profileUrl,
       'createdAt': createdAt,
-      'phone':phone,
-      'location':location
+      'phone': phone,
+      'location': location,
     };
   }
 
@@ -79,9 +77,6 @@ class UserModel extends UserEntity {
   }
 
   Map<String, dynamic> toJson() => toMap();
-
-
-
 
   Map<String, dynamic> toSql() {
     return {

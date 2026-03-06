@@ -11,6 +11,7 @@ import 'package:mindloom/features/diary/presentation/view/create_entry.dart';
 import 'package:mindloom/features/explore/presentation/binding/explore_binding.dart';
 import 'package:mindloom/features/feedback/presentation/binding/add_feedback_binding.dart';
 import 'package:mindloom/features/feedback/presentation/views/add_feedback_view.dart';
+import 'package:mindloom/features/home/presentation/home_binding.dart';
 import 'package:mindloom/features/notifications/presentation/binding/notification_binding.dart';
 import 'package:mindloom/features/notifications/presentation/views/notification_view.dart';
 import 'package:mindloom/features/profile/presentation/bindings/edit_profile_binding.dart';
@@ -27,7 +28,7 @@ import 'package:mindloom/tabs.dart';
 import 'package:mindloom/features/onboarding/binding/onboarding_binding.dart';
 import 'package:mindloom/features/onboarding/presentation/views/onboarding_view.dart';
 
-import 'app_routes.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
 
 class AppPages {
   static const initial = Routes.onboarding;
@@ -53,6 +54,7 @@ class AppPages {
       page: () => const Tabs(),
       bindings: [
         UserBinding(),
+        HomeBinding(),
         DiaryBinding(),
         StoryBinding(),
         ExploreBinding(),
@@ -88,7 +90,7 @@ class AppPages {
     ),
 
     GetPage(name: Routes.notification, page: () => NotificationView()),
-        GetPage(
+    GetPage(
       name: Routes.addFeedback,
       binding: AddFeedbackBinding(),
       page: () => AddFeedbackView(),

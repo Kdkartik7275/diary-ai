@@ -2,19 +2,21 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mindloom/config/constants/typedefs.dart';
 import 'package:mindloom/core/errors/failure.dart';
 import 'package:mindloom/core/network/connection_checker.dart';
+import 'package:mindloom/features/social/data/data_source/social_local_data_source.dart';
 import 'package:mindloom/features/social/data/data_source/social_remote_data_source.dart';
 import 'package:mindloom/features/social/domain/entity/follow_entity.dart';
 import 'package:mindloom/features/social/domain/entity/follow_status.dart';
 import 'package:mindloom/features/social/domain/repository/social_repository.dart';
 
 class SocialRepositoryImpl implements SocialRepository {
-  final SocialRemoteDataSource remoteDataSource;
-  final ConnectionChecker connectionChecker;
-
   SocialRepositoryImpl({
     required this.remoteDataSource,
     required this.connectionChecker,
+    required this.localDataSource,
   });
+  final SocialRemoteDataSource remoteDataSource;
+  final ConnectionChecker connectionChecker;
+  final SocialLocalDataSource localDataSource;
 
   @override
   ResultVoid followUser({
@@ -29,6 +31,10 @@ class SocialRepositoryImpl implements SocialRepository {
       await remoteDataSource.followUser(
         currentUserId: currentUserId,
         targetUserId: targetUserId,
+      );
+      await localDataSource.addFollowing(
+        followingId: targetUserId,
+        userId: currentUserId,
       );
       return right(null);
     } catch (e) {
@@ -79,7 +85,16 @@ class SocialRepositoryImpl implements SocialRepository {
     }
 
     try {
+      bool isFollwingEmpty = await localDataSource.isFollowingTableEmpty();
       final followers = await remoteDataSource.getFollowings(userId);
+      if (isFollwingEmpty) {
+        for (var follower in followers) {
+          await localDataSource.addFollowing(
+            followingId: follower.id,
+            userId: userId,
+          );
+        }
+      }
 
       return right(followers);
     } catch (e) {

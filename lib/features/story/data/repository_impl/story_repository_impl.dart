@@ -344,4 +344,19 @@ class StoryRepositoryImpl implements StoryRepository {
       return left(FirebaseFailure(message: e.toString()));
     }
   }
+
+  @override
+  ResultFuture<List<StoryEntity>> getUserFeed({required String userId}) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.getUserFeed(userId: userId);
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
 }

@@ -1,4 +1,3 @@
-
 import 'package:mindloom/config/constants/typedefs.dart';
 
 abstract interface class UseCaseWithParams<Type, Params> {

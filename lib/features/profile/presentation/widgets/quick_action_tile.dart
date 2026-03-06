@@ -28,7 +28,10 @@ class QuickActionTile extends StatelessWidget {
       onTap: onTap,
       title: Text(
         label,
-        style: theme.titleLarge!.copyWith(fontWeight: FontWeight.normal,fontSize: 15),
+        style: theme.titleLarge!.copyWith(
+          fontWeight: FontWeight.normal,
+          fontSize: 15,
+        ),
       ),
       subtitle: subtitle,
       leading: TRoundedContainer(

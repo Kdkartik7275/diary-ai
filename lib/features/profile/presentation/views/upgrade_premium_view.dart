@@ -30,11 +30,31 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
       'yearlyMonthlyPrice': 1.99,
       'yearlyTotal': 23.88,
       'features': [
-        {'icon': CupertinoIcons.book_fill, 'text': 'Unlimited diary entries', 'free': true},
-        {'icon': CupertinoIcons.wand_stars, 'text': '5 AI story generations/mo', 'free': false},
-        {'icon': CupertinoIcons.pencil_outline, 'text': '3 published stories', 'free': false},
-        {'icon': CupertinoIcons.globe, 'text': 'Community reading access', 'free': false},
-        {'icon': CupertinoIcons.cloud_download_fill, 'text': 'Export as PDF', 'free': false},
+        {
+          'icon': CupertinoIcons.book_fill,
+          'text': 'Unlimited diary entries',
+          'free': true,
+        },
+        {
+          'icon': CupertinoIcons.wand_stars,
+          'text': '5 AI story generations/mo',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.pencil_outline,
+          'text': '3 published stories',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.globe,
+          'text': 'Community reading access',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.cloud_download_fill,
+          'text': 'Export as PDF',
+          'free': false,
+        },
       ],
       'notIncluded': [
         'Advanced AI rewrites',
@@ -54,18 +74,43 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
       'yearlyMonthlyPrice': 3.99,
       'yearlyTotal': 47.88,
       'features': [
-        {'icon': CupertinoIcons.book_fill, 'text': 'Unlimited diary entries', 'free': true},
-        {'icon': CupertinoIcons.wand_stars, 'text': '30 AI story generations/mo', 'free': false},
-        {'icon': CupertinoIcons.pencil_outline, 'text': 'Unlimited published stories', 'free': false},
-        {'icon': CupertinoIcons.globe, 'text': 'Full community features', 'free': false},
-        {'icon': CupertinoIcons.wand_rays, 'text': 'Advanced AI rewrites', 'free': false},
-        {'icon': CupertinoIcons.chart_bar_alt_fill, 'text': 'Story & diary analytics', 'free': false},
-        {'icon': CupertinoIcons.cloud_download_fill, 'text': 'Export PDF, ePub & text', 'free': false},
+        {
+          'icon': CupertinoIcons.book_fill,
+          'text': 'Unlimited diary entries',
+          'free': true,
+        },
+        {
+          'icon': CupertinoIcons.wand_stars,
+          'text': '30 AI story generations/mo',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.pencil_outline,
+          'text': 'Unlimited published stories',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.globe,
+          'text': 'Full community features',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.wand_rays,
+          'text': 'Advanced AI rewrites',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.chart_bar_alt_fill,
+          'text': 'Story & diary analytics',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.cloud_download_fill,
+          'text': 'Export PDF, ePub & text',
+          'free': false,
+        },
       ],
-      'notIncluded': [
-        'Premium themes & covers',
-        'Priority support',
-      ],
+      'notIncluded': ['Premium themes & covers', 'Priority support'],
     },
     {
       'id': 2,
@@ -77,15 +122,51 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
       'yearlyMonthlyPrice': 6.99,
       'yearlyTotal': 83.88,
       'features': [
-        {'icon': CupertinoIcons.book_fill, 'text': 'Unlimited diary entries', 'free': true},
-        {'icon': CupertinoIcons.wand_stars, 'text': 'Unlimited AI generations', 'free': false},
-        {'icon': CupertinoIcons.pencil_outline, 'text': 'Unlimited published stories', 'free': false},
-        {'icon': CupertinoIcons.globe, 'text': 'Full community + featured slots', 'free': false},
-        {'icon': CupertinoIcons.wand_rays, 'text': 'Advanced AI rewrites', 'free': false},
-        {'icon': CupertinoIcons.chart_bar_alt_fill, 'text': 'Deep analytics & insights', 'free': false},
-        {'icon': CupertinoIcons.paintbrush_fill, 'text': 'All premium themes & covers', 'free': false},
-        {'icon': CupertinoIcons.cloud_download_fill, 'text': 'Export all formats', 'free': false},
-        {'icon': CupertinoIcons.checkmark_shield_fill, 'text': 'Priority support', 'free': false},
+        {
+          'icon': CupertinoIcons.book_fill,
+          'text': 'Unlimited diary entries',
+          'free': true,
+        },
+        {
+          'icon': CupertinoIcons.wand_stars,
+          'text': 'Unlimited AI generations',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.pencil_outline,
+          'text': 'Unlimited published stories',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.globe,
+          'text': 'Full community + featured slots',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.wand_rays,
+          'text': 'Advanced AI rewrites',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.chart_bar_alt_fill,
+          'text': 'Deep analytics & insights',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.paintbrush_fill,
+          'text': 'All premium themes & covers',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.cloud_download_fill,
+          'text': 'Export all formats',
+          'free': false,
+        },
+        {
+          'icon': CupertinoIcons.checkmark_shield_fill,
+          'text': 'Priority support',
+          'free': false,
+        },
       ],
       'notIncluded': [],
     },
@@ -215,9 +296,15 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _linkButton('Restore Purchase', theme),
-                Text('·', style: TextStyle(color: AppColors.textLighter, fontSize: 11)),
+                Text(
+                  '·',
+                  style: TextStyle(color: AppColors.textLighter, fontSize: 11),
+                ),
                 _linkButton('Terms', theme),
-                Text('·', style: TextStyle(color: AppColors.textLighter, fontSize: 11)),
+                Text(
+                  '·',
+                  style: TextStyle(color: AppColors.textLighter, fontSize: 11),
+                ),
                 _linkButton('Privacy', theme),
               ],
             ),
@@ -296,10 +383,12 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                 color: isSelected
                     ? color.withValues(alpha: .08)
                     : (isDark
-                        ? Colors.white.withValues(alpha: .04)
-                        : Colors.grey.withValues(alpha: .05)),
+                          ? Colors.white.withValues(alpha: .04)
+                          : Colors.grey.withValues(alpha: .05)),
                 border: Border.all(
-                  color: isSelected ? color : AppColors.border.withValues(alpha: .4),
+                  color: isSelected
+                      ? color
+                      : AppColors.border.withValues(alpha: .4),
                   width: isSelected ? 1.5 : 1,
                 ),
               ),
@@ -307,7 +396,10 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                 children: [
                   if (hasBadge)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 2,
+                      ),
                       margin: const EdgeInsets.only(bottom: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
@@ -359,7 +451,13 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
       child: Row(
         children: [
           _buildBillingOption(0, 'Monthly', null, theme, isDark),
-          _buildBillingOption(1, 'Yearly', 'Save ${_savingsPercent()}%', theme, isDark),
+          _buildBillingOption(
+            1,
+            'Yearly',
+            'Save ${_savingsPercent()}%',
+            theme,
+            isDark,
+          ),
         ],
       ),
     );
@@ -382,9 +480,7 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
           padding: const EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: isSelected
-                ? (Colors.white)
-                : Colors.transparent,
+            color: isSelected ? (Colors.white) : Colors.transparent,
             boxShadow: isSelected
                 ? [
                     BoxShadow(
@@ -410,7 +506,10 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
               if (savingsTag != null) ...[
                 const SizedBox(width: 5),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
                     color: tierColor.withValues(alpha: isSelected ? .14 : .07),
@@ -589,7 +688,10 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                     size: 11,
                   ),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 0,
+                ),
                 minVerticalPadding: 0,
                 visualDensity: const VisualDensity(vertical: -4),
               );
@@ -619,7 +721,9 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                         .map(
                           (item) => Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               color: AppColors.border.withValues(alpha: .3),
@@ -630,13 +734,17 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                                 Icon(
                                   CupertinoIcons.minus,
                                   size: 9,
-                                  color: AppColors.textLighter.withValues(alpha: .5),
+                                  color: AppColors.textLighter.withValues(
+                                    alpha: .5,
+                                  ),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   item as String,
                                   style: theme.titleSmall!.copyWith(
-                                    color: AppColors.textLighter.withValues(alpha: .7),
+                                    color: AppColors.textLighter.withValues(
+                                      alpha: .7,
+                                    ),
                                     fontSize: 11,
                                     fontWeight: FontWeight.normal,
                                   ),
@@ -666,10 +774,7 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           gradient: LinearGradient(
-            colors: [
-              tierColor.withValues(alpha: .7),
-              tierColor,
-            ],
+            colors: [tierColor.withValues(alpha: .7), tierColor],
           ),
         ),
         alignment: Alignment.center,
@@ -735,7 +840,10 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isDark
                       ? Colors.white.withValues(alpha: .04)
@@ -773,10 +881,14 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                 return Column(
                   children: [
                     Divider(
-                        color: AppColors.border.withValues(alpha: .3), height: 1),
+                      color: AppColors.border.withValues(alpha: .3),
+                      height: 1,
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 9),
+                        horizontal: 12,
+                        vertical: 9,
+                      ),
                       child: Row(
                         children: [
                           Expanded(
@@ -801,7 +913,8 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                                     ? Icon(
                                         CupertinoIcons.checkmark_alt,
                                         size: 13,
-                                        color: colColor ?? AppColors.textLighter,
+                                        color:
+                                            colColor ?? AppColors.textLighter,
                                       )
                                     : Text(
                                         cell.value,
@@ -809,9 +922,9 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                                           fontSize: 10,
                                           color: isDash
                                               ? AppColors.textLighter
-                                                  .withValues(alpha: .4)
+                                                    .withValues(alpha: .4)
                                               : (colColor ??
-                                                  AppColors.textLighter),
+                                                    AppColors.textLighter),
                                           fontWeight: isDash
                                               ? FontWeight.normal
                                               : FontWeight.w600,
@@ -874,7 +987,9 @@ class _UpgradePremiumViewState extends State<UpgradePremiumView>
                     children: [
                       CircleAvatar(
                         radius: 12,
-                        backgroundColor: AppColors.primary.withValues(alpha: .12),
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: .12,
+                        ),
                         child: Text(
                           'A',
                           style: theme.titleSmall!.copyWith(

@@ -6,7 +6,6 @@ import 'package:mindloom/config/constants/genres.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
 import 'package:mindloom/features/explore/presentation/widgets/recently_added_story.dart';
-import 'package:mindloom/features/explore/presentation/widgets/story_trending_card.dart';
 
 class ExploreStoriesView extends GetView<ExploreController> {
   const ExploreStoriesView({super.key});
@@ -158,29 +157,6 @@ class ExploreStoriesView extends GetView<ExploreController> {
                 ),
                 SizedBox(height: height * 0.02),
 
-                controller.trendingLoading.value
-                    ? Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: height * 0.04,
-                          ),
-                          child: CircularProgressIndicator(
-                            color: AppColors.primary,
-                            strokeWidth: 2,
-                          ),
-                        ),
-                      )
-                    : ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.trendingStories.length,
-                        itemBuilder: (context, index) {
-                          final story = controller.trendingStories[index];
-                          return StoryTrendingCard(trendingStory: story);
-                        },
-                        separatorBuilder: (_, _) =>
-                            SizedBox(height: height * 0.02),
-                      ),
                 SizedBox(height: height * 0.03),
                 Row(
                   children: [

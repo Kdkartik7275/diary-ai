@@ -12,10 +12,6 @@ import 'package:mindloom/features/story/domain/entity/story_stats.dart';
 import 'package:mindloom/features/story/domain/usecases/get_story_stats.dart';
 
 class ExploreController extends GetxController {
-  final GetRecentlyAddedStory getRecentlyAddedStory;
-  final GetTrendingStories getTrendingStories;
-  final GetStoryStats getStoryStats;
-  final GetStoryAuthor getStoryAuthorUseCase;
 
   ExploreController({
     required this.getRecentlyAddedStory,
@@ -23,6 +19,10 @@ class ExploreController extends GetxController {
     required this.getStoryStats,
     required this.getStoryAuthorUseCase,
   });
+  final GetRecentlyAddedStory getRecentlyAddedStory;
+  final GetTrendingStories getTrendingStories;
+  final GetStoryStats getStoryStats;
+  final GetStoryAuthor getStoryAuthorUseCase;
 
   RxList<RecentlyAddedStoryEntity> recentlyAddedStories =
       RxList<RecentlyAddedStoryEntity>([]);

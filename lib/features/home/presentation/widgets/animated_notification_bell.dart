@@ -46,7 +46,7 @@ class _AnimatedNotificationBellState extends State<AnimatedNotificationBell>
     super.didUpdateWidget(oldWidget);
 
     if (widget.unreadCount > oldWidget.unreadCount && widget.unreadCount > 0) {
-      _controller.forward(from: 0); 
+      _controller.forward(from: 0);
     }
   }
 

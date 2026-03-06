@@ -45,13 +45,17 @@ class _EditProfileViewState extends State<EditProfileView> {
               onPressed: () async {
                 await controller.updateUser();
               },
-              child:controller.updatingProfile.value ?CircularProgressIndicator(
-                color: AppColors.primary,
-                strokeWidth: 2,
-              ) : Text(
-                'Save',
-                style: theme.titleLarge!.copyWith(color: AppColors.primary),
-              ),
+              child: controller.updatingProfile.value
+                  ? CircularProgressIndicator(
+                      color: AppColors.primary,
+                      strokeWidth: 2,
+                    )
+                  : Text(
+                      'Save',
+                      style: theme.titleLarge!.copyWith(
+                        color: AppColors.primary,
+                      ),
+                    ),
             ),
           ],
         ),

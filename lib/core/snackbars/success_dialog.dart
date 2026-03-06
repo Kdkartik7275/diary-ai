@@ -7,7 +7,7 @@ void showSuccessDialog(String message) {
     messageText: Text(
       message,
       textAlign: TextAlign.center,
-          style: Theme.of(Get.context!).textTheme.titleLarge!.copyWith(
+      style: Theme.of(Get.context!).textTheme.titleLarge!.copyWith(
         color: Colors.white,
         fontSize: 14,
         fontWeight: FontWeight.w500,

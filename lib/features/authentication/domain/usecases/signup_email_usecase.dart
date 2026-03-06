@@ -5,17 +5,18 @@ import 'package:mindloom/core/usecases/usecases.dart';
 import 'package:mindloom/features/authentication/domain/repository/authentication_repository.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 
-class SignupEmailUsecase implements UseCaseWithParams<UserEntity,SignupEmailParams>{
+class SignupEmailUsecase
+    implements UseCaseWithParams<UserEntity, SignupEmailParams> {
   final AuthenticationRepository repository;
 
   SignupEmailUsecase({required this.repository});
   @override
-  ResultFuture<UserEntity> call(SignupEmailParams params) async{
-   return await repository.signUpWithEmailAndPassword(
-    email: params.email,
-    fullName: params.fullName,
-    password: params.password,
-   );
+  ResultFuture<UserEntity> call(SignupEmailParams params) async {
+    return await repository.signUpWithEmailAndPassword(
+      email: params.email,
+      fullName: params.fullName,
+      password: params.password,
+    );
   }
 }
 

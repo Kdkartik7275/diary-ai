@@ -147,6 +147,7 @@ void _initStory() {
   sl.registerLazySingleton(() => UploadStoryCoverImage(repository: sl()));
   sl.registerLazySingleton(() => GenerateStoryFromDiaries(repository: sl()));
   sl.registerLazySingleton(() => DeleteDraft(repository: sl()));
+  sl.registerLazySingleton(() => GetUserFeed(repository: sl()));
 }
 
 void _initExplore() {
@@ -195,11 +196,15 @@ void _initSocial() {
   sl.registerLazySingleton<SocialRemoteDataSource>(
     () => SocialRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
   );
+  sl.registerLazySingleton<SocialLocalDataSource>(
+    () => SocialLocalDataSourceImpl(),
+  );
 
   sl.registerLazySingleton<SocialRepository>(
     () => SocialRepositoryImpl(
       connectionChecker: sl<ConnectionChecker>(),
       remoteDataSource: sl<SocialRemoteDataSource>(),
+      localDataSource: sl<SocialLocalDataSource>(),
     ),
   );
   // USECASES

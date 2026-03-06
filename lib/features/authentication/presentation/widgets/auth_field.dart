@@ -36,17 +36,17 @@ class AuthField extends StatelessWidget {
       keyboardType: textInputType,
       inputFormatters: inputFormatters,
       onChanged: onChanged,
-      style:  Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 14), 
+      style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 14),
       decoration: InputDecoration(
         hintText: hintText,
         suffixIcon: suffixIcon,
         prefixIcon: prefixIcon,
-        isDense: true, 
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 14, horizontal: 12), 
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 12,
         ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }

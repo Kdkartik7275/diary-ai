@@ -6,6 +6,10 @@ import 'package:mindloom/features/authentication/presentation/controller/login_c
 class LoginBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => LoginController(signInWithEmailAndPassword: sl<SignInWithEmailAndPassword>()));
+    Get.lazyPut(
+      () => LoginController(
+        signInWithEmailAndPassword: sl<SignInWithEmailAndPassword>(),
+      ),
+    );
   }
 }

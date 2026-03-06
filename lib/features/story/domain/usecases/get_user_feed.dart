@@ -3,13 +3,12 @@ import 'package:mindloom/core/usecases/usecases.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/domain/repository/story_repository.dart';
 
-class CreateStory
-    implements UseCaseWithParams<StoryEntity, Map<String, dynamic>> {
-  final StoryRepository repository;
+class GetUserFeed implements UseCaseWithParams<List<StoryEntity>, String> {
+  GetUserFeed({required this.repository});
 
-  CreateStory({required this.repository});
+  final StoryRepository repository;
   @override
-  ResultFuture<StoryEntity> call(Map<String, dynamic> data) async {
-    return await repository.createStory(data: data);
+  ResultFuture<List<StoryEntity>> call(String userId) async {
+    return await repository.getUserFeed(userId: userId);
   }
 }

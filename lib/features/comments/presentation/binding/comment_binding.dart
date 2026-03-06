@@ -24,9 +24,8 @@ class CommentBinding extends Bindings {
         likeReplyUseCase: sl<LikeReply>(),
         unlikeCommentUseCase: sl<UnlikeComment>(),
         unlikeReplyUseCase: sl<UnlikeReply>(),
-        createNotificationUseCase: sl<CreateNotification>()
+        createNotificationUseCase: sl<CreateNotification>(),
       ),
-
     );
   }
 }

@@ -84,7 +84,7 @@ class DiaryController extends GetxController {
       final result = await deleteDiaryUseCase.call(diaryId);
 
       result.fold((err) => showErrorDialog(err.message), (r) {
-        diaries.removeWhere((diary)=> diary.id == diaryId);
+        diaries.removeWhere((diary) => diary.id == diaryId);
         showSuccessDialog("Diary moved to Trash.");
         update();
       });

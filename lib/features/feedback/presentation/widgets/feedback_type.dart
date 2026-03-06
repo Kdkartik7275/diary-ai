@@ -53,7 +53,10 @@ class FeedbackType extends GetView<AddFeedbackController> {
             ),
             title: Text(
               title,
-              style: theme.titleLarge!.copyWith(fontWeight: FontWeight.normal,fontSize: 15),
+              style: theme.titleLarge!.copyWith(
+                fontWeight: FontWeight.normal,
+                fontSize: 15,
+              ),
             ),
             subtitle: Text(
               subtitle,

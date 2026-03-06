@@ -6,6 +6,8 @@ import 'package:mindloom/features/authentication/presentation/controller/signup_
 class SignupBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<SignUpController>(() => SignUpController(signupEmailUsecase: sl<SignupEmailUsecase>()));
+    Get.lazyPut<SignUpController>(
+      () => SignUpController(signupEmailUsecase: sl<SignupEmailUsecase>()),
+    );
   }
 }
