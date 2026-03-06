@@ -362,12 +362,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                         await followController.followUser(
                           currentUserId: currentUser.id,
                           currentUserFullName: currentUser.fullName,
-                          currentUserAvatar: currentUser.profileUrl ?? '',
-                          currentUserName: currentUser.fullName,
                           targetUserId: user.id,
-                          targetUserFullName: user.fullName,
-                          targetUserAvatar: user.profileUrl ?? '',
-                          targetUserName: user.fullName,
                         );
                       },
                 icon: Icon(

@@ -55,3 +55,11 @@ String getCommentTime(Timestamp timestamp) {
     return '${commentTime.day}/${commentTime.month}/${commentTime.year}';
   }
 }
+
+String nameInitials(String fullName) {
+  final name = fullName.trim();
+  if (name.isEmpty) return '?';
+  final parts = name.split(RegExp(r'\s+'));
+  if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+  return name[0].toUpperCase();
+}

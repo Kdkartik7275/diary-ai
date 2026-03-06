@@ -12,6 +12,7 @@ class QuickActionTile extends StatelessWidget {
     required this.icon,
     required this.backgroundColor,
     this.onTap,
+    this.subtitle,
   });
 
   final TextTheme theme;
@@ -19,6 +20,7 @@ class QuickActionTile extends StatelessWidget {
   final IconData icon;
   final Color backgroundColor;
   final void Function()? onTap;
+  final Widget? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class QuickActionTile extends StatelessWidget {
         label,
         style: theme.titleLarge!.copyWith(fontWeight: FontWeight.normal,fontSize: 15),
       ),
+      subtitle: subtitle,
       leading: TRoundedContainer(
         height: 40,
         width: 40,

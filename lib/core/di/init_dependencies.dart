@@ -35,6 +35,10 @@ import 'package:mindloom/features/explore/domain/repository/explore_repository.d
 import 'package:mindloom/features/explore/domain/usecases/get_recently_added_story.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_story_author.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_trending_stories.dart';
+import 'package:mindloom/features/feedback/data/data_source/feedback_remote_data_source.dart';
+import 'package:mindloom/features/feedback/data/repository_impl/feedback_repository_impl.dart';
+import 'package:mindloom/features/feedback/domain/repository/feedback_repository.dart';
+import 'package:mindloom/features/feedback/domain/usecase/submit_feedback.dart';
 import 'package:mindloom/features/notifications/data/data_source/notification_remote_data_source.dart';
 import 'package:mindloom/features/notifications/data/repository_impl/notification_repository_impl.dart';
 import 'package:mindloom/features/notifications/domain/repository/notification_repository.dart';

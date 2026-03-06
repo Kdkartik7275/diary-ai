@@ -11,35 +11,14 @@ class FollowUser implements UseCaseWithParams<void, FollowUserParams> {
   ResultVoid call(FollowUserParams params) async {
     return await repository.followUser(
       currentUserId: params.currentUserId,
-      currentUserName: params.currentUserName,
-      currentUserAvatar: params.currentUserAvatar,
       targetUserId: params.targetUserId,
-      targetUserName: params.targetUserName,
-      targetUserAvatar: params.targetUserAvatar,
-      currentUserFullName: params.currentUserFullName,
-      targetUserFullName: params.targetUserFullName,
     );
   }
 }
 
 class FollowUserParams {
   final String currentUserId;
-  final String currentUserName;
-  final String currentUserAvatar;
   final String targetUserId;
-  final String targetUserName;
-  final String targetUserAvatar;
-  final String currentUserFullName;
-  final String targetUserFullName;
 
-  FollowUserParams({
-    required this.currentUserId,
-    required this.currentUserName,
-    required this.currentUserAvatar,
-    required this.targetUserId,
-    required this.targetUserName,
-    required this.targetUserAvatar,
-    required this.currentUserFullName,
-    required this.targetUserFullName,
-  });
+  FollowUserParams({required this.currentUserId, required this.targetUserId});
 }

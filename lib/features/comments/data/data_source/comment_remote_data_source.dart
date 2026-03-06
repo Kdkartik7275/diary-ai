@@ -74,8 +74,6 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
         'repliesCount': 0,
         'isEdited': false,
         'isDeleted': false,
-        'userName': data['userName'],
-        'userProfileUrl': data['userProfileUrl'],
       };
 
       await firestore.runTransaction((tx) async {
@@ -199,8 +197,6 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
         'commentId': commentId,
         'storyId': storyId,
         'userId': userId,
-        'userName': data['userName'],
-        'userProfileUrl': data['userProfileUrl'],
         'content': data['content'],
         'createdAt': Timestamp.now(),
         'likesCount': 0,

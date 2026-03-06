@@ -176,7 +176,8 @@ class _CommentViewState extends State<CommentView> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Replying to ${controller.replyingTo.value!.userName}',
+                            'Replying to user',
+                            //  'Replying to ${controller.replyingTo.value!.userName}',
                             style: theme.titleSmall!.copyWith(
                               color: AppColors.textLighter,
                               fontSize: 12,
@@ -293,7 +294,6 @@ class _CommentViewState extends State<CommentView> {
                                         commentId: ctrl.replyingTo.value!.id,
                                         content: ctrl.contentController.text,
                                         userName: user.fullName,
-                                        userProfileUrl: user.profileUrl ?? '',
                                         userId: user.id,
                                         notifTo:
                                             ctrl.replyingTo.value?.userId ?? '',
@@ -304,7 +304,6 @@ class _CommentViewState extends State<CommentView> {
                                         storyId: storyId,
                                         content: ctrl.contentController.text,
                                         userName: user.fullName,
-                                        userProfileUrl: user.profileUrl ?? '',
                                         userId: user.id,
                                         authorId: authorId,
                                         storyTitle: storyTitle,

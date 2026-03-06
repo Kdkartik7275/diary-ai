@@ -68,6 +68,12 @@ class StoryReadingController extends GetxController {
     return result;
   }
 
+  _ReaderPage? get currentReaderPage {
+    if (_pages.isEmpty) return null;
+    if (_currentPage.value >= _pages.length) return null;
+    return _pages[_currentPage.value];
+  }
+
   List<String> _paginateContent(String content, {int charsPerPage = 1200}) {
     final pages = <String>[];
 
@@ -98,8 +104,6 @@ class StoryReadingController extends GetxController {
 
   bool get canGoNext => _currentPage.value < _pages.length - 1;
   bool get canGoPrevious => _currentPage.value > 0;
-
-  _ReaderPage get currentReaderPage => _pages[_currentPage.value];
 
   Future<void> loadStats({required String storyId}) async {
     try {

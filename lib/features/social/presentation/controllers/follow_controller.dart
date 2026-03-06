@@ -62,24 +62,13 @@ class FollowController extends GetxController {
 
   Future<void> followUser({
     required String currentUserId,
-    required String currentUserFullName,
-    required String currentUserAvatar,
     required String targetUserId,
-    required String targetUserFullName,
-    required String targetUserAvatar,
-    required String currentUserName,
-    required String targetUserName,
+    required String currentUserFullName,
   }) async {
     isFollowing.value = true;
     final params = FollowUserParams(
       currentUserId: currentUserId,
-      currentUserName: currentUserName,
-      currentUserAvatar: currentUserAvatar,
       targetUserId: targetUserId,
-      targetUserName: targetUserName,
-      targetUserAvatar: targetUserAvatar,
-      currentUserFullName: currentUserFullName,
-      targetUserFullName: targetUserFullName,
     );
 
     final result = await followUserUseCase.call(params);

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
 
-import 'package:mindloom/features/social/domain/entity/follow_entity.dart';
 import 'package:mindloom/features/social/presentation/views/user_profile_page.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
-class UserTile extends StatelessWidget {
-  const UserTile({super.key, required this.user});
+class UserTile extends GetView<UserController> {
+  const UserTile({super.key, required this.userId});
 
-  final FollowEntity user;
+  final String userId;
 
   static const _avatarColors = [
     Color(0xFFE8E0FF),
@@ -25,92 +27,98 @@ class UserTile extends StatelessWidget {
     Color(0xFFCC2D6B),
   ];
 
-  String get _initials {
-    final name = user.fullName.trim();
-    if (name.isEmpty) return '?';
-    final parts = name.split(RegExp(r'\s+'));
-    if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    return name[0].toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).textTheme;
-    final colorIndex = user.id.hashCode.abs() % _avatarColors.length;
-    final bgColor = _avatarColors[colorIndex];
-    final textColor = _avatarTextColors[colorIndex];
+    return FutureBuilder<UserEntity>(
+      future: controller.getUserById(userId: userId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const UserTileLoading();
+        }
 
-    return GestureDetector(
-      onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFF0F0F0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+        if (snapshot.hasError) {
+          return const UserTileError();
+        }
+
+        if (!snapshot.hasData) {
+          return const UserTileEmpty();
+        }
+
+        final user = snapshot.data!;
+        final colorIndex = user.id.hashCode.abs() % _avatarColors.length;
+        final bgColor = _avatarColors[colorIndex];
+        final textColor = _avatarTextColors[colorIndex];
+
+        return GestureDetector(
+          onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFF0F0F0)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Avatar
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: bgColor),
-              child: user.profileUrl != null && user.profileUrl!.isNotEmpty
-                  ? ClipOval(
-                      child: Image.network(
-                        user.profileUrl!,
-                        width: 46,
-                        height: 46,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) =>
-                            _Initials(initials: _initials, color: textColor),
+            child: Row(
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: bgColor,
+                  ),
+                  child: user.profileUrl != null && user.profileUrl!.isNotEmpty
+                      ? ClipOval(
+                          child: Image.network(
+                            user.profileUrl!,
+                            width: 46,
+                            height: 46,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => _Initials(
+                              initials: nameInitials(user.fullName),
+                              color: textColor,
+                            ),
+                          ),
+                        )
+                      : _Initials(
+                          initials: nameInitials(user.fullName),
+                          color: textColor,
+                        ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.fullName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    )
-                  : _Initials(initials: _initials, color: textColor),
-            ),
-      
-            const SizedBox(width: 12),
-      
-            // Name + username
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    user.fullName,
-                    style: theme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF111111),
-                      fontSize: 14,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                      if (user.username != null &&
+                          user.username!.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          '@${user.username}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '@${user.username}',
-                    style: theme.bodySmall?.copyWith(
-                      color: const Color(0xFF999999),
-                      fontSize: 12,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -133,5 +141,98 @@ class _Initials extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class UserTileLoading extends StatelessWidget {
+  const UserTileLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFF0F0F0)),
+      ),
+      child: Row(
+        children: const [
+          _AvatarPlaceholder(),
+          SizedBox(width: 12),
+          Expanded(child: _UserTextPlaceholder()),
+        ],
+      ),
+    );
+  }
+}
+
+class _AvatarPlaceholder extends StatelessWidget {
+  const _AvatarPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+class _UserTextPlaceholder extends StatelessWidget {
+  const _UserTextPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 120,
+          height: 14,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        SizedBox(height: 6),
+        Container(
+          width: 80,
+          height: 12,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class UserTileError extends StatelessWidget {
+  const UserTileError({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: const Text(
+        'Failed to load user',
+        style: TextStyle(color: Colors.redAccent),
+      ),
+    );
+  }
+}
+
+class UserTileEmpty extends StatelessWidget {
+  const UserTileEmpty({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox.shrink();
   }
 }

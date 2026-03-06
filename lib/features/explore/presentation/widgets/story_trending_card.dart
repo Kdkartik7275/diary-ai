@@ -2,17 +2,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
-import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
 import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
 import 'package:mindloom/features/explore/presentation/view/reading_view.dart';
 import 'package:mindloom/features/explore/presentation/widgets/user_place_holder.dart';
 import 'package:mindloom/features/story/data/model/story_stats_model.dart';
 import 'package:mindloom/features/story/domain/entity/story_stats.dart';
+import 'package:mindloom/features/user/domain/entity/user_entity.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class StoryTrendingCard extends GetView<ExploreController> {
   const StoryTrendingCard({super.key, required this.trendingStory});
@@ -99,15 +99,12 @@ class StoryTrendingCard extends GetView<ExploreController> {
                     ],
                   ),
                   SizedBox(height: height * .01),
-                  FutureBuilder<StoryAuthorEntity>(
-                    future: controller.getStoryAuthor(
+                  FutureBuilder<UserEntity>(
+                    future: Get.find<UserController>().getUserById(
                       userId: trendingStory.story.userId,
                     ),
                     builder:
-                        (
-                          context,
-                          AsyncSnapshot<StoryAuthorEntity> asyncSnapshot,
-                        ) {
+                        (context, AsyncSnapshot<UserEntity> asyncSnapshot) {
                           if (asyncSnapshot.connectionState ==
                               ConnectionState.waiting) {
                             return StoryUserLoading();
@@ -127,10 +124,10 @@ class StoryTrendingCard extends GetView<ExploreController> {
                                 backgroundColor: AppColors.primary.withValues(
                                   alpha: .3,
                                 ),
-                                child: user.profilePictureUrl != null
+                                child: user.profileUrl != null
                                     ? ClipOval(
                                         child: Image.network(
-                                          user.profilePictureUrl!,
+                                          user.profileUrl!,
                                           width: 28,
                                           height: 28,
                                           fit: BoxFit.cover,
@@ -138,7 +135,7 @@ class StoryTrendingCard extends GetView<ExploreController> {
                                               (context, error, stackTrace) {
                                                 return Center(
                                                   child: Text(
-                                                    user.name.substring(0, 2),
+                                                    nameInitials(user.fullName),
                                                     style: theme.titleSmall!
                                                         .copyWith(
                                                           color: AppColors.text,
@@ -152,7 +149,7 @@ class StoryTrendingCard extends GetView<ExploreController> {
                                       )
                                     : Center(
                                         child: Text(
-                                          user.name.substring(0, 2),
+                                          nameInitials(user.fullName),
                                           style: theme.titleSmall!.copyWith(
                                             color: AppColors.text,
                                             fontWeight: FontWeight.normal,
@@ -163,7 +160,7 @@ class StoryTrendingCard extends GetView<ExploreController> {
 
                               SizedBox(width: 6),
                               Text(
-                                user.name,
+                                user.fullName,
                                 style: theme.titleSmall!.copyWith(
                                   color: AppColors.textLighter,
                                   fontWeight: FontWeight.normal,
@@ -182,7 +179,7 @@ class StoryTrendingCard extends GetView<ExploreController> {
                     style: theme.titleSmall!.copyWith(
                       color: AppColors.textLighter,
                       fontWeight: FontWeight.normal,
-                      fontSize: 12
+                      fontSize: 12,
                     ),
                   ),
                   SizedBox(height: height * .01),

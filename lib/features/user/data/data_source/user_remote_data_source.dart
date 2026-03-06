@@ -59,7 +59,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         commentsCount: 0,
       );
       await firestore
-          .collection('users_stats')
+          .collection('user_stats')
           .doc(userId)
           .set(userStat.toMap());
 

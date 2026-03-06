@@ -134,20 +134,13 @@ class CommentsController extends GetxController {
     required String storyId,
     required String content,
     required String userName,
-    required String userProfileUrl,
     required String userId,
     required String authorId,
     required String storyTitle,
   }) async {
     if (content.trim().isEmpty) return;
 
-    final data = {
-      'storyId': storyId,
-      'content': content,
-      'userName': userName,
-      'userProfileUrl': userProfileUrl,
-      'userId': userId,
-    };
+    final data = {'storyId': storyId, 'content': content, 'userId': userId};
 
     final result = await addCommentUseCase.call(data);
 
@@ -173,7 +166,6 @@ class CommentsController extends GetxController {
     required String commentId,
     required String content,
     required String userName,
-    required String userProfileUrl,
     required String userId,
     required String notifTo,
     required String storyTitle,
@@ -188,8 +180,7 @@ class CommentsController extends GetxController {
         'commentId': commentId,
         'storyId': parentComment.storyId,
         'content': content,
-        'userName': userName,
-        'userProfileUrl': userProfileUrl,
+
         'userId': userId,
       };
       final result = await addReplyUseCase.call(replyData);
@@ -206,8 +197,6 @@ class CommentsController extends GetxController {
             final updatedComment = comments[index].copyWith(
               storyId: parentComment.storyId,
               userId: parentComment.userId,
-              userName: parentComment.userName,
-              userProfileUrl: parentComment.userProfileUrl,
               content: parentComment.content,
               createdAt: parentComment.createdAt,
               likesCount: parentComment.likesCount,
@@ -246,8 +235,6 @@ class CommentsController extends GetxController {
       comments[index] = currentComment.copyWith(
         storyId: currentComment.storyId,
         userId: currentComment.userId,
-        userName: currentComment.userName,
-        userProfileUrl: currentComment.userProfileUrl,
         content: currentComment.content,
         createdAt: currentComment.createdAt,
         likesCount: currentComment.likesCount + 1,
@@ -282,8 +269,6 @@ class CommentsController extends GetxController {
       comments[index] = currentComment.copyWith(
         storyId: currentComment.storyId,
         userId: currentComment.userId,
-        userName: currentComment.userName,
-        userProfileUrl: currentComment.userProfileUrl,
         content: currentComment.content,
         createdAt: currentComment.createdAt,
         likesCount: currentComment.likesCount - 1,

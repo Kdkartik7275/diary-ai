@@ -5,13 +5,7 @@ import 'package:mindloom/features/social/data/model/follow_status_model.dart';
 abstract interface class SocialRemoteDataSource {
   Future<void> followUser({
     required String currentUserId,
-    required String currentUserFullName,
-    required String currentUserAvatar,
     required String targetUserId,
-    required String targetUserFullName,
-    required String targetUserAvatar,
-    required String currentUserName,
-    required String targetUserName,
   });
 
   Future<FollowStatusModel> getFollowStatus({
@@ -30,14 +24,7 @@ class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
   @override
   Future<void> followUser({
     required String currentUserId,
-    required String currentUserFullName,
-    required String currentUserAvatar,
-    required String currentUserName,
-    required String targetUserName,
-
     required String targetUserId,
-    required String targetUserFullName,
-    required String targetUserAvatar,
   }) async {
     final followingRef = firestore
         .collection('user_following')
@@ -61,16 +48,12 @@ class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
       if (alreadyFollowing.exists) return;
 
       tx.set(followingRef, {
-        'name': targetUserFullName,
-        'avatar': targetUserAvatar,
-        'username': targetUserName,
+        'userId': targetUserId,
         'followedAt': FieldValue.serverTimestamp(),
       });
 
       tx.set(followerRef, {
-        'name': currentUserFullName,
-        'avatar': currentUserAvatar,
-        'username': currentUserName,
+        'userId': currentUserId,
         'followedAt': FieldValue.serverTimestamp(),
       });
 
@@ -123,15 +106,7 @@ class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
           .get();
 
       return snapshot.docs.map((doc) {
-        final data = doc.data();
-
-        return FollowModel(
-          id: doc.id,
-          fullName: data['name'] ?? '',
-          username: data['username'] ?? '',
-          profileUrl: data['avatar'],
-          isFollowingBack: false,
-        );
+        return FollowModel(id: doc.id, isFollowingBack: false);
       }).toList();
     } catch (e) {
       throw e.toString();
@@ -149,15 +124,7 @@ class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
           .get();
 
       return snapshot.docs.map((doc) {
-        final data = doc.data();
-
-        return FollowModel(
-          id: doc.id,
-          fullName: data['name'] ?? '',
-          username: data['username'] ?? '',
-          profileUrl: data['avatar'],
-          isFollowingBack: false,
-        );
+        return FollowModel(id: doc.id, isFollowingBack: false);
       }).toList();
     } catch (e) {
       throw e.toString();

@@ -6,8 +6,6 @@ class CommentModel extends CommentEntity {
   CommentModel({
     required super.id,
     required super.userId,
-    required super.userName,
-    required super.userProfileUrl,
     required super.storyId,
     required super.content,
     required super.createdAt,
@@ -27,8 +25,6 @@ class CommentModel extends CommentEntity {
     return CommentModel(
       id: map['id'] ?? '',
       userId: map['userId'] ?? '',
-      userName: map['userName'] ?? '',
-      userProfileUrl: map['userProfileUrl'] ?? '',
       storyId: map['storyId'] ?? '',
       content: map['content'] ?? '',
       createdAt: map['createdAt'] ?? Timestamp.now(),
@@ -45,8 +41,6 @@ class CommentModel extends CommentEntity {
     return {
       'id': id,
       'userId': userId,
-      'userName': userName,
-      'userProfileUrl': userProfileUrl,
       'storyId': storyId,
       'content': content,
       'createdAt': createdAt,
@@ -56,5 +50,4 @@ class CommentModel extends CommentEntity {
       'isDeleted': isDeleted,
     };
   }
-
 }

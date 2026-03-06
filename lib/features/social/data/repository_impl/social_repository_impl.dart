@@ -19,13 +19,7 @@ class SocialRepositoryImpl implements SocialRepository {
   @override
   ResultVoid followUser({
     required String currentUserId,
-    required String currentUserFullName,
-    required String currentUserAvatar,
     required String targetUserId,
-    required String targetUserFullName,
-    required String targetUserAvatar,
-    required String currentUserName,
-    required String targetUserName,
   }) async {
     if (!await connectionChecker.isConnected) {
       return left(FirebaseFailure(message: 'No internet connection'));
@@ -34,13 +28,7 @@ class SocialRepositoryImpl implements SocialRepository {
     try {
       await remoteDataSource.followUser(
         currentUserId: currentUserId,
-        currentUserFullName: currentUserFullName,
-        currentUserAvatar: currentUserAvatar,
         targetUserId: targetUserId,
-        targetUserFullName: targetUserFullName,
-        targetUserAvatar: targetUserAvatar,
-        currentUserName: currentUserName,
-        targetUserName: targetUserName,
       );
       return right(null);
     } catch (e) {

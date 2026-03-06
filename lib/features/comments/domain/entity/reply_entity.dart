@@ -5,8 +5,6 @@ class ReplyEntity {
   final String commentId;
   final String storyId;
   final String userId;
-  final String userName;
-  final String userProfileUrl;
   final String content;
   final Timestamp createdAt;
   final int likesCount;
@@ -20,8 +18,6 @@ class ReplyEntity {
     required this.commentId,
     required this.storyId,
     required this.userId,
-    required this.userName,
-    required this.userProfileUrl,
     required this.content,
     required this.createdAt,
     required this.likesCount,
@@ -36,8 +32,6 @@ class ReplyEntity {
     String? commentId,
     String? storyId,
     String? userId,
-    String? userName,
-    String? userProfileUrl,
     String? content,
     Timestamp? createdAt,
     int? likesCount,
@@ -51,8 +45,6 @@ class ReplyEntity {
       commentId: commentId ?? this.commentId,
       storyId: storyId ?? this.storyId,
       userId: userId ?? this.userId,
-      userName: userName ?? this.userName,
-      userProfileUrl: userProfileUrl ?? this.userProfileUrl,
       content: content ?? this.content,
       createdAt: createdAt ?? this.createdAt,
       likesCount: likesCount ?? this.likesCount,

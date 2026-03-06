@@ -35,7 +35,11 @@ class ProfileView extends GetView<UserController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProfileHeader(user: user,followersCount: followersCount,followingCount: followingCount),
+              ProfileHeader(
+                user: user,
+                followersCount: followersCount,
+                followingCount: followingCount,
+              ),
               ProfileStats(
                 publishedStoriesCount: publishedStories,
                 totalWordsCount: totalWordsCount,
@@ -87,6 +91,21 @@ class ProfileView extends GetView<UserController> {
                             backgroundColor: const Color(0xFFFFB175),
                             icon: Icons.settings_outlined,
                             label: 'Backup & Sync',
+                          ),
+                          QuickActionTile(
+                            onTap: () => Get.toNamed(Routes.addFeedback),
+                            theme: theme,
+                            backgroundColor: const Color(0xFFB095FF),
+                            icon: Icons.feedback_outlined,
+                            label: 'Send Feedback',
+                            subtitle: Text(
+                              '• Beta - help us improve',
+                              style: theme.titleSmall!.copyWith(
+                                fontWeight: FontWeight.normal,
+                                color: const Color(0xFFFFB175),
+                                fontSize: 13,
+                              ),
+                            ),
                           ),
                         ],
                       ),

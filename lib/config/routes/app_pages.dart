@@ -9,6 +9,8 @@ import 'package:mindloom/features/diary/presentation/binding/create_diary_bindin
 import 'package:mindloom/features/diary/presentation/binding/diary_binding.dart';
 import 'package:mindloom/features/diary/presentation/view/create_entry.dart';
 import 'package:mindloom/features/explore/presentation/binding/explore_binding.dart';
+import 'package:mindloom/features/feedback/presentation/binding/add_feedback_binding.dart';
+import 'package:mindloom/features/feedback/presentation/views/add_feedback_view.dart';
 import 'package:mindloom/features/notifications/presentation/binding/notification_binding.dart';
 import 'package:mindloom/features/notifications/presentation/views/notification_view.dart';
 import 'package:mindloom/features/profile/presentation/bindings/edit_profile_binding.dart';
@@ -86,5 +88,10 @@ class AppPages {
     ),
 
     GetPage(name: Routes.notification, page: () => NotificationView()),
+        GetPage(
+      name: Routes.addFeedback,
+      binding: AddFeedbackBinding(),
+      page: () => AddFeedbackView(),
+    ),
   ];
 }

@@ -16,7 +16,7 @@ class Stories extends GetView<UserController> {
     return Obx(() {
       final stories = controller.userStories[userId];
 
-      if (controller.userStoryLoading.value) {
+      if (controller.userStatLoading.value) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 22),
           child: Center(

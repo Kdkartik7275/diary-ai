@@ -3,8 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CommentEntity {
   final String id;
   final String userId;
-  final String userName;
-  final String userProfileUrl;
   final String storyId;
   final String content;
   final Timestamp createdAt;
@@ -18,8 +16,6 @@ class CommentEntity {
   CommentEntity({
     required this.id,
     required this.userId,
-    required this.userName,
-    required this.userProfileUrl,
     required this.storyId,
     required this.content,
     required this.createdAt,
@@ -49,8 +45,6 @@ class CommentEntity {
     return CommentEntity(
       id: id ?? this.id,
       userId: userId ?? this.userId,
-      userName: userName ?? this.userName,
-      userProfileUrl: userProfileUrl ?? this.userProfileUrl,
       storyId: storyId ?? this.storyId,
       content: content ?? this.content,
       createdAt: createdAt ?? this.createdAt,

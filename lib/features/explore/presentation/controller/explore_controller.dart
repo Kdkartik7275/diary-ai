@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/snackbars/error_snackbar.dart';
 import 'package:mindloom/features/explore/domain/entity/recently_added_story.dart';
-import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
 import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_recently_added_story.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_story_author.dart';
@@ -33,10 +32,9 @@ class ExploreController extends GetxController {
   RxString selectedGenre = RxString('');
 
   final Map<String, StoryStatsEntity> _statsCache = {};
-  final Map<String, StoryAuthorEntity> _authorsCache = {};
   final Map<String, Future<StoryStatsEntity>> _pendingRequests = {};
 
-  @override 
+  @override
   void onInit() {
     super.onInit();
     fetchRecentlyAddedStories();
@@ -108,26 +106,9 @@ class ExploreController extends GetxController {
     return future;
   }
 
-  Future<StoryAuthorEntity> getStoryAuthor({required String userId}) async {
-    if (_authorsCache.containsKey(userId)) {
-      return _authorsCache[userId]!;
-    }
-
-    try {
-      final result = await getStoryAuthorUseCase.call(userId);
-      return result.fold((l) => throw l.message, (r) {
-        _authorsCache[userId] = r;
-        return r;
-      });
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   Future<void> refreshExplore() async {
     await Future.wait([fetchTrendingStories(), fetchRecentlyAddedStories()]);
     _statsCache.clear();
-    _authorsCache.clear();
     _pendingRequests.clear();
   }
 }

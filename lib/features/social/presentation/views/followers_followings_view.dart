@@ -60,28 +60,9 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF7F8FC),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 16,
-              color: Colors.black87,
-            ),
-          ),
-        ),
         title: Text(
           'Connections',
-          style: theme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: Colors.black87,
-            letterSpacing: 0.4,
-          ),
+          style: theme.titleLarge?.copyWith(letterSpacing: 0.4),
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -119,8 +100,8 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
           controller: _tabController,
 
           children: [
-            _FollowList(type: _ListType.followers, searchQuery: _searchQuery),
-            _FollowList(type: _ListType.following, searchQuery: _searchQuery),
+            _FollowList(type: _ListType.followers),
+            _FollowList(type: _ListType.following),
           ],
         ),
       ),
@@ -131,10 +112,9 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
 enum _ListType { followers, following }
 
 class _FollowList extends StatelessWidget {
-  const _FollowList({required this.type, required this.searchQuery});
+  const _FollowList({required this.type});
 
   final _ListType type;
-  final RxString searchQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -154,16 +134,8 @@ class _FollowList extends StatelessWidget {
           ? controller.followers
           : controller.following;
 
-      final filtered = searchQuery.value.isEmpty
-          ? source
-          : source.where((u) {
-              final q = searchQuery.value;
-              return u.fullName.toLowerCase().contains(q) ||
-                  u.username.toLowerCase().contains(q);
-            }).toList();
-
-      if (filtered.isEmpty) {
-        return _EmptyState(type: type, hasQuery: searchQuery.value.isNotEmpty);
+      if (source.isEmpty) {
+        return _EmptyState(type: type);
       }
 
       return RefreshIndicator(
@@ -178,10 +150,10 @@ class _FollowList extends StatelessWidget {
         },
         child: ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          itemCount: filtered.length,
+          itemCount: source.length,
           separatorBuilder: (_, _) => const SizedBox(height: 10),
           itemBuilder: (context, index) {
-            return UserTile(user: filtered[index]);
+            return UserTile(userId: source[index].id);
           },
         ),
       );
@@ -190,31 +162,24 @@ class _FollowList extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.type, required this.hasQuery});
+  const _EmptyState({required this.type});
 
   final _ListType type;
-  final bool hasQuery;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
     final isFollowers = type == _ListType.followers;
 
-    final icon = hasQuery
-        ? Icons.search_off_rounded
-        : (isFollowers
-              ? Icons.people_outline_rounded
-              : Icons.person_add_alt_1_outlined);
+    final icon = (isFollowers
+        ? Icons.people_outline_rounded
+        : Icons.person_add_alt_1_outlined);
 
-    final title = hasQuery
-        ? 'No results found'
-        : (isFollowers ? 'No followers yet' : 'Not following anyone');
+    final title = (isFollowers ? 'No followers yet' : 'Not following anyone');
 
-    final subtitle = hasQuery
-        ? 'Try a different name or username'
-        : (isFollowers
-              ? 'When people follow you, they\'ll appear here'
-              : 'Start following people to see them here');
+    final subtitle = (isFollowers
+        ? 'When people follow you, they\'ll appear here'
+        : 'Start following people to see them here');
 
     return Center(
       child: Padding(

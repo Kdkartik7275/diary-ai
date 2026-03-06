@@ -26,7 +26,7 @@ class UserController extends GetxController {
   RxMap<String, List<StoryEntity>> userStories = RxMap({});
 
   RxBool loading = false.obs;
-  RxBool userStoryLoading = false.obs;
+  RxBool userStatLoading = false.obs;
 
   Future<void> loadUser(String uid) async {
     try {
@@ -40,6 +40,7 @@ class UserController extends GetxController {
         },
         (user) async {
           currentUser.value = user;
+          usersCache[user.id] = user;
           final statsResult = await getUserStatsUseCase.call(user.id);
           statsResult.fold(
             (statsFailure) {
@@ -65,8 +66,9 @@ class UserController extends GetxController {
       }
       final result = await getUserUseCase.call(userId);
 
-      return result.fold((err) => throw err.message, (user) {
-        return usersCache[user.id] = user;
+      return result.fold((err) => throw Exception(err.message), (user) {
+        usersCache[user.id] = user;
+        return user;
       });
     } catch (e) {
       throw e.toString();
@@ -75,7 +77,7 @@ class UserController extends GetxController {
 
   Future<UserStats> getUserStats({required String userId}) async {
     try {
-      userStoryLoading.value = true;
+      userStatLoading.value = true;
       final result = await getUserStatsUseCase.call(userId);
       return result.fold((err) => throw err.message, (stat) {
         return stat;
@@ -83,16 +85,13 @@ class UserController extends GetxController {
     } catch (e) {
       throw e.toString();
     } finally {
-      userStoryLoading.value = false;
+      userStatLoading.value = false;
     }
   }
 
   Future<void> getUserStories({required String userId}) async {
     try {
-      if (userStories.containsKey(userId)) {
-        userStories[userId]!;
-        return;
-      }
+      if (userStories.containsKey(userId)) return;
       final result = await getPublishedStoriesByUserUseCase.call(userId);
 
       result.fold((err) => throw err.message, (r) {
@@ -113,6 +112,7 @@ class UserController extends GetxController {
 
   void updateUser(UserEntity user) {
     currentUser.value = user;
+    usersCache[currentUser.value!.id] = user;
     update();
   }
 }

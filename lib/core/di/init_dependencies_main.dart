@@ -14,6 +14,7 @@ class DependencyInjection {
     _initComments();
     _initSocial();
     _initNotification();
+    _initFeedback();
   }
 }
 
@@ -224,4 +225,20 @@ void _initNotification() {
   sl.registerLazySingleton(() => CreateNotification(repository: sl()));
   sl.registerLazySingleton(() => GetUserNotification(repository: sl()));
   sl.registerLazySingleton(() => MarkNotificationAsRead(repository: sl()));
+}
+
+void _initFeedback() {
+  // DATASOURCE
+  sl.registerLazySingleton<FeedbackRemoteDataSource>(
+    () => FeedbackRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
+  );
+
+  sl.registerLazySingleton<FeedbackRepository>(
+    () => FeedbackRepositoryImpl(
+      connectionChecker: sl<ConnectionChecker>(),
+      remoteDataSource: sl<FeedbackRemoteDataSource>(),
+    ),
+  );
+  // USECASES
+  sl.registerLazySingleton(() => SubmitFeedback(repository: sl()));
 }
