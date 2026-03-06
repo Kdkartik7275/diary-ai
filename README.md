@@ -122,6 +122,6 @@ This project is licensed under the **MIT License**.
 
 # 👨‍💻 Author
 
-Developed by **Karti**
+Developed by **Kartik**
 
 If you like this project, consider giving it a ⭐ on GitHub.
