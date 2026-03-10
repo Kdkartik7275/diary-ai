@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -346,7 +347,13 @@ class StoryRepositoryImpl implements StoryRepository {
   }
 
   @override
-  ResultFuture<List<StoryEntity>> getUserFeed({required String userId}) async {
+  ResultFuture<
+    ({DocumentSnapshot<Object?>? lastDoc, List<StoryEntity> stories})
+  >
+  getUserFeed({
+    required String userId,
+    DocumentSnapshot<Object?>? lastDoc,
+  }) async {
     try {
       if (!await connectionChecker.isConnected) {
         return left(FirebaseFailure(message: 'No Internet Connection'));

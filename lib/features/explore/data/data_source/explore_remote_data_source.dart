@@ -10,12 +10,13 @@ abstract interface class ExploreRemoteDataSource {
   Future<List<RecentlyAddedStoryModel>> getRecentlyAddedStories();
   Future<List<TrendingStoryModel>> getTrendingStories();
   Future<StoryAuthorModel> getStoryAuthor(String authorId);
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getStoriesByGenre({String? genre, DocumentSnapshot? lastDoc});
 }
 
 class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
-  final FirebaseFirestore firestore;
-
   ExploreRemoteDataSourceImpl({required this.firestore});
+  final FirebaseFirestore firestore;
   @override
   Future<List<RecentlyAddedStoryModel>> getRecentlyAddedStories() async {
     try {
@@ -126,6 +127,39 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
     } catch (e) {
       debugPrint(e.toString());
       throw Exception('Failed to fetch story author: $e');
+    }
+  }
+
+  @override
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getStoriesByGenre({String? genre, DocumentSnapshot? lastDoc}) async {
+    try {
+      Query query = firestore
+          .collection('stories')
+          .where('isPublished', isEqualTo: true)
+          .orderBy('publishedAt', descending: true)
+          .limit(10);
+
+      if (genre != null) {
+        query = query.where('tags', arrayContains: genre);
+      }
+
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
+      }
+
+      final snapshot = await query.get();
+
+      final stories = snapshot.docs
+          .map((doc) => StoryModel.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      final newLastDoc = snapshot.docs.isNotEmpty ? snapshot.docs.last : null;
+
+      return (stories: stories, lastDoc: newLastDoc);
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception(e.toString());
     }
   }
 }

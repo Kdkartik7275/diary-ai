@@ -9,10 +9,12 @@ import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/snackbars/error_snackbar.dart';
 import 'package:mindloom/core/snackbars/success_dialog.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/domain/entity/story_stats.dart';
 import 'package:mindloom/features/story/domain/usecases/delete_draft.dart';
 import 'package:mindloom/features/story/domain/usecases/get_drafts_count.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_count.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_stories.dart';
+import 'package:mindloom/features/story/domain/usecases/get_story_stats.dart';
 import 'package:mindloom/features/story/domain/usecases/get_user_drafts.dart';
 import 'package:mindloom/features/story/domain/usecases/publish_story.dart';
 import 'package:mindloom/features/story/domain/usecases/stories_total_wordcount.dart';
@@ -25,6 +27,7 @@ class StoryController extends GetxController {
   final PublishStory publishStory;
   final GetPublishedStories getPublishedStories;
   final DeleteDraft deleteDraftUseCase;
+  final GetStoryStats getStoryStatsUseCase;
 
   StoryController({
     required this.getUserDrafts,
@@ -34,6 +37,7 @@ class StoryController extends GetxController {
     required this.publishStory,
     required this.getPublishedStories,
     required this.deleteDraftUseCase,
+    required this.getStoryStatsUseCase,
   });
   RxList<StoryEntity> drafts = RxList([]);
   RxList<StoryEntity> published = RxList([]);
@@ -43,6 +47,8 @@ class StoryController extends GetxController {
   RxInt draftStoriesCount = RxInt(0);
   RxInt publishedStoriesCount = RxInt(0);
   RxString publishingStoryId = RxString('');
+
+  final Map<String, StoryStatsEntity> _statsCache = {};
 
   @override
   void onInit() {
@@ -103,7 +109,7 @@ class StoryController extends GetxController {
   Future<void> deleteDraft({required String draftId}) async {
     try {
       drafts.removeWhere((element) => element.id == draftId);
-      showSuccessDialog("Story moved to Trash.");
+      showSuccessDialog('Story moved to Trash.');
       update();
       final result = await deleteDraftUseCase.call(draftId);
       result.fold((err) => showErrorDialog(err.message), (r) {});
@@ -120,7 +126,10 @@ class StoryController extends GetxController {
       );
       result.fold(
         (l) => showErrorDialog(l.message),
-        (stories) => published.value = stories,
+        (stories){
+debugPrint(stories.first.chapters.length.toString());
+           published.value = stories;
+        } ,
       );
       await getPublishedCount();
     } catch (e) {
@@ -182,6 +191,27 @@ class StoryController extends GetxController {
       );
     } catch (e) {
       publishedStoriesCount.value = 0;
+    }
+  }
+
+  Future<StoryStatsEntity> getStoryStatsById({required String id}) async {
+    try {
+      if (_statsCache.containsKey(id)) {
+        return _statsCache[id]!;
+      }
+      final result = await getStoryStatsUseCase.call(
+        GetStoryStatsParams(
+          userId: sl<FirebaseAuth>().currentUser!.uid,
+          storyId: id,
+        ),
+      );
+
+      return result.fold((err) => throw Exception(err.message), (stat) {
+        _statsCache[id] = stat;
+        return stat;
+      });
+    } catch (e) {
+      throw e.toString();
     }
   }
 

@@ -16,6 +16,8 @@ import 'package:mindloom/features/notifications/presentation/binding/notificatio
 import 'package:mindloom/features/notifications/presentation/views/notification_view.dart';
 import 'package:mindloom/features/profile/presentation/bindings/edit_profile_binding.dart';
 import 'package:mindloom/features/profile/presentation/views/edit_profile_view.dart';
+import 'package:mindloom/features/search/presentation/binding/search_story_binding.dart';
+import 'package:mindloom/features/search/presentation/view/search_story_view.dart';
 import 'package:mindloom/features/social/presentation/bindings/follow_binding.dart';
 import 'package:mindloom/features/story/presentation/bindings/create_story_binding.dart';
 import 'package:mindloom/features/story/presentation/bindings/generate_story_binding.dart';
@@ -94,6 +96,11 @@ class AppPages {
       name: Routes.addFeedback,
       binding: AddFeedbackBinding(),
       page: () => AddFeedbackView(),
+    ),
+    GetPage(
+      name: Routes.search,
+      page: () => SearchStoryView(),
+      binding: SearchStoryBinding(),
     ),
   ];
 }

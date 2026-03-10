@@ -15,6 +15,7 @@ class DependencyInjection {
     _initSocial();
     _initNotification();
     _initFeedback();
+    _initSearch();
   }
 }
 
@@ -148,6 +149,7 @@ void _initStory() {
   sl.registerLazySingleton(() => GenerateStoryFromDiaries(repository: sl()));
   sl.registerLazySingleton(() => DeleteDraft(repository: sl()));
   sl.registerLazySingleton(() => GetUserFeed(repository: sl()));
+  sl.registerLazySingleton(() => GetStoriesByGenre(repository: sl()));
 }
 
 void _initExplore() {
@@ -246,4 +248,21 @@ void _initFeedback() {
   );
   // USECASES
   sl.registerLazySingleton(() => SubmitFeedback(repository: sl()));
+}
+
+
+void _initSearch() {
+  // DATASOURCE
+  sl.registerLazySingleton<SearchStoryRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
+  );
+
+  sl.registerLazySingleton<SearchRepository>(
+    () => SearchRepositoryImpl(
+      connectionChecker: sl<ConnectionChecker>(),
+      remoteDataSource: sl<SearchStoryRemoteDataSource>(),
+    ),
+  );
+  // USECASES
+  sl.registerLazySingleton(() => SearchStory(repository: sl()));
 }

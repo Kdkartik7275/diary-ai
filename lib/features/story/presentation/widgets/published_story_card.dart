@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
+import 'package:mindloom/features/story/presentation/controller/story_controller.dart';
 import 'package:mindloom/features/story/presentation/views/draft_preview.dart';
 
 class PublishedStoryCard extends StatelessWidget {
@@ -103,54 +104,73 @@ class PublishedStoryCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     // Meta info
-                    Row(
-                      children: [
-                        Icon(
-                          CupertinoIcons.book,
-                          size: 14,
-                          color: AppColors.textLighter,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          chapters,
-                          style: theme.titleSmall!.copyWith(
-                            color: AppColors.textLighter,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Icon(
-                          CupertinoIcons.time,
-                          size: 14,
-                          color: AppColors.textLighter,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '1.2k reads',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.titleSmall!.copyWith(
-                            color: AppColors.textLighter,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Icon(
-                          CupertinoIcons.heart,
-                          size: 14,
-                          color: AppColors.textLighter,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '234',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.titleSmall!.copyWith(
-                            color: AppColors.textLighter,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ],
+                    FutureBuilder(
+                      future: Get.find<StoryController>().getStoryStatsById(
+                        id: story.id,
+                      ),
+                      builder: (context, asyncSnapshot) {
+                        if (asyncSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return StoryStatsLoading();
+                        }
+                        if (asyncSnapshot.hasError) {
+                          return SizedBox.shrink();
+                        }
+
+                        if (!asyncSnapshot.hasData) {
+                          return SizedBox.shrink();
+                        }
+                        final stat = asyncSnapshot.data!;
+                        return Row(
+                          children: [
+                            Icon(
+                              CupertinoIcons.book,
+                              size: 14,
+                              color: AppColors.textLighter,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              chapters,
+                              style: theme.titleSmall!.copyWith(
+                                color: AppColors.textLighter,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Icon(
+                              CupertinoIcons.time,
+                              size: 14,
+                              color: AppColors.textLighter,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '1.2k reads',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.titleSmall!.copyWith(
+                                color: AppColors.textLighter,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Icon(
+                              CupertinoIcons.heart,
+                              size: 14,
+                              color: AppColors.textLighter,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '234',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.titleSmall!.copyWith(
+                                color: AppColors.textLighter,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 16),
@@ -220,6 +240,50 @@ class PublishedStoryCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class StoryStatsLoading extends StatelessWidget {
+  const StoryStatsLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [_StatPlaceholder(), _StatPlaceholder()],
+      ),
+    );
+  }
+}
+
+class _StatPlaceholder extends StatelessWidget {
+  const _StatPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 18,
+          height: 18,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Container(
+          width: 60,
+          height: 10,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+      ],
     );
   }
 }

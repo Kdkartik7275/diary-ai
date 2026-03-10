@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mindloom/config/constants/typedefs.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/domain/entity/story_stats.dart';
@@ -49,5 +50,6 @@ abstract interface class StoryRepository {
 
   ResultFuture<String?> uploadStoryCoverImage(File image);
 
-  ResultFuture<List<StoryEntity>> getUserFeed({required String userId});
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getUserFeed({required String userId, DocumentSnapshot? lastDoc});
 }

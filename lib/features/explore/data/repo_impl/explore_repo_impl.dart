@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mindloom/config/constants/typedefs.dart';
 import 'package:mindloom/core/errors/failure.dart';
@@ -7,16 +8,16 @@ import 'package:mindloom/features/explore/domain/entity/recently_added_story.dar
 import 'package:mindloom/features/explore/domain/entity/story_author_entity.dart';
 import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:mindloom/features/explore/domain/repository/explore_repository.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 
 class ExploreRepositoryImpl implements ExploreRepository {
-  final ExploreRemoteDataSource remoteDataSource;
-
-  final ConnectionChecker connectionChecker;
-
   ExploreRepositoryImpl({
     required this.remoteDataSource,
     required this.connectionChecker,
   });
+  final ExploreRemoteDataSource remoteDataSource;
+
+  final ConnectionChecker connectionChecker;
   @override
   ResultFuture<List<RecentlyAddedStoryEntity>> getRecentlyAddedStories() async {
     try {
@@ -51,6 +52,25 @@ class ExploreRepositoryImpl implements ExploreRepository {
       }
       final result = await remoteDataSource.getStoryAuthor(authorId);
       return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getStoriesByGenre({String? genre, DocumentSnapshot? lastDoc}) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.getStoriesByGenre(
+        genre: genre,
+        lastDoc: lastDoc,
+      );
+
+      return right((stories: result.stories, lastDoc: result.lastDoc));
     } catch (e) {
       return left(FirebaseFailure(message: e.toString()));
     }

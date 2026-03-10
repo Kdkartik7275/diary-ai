@@ -224,13 +224,13 @@ class _DraftPreviewState extends State<DraftPreview> {
 }
 
 class _ReaderPage {
-  final String chapterTitle;
-  final String content;
-  final int chapterNumber;
 
   const _ReaderPage({
     required this.chapterTitle,
     required this.content,
     required this.chapterNumber,
   });
+  final String chapterTitle;
+  final String content;
+  final int chapterNumber;
 }

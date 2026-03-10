@@ -50,7 +50,7 @@ class FeedCard extends StatelessWidget {
               width: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                color: AppColors.primary,
+                color: AppColors.white,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -65,14 +65,9 @@ class FeedCard extends StatelessWidget {
 
                         fit: BoxFit.cover,
                       )
-                    : Center(
-                        child: Icon(
-                          CupertinoIcons.book,
-
-                          color: AppColors.white,
-
-                          size: 40,
-                        ),
+                    : Image.asset(
+                        'assets/icons/logo_new.png',
+                        fit: BoxFit.cover,
                       ),
               ),
             ),

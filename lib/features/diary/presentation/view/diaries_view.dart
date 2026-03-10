@@ -50,89 +50,62 @@ class DiariesView extends GetView<DiaryController> {
                         ),
                       ),
                       SizedBox(height: height * 0.02),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TRoundedContainer(
-                              height: height * 0.05,
-
-                              radius: 14,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: .07),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-
-                              child: TextField(
-                                onChanged: (query) {
-                                  if (query.isEmpty) {
-                                    controller.searching.value = false;
-                                  } else {
-                                    controller.searchDiaries(query);
-                                  }
-                                },
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 12,
-                                      right: 10,
-                                    ),
-                                    child: Icon(
-                                      CupertinoIcons.search,
-                                      color: AppColors.hintText,
-                                      size: 20,
-                                    ),
-                                  ),
-
-                                  prefixIconConstraints: const BoxConstraints(
-                                    minWidth: 0,
-                                    minHeight: 0,
-                                  ),
-
-                                  contentPadding: const EdgeInsets.only(
-                                    top: 5,
-                                    bottom: 10,
-                                    right: 16,
-                                  ),
-
-                                  hintText: 'Search your entries...',
-                                  hintStyle: theme.bodyLarge!.copyWith(
-                                    color: AppColors.hintText,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 12),
-
-                          TRoundedContainer(
-                            height: height * 0.05,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 10,
-                            ),
-                            radius: 14,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: .07),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                            child: Icon(
-                              Icons.filter_alt_outlined,
-                              color: AppColors.hintText,
-                            ),
+                      TRoundedContainer(
+                        height: height * 0.05,
+                                            
+                        radius: 14,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: .07),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
+                                            
+                        child: TextField(
+                          onChanged: (query) {
+                            if (query.isEmpty) {
+                              controller.searching.value = false;
+                            } else {
+                              controller.searchDiaries(query);
+                            }
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                                            
+                            prefixIcon: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 12,
+                                right: 10,
+                              ),
+                              child: Icon(
+                                CupertinoIcons.search,
+                                color: AppColors.hintText,
+                                size: 20,
+                              ),
+                            ),
+                                            
+                            prefixIconConstraints: const BoxConstraints(
+                              minWidth: 0,
+                              minHeight: 0,
+                            ),
+                                            
+                            contentPadding: const EdgeInsets.only(
+                              top: 5,
+                              bottom: 10,
+                              right: 16,
+                            ),
+                                            
+                            hintText: 'Search your entries...',
+                            hintStyle: theme.bodyLarge!.copyWith(
+                              color: AppColors.hintText,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(height: height * 0.02),
 

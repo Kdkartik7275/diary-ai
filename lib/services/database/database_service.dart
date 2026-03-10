@@ -575,7 +575,6 @@ CREATE TABLE $_followingsTable (
       final chapters = chaptersMap
           .map((e) => StoryChapterModel.fromSql(e))
           .toList();
-
       stories.add(StoryModel.fromSql(story, chapters: chapters));
     }
 

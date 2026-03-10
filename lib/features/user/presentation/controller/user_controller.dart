@@ -8,15 +8,15 @@ import 'package:mindloom/features/user/domain/usecases/get_user.dart';
 import 'package:mindloom/features/user/domain/usecases/get_user_stats.dart';
 
 class UserController extends GetxController {
-  final GetUser getUserUseCase;
-  final GetUserStats getUserStatsUseCase;
-  final GetPublishedStoriesByUser getPublishedStoriesByUserUseCase;
 
   UserController({
     required this.getUserUseCase,
     required this.getPublishedStoriesByUserUseCase,
     required this.getUserStatsUseCase,
   });
+  final GetUser getUserUseCase;
+  final GetUserStats getUserStatsUseCase;
+  final GetPublishedStoriesByUser getPublishedStoriesByUserUseCase;
 
   Rx<UserEntity?> currentUser = Rx<UserEntity?>(null);
   Rx<UserStats?> userStats = Rx<UserStats?>(null);
@@ -36,7 +36,7 @@ class UserController extends GetxController {
 
       result.fold(
         (failure) {
-          debugPrint("Error loading user: ${failure.message}");
+          debugPrint('Error loading user: ${failure.message}');
         },
         (user) async {
           currentUser.value = user;
@@ -44,7 +44,7 @@ class UserController extends GetxController {
           final statsResult = await getUserStatsUseCase.call(user.id);
           statsResult.fold(
             (statsFailure) {
-              debugPrint("Error loading user stats: ${statsFailure.message}");
+              debugPrint('Error loading user stats: ${statsFailure.message}');
             },
             (stats) {
               userStats.value = stats;
@@ -53,7 +53,7 @@ class UserController extends GetxController {
         },
       );
     } catch (e) {
-      debugPrint("Exception loading user: $e");
+      debugPrint('Exception loading user: $e');
     } finally {
       loading.value = false;
     }

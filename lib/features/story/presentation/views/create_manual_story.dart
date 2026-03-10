@@ -12,7 +12,7 @@ class CreateManualStory extends GetView<CreateStoryController> {
   @override
   Widget build(BuildContext context) {
     final story = Get.arguments as StoryEntity?;
-    if (story != null && !controller.isEdit.value) {
+    if (story != null) {
       controller.loadEntryForEdit(story);
     }
     final theme = Theme.of(context).textTheme;
@@ -169,7 +169,7 @@ class CreateManualStory extends GetView<CreateStoryController> {
                               fontWeight: FontWeight.w500,
                             ),
                             decoration: InputDecoration(
-                              hintText: "Story Title",
+                              hintText: 'Story Title',
                               hintStyle: theme.titleMedium!.copyWith(
                                 fontWeight: FontWeight.normal,
                                 color: AppColors.hintText,
@@ -287,7 +287,7 @@ class CreateManualStory extends GetView<CreateStoryController> {
                                 fontWeight: FontWeight.w500,
                               ),
                               decoration: InputDecoration(
-                                hintText: "Chapter Title",
+                                hintText: 'Chapter Title',
                                 hintStyle: theme.titleLarge!.copyWith(
                                   fontWeight: FontWeight.normal,
                                   color: AppColors.hintText,
@@ -321,7 +321,7 @@ class CreateManualStory extends GetView<CreateStoryController> {
                                 ),
                                 decoration: InputDecoration(
                                   hintText:
-                                      "Start writing your story here... Let your imagination flow freely.",
+                                      'Start writing your story here... Let your imagination flow freely.',
                                   border: InputBorder.none,
                                   errorBorder: InputBorder.none,
                                   enabledBorder: InputBorder.none,
@@ -396,7 +396,9 @@ class CreateManualStory extends GetView<CreateStoryController> {
                             strokeWidth: 2,
                           )
                         : Text(
-                            controller.isEdit.value
+                            story?.isPublished ?? false
+                                ? 'Update Story'
+                                : controller.isEdit.value
                                 ? 'Update Draft'
                                 : 'Save Draft',
                             style: theme.titleLarge!.copyWith(

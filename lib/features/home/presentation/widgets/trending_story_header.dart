@@ -35,109 +35,72 @@ class TrendingStoryHeader extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
 
-        color: AppColors.primary,
+        color: AppColors.white,
       ),
 
-      child: story.story.coverImageUrl != null
-          ? Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
 
-                  child: CachedNetworkImage(
+            child: story.story.coverImageUrl != null
+                ? CachedNetworkImage(
                     imageUrl: story.story.coverImageUrl!,
                     height: height * .2,
 
                     width: width,
 
                     fit: BoxFit.cover,
-                  ),
+                  )
+                : Image.asset('assets/icons/logo_new.png', fit: BoxFit.cover),
+          ),
+
+          Positioned(
+            right: 10,
+
+            top: 10,
+
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+
+              decoration: BoxDecoration(
+                color: AppColors.white,
+
+                borderRadius: BorderRadius.circular(12),
+              ),
+
+              child: Text(
+                story.story.tags.first,
+
+                style: theme.titleSmall!.copyWith(
+                  fontWeight: FontWeight.normal,
+
+                  color: AppColors.primary,
                 ),
-
-                Positioned(
-                  right: 10,
-
-                  top: 10,
-
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-
-                    child: Text(
-                      story.story.tags.first,
-
-                      style: theme.titleSmall!.copyWith(
-                        fontWeight: FontWeight.normal,
-
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                ),
-
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-
-                        end: Alignment.center,
-
-                        colors: [
-                          Colors.black.withValues(alpha: 0.7),
-
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : Stack(
-              children: [
-                Center(
-                  child: Icon(
-                    CupertinoIcons.book,
-
-                    color: AppColors.white,
-
-                    size: 40,
-                  ),
-                ),
-
-                Positioned(
-                  right: 10,
-
-                  top: 10,
-
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-
-                    child: Text(
-                      story.story.tags.first,
-
-                      style: theme.titleSmall!.copyWith(
-                        fontWeight: FontWeight.normal,
-
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
+          ),
+          if (story.story.coverImageUrl != null &&
+              story.story.coverImageUrl!.isNotEmpty)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+
+                    end: Alignment.center,
+
+                    colors: [
+                      Colors.black.withValues(alpha: 0.7),
+
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

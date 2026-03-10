@@ -26,7 +26,6 @@ class TrendingStoryStats extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const StoryStatsLoading();
         }
-
         final StoryStatsEntity stats =
             snapshot.hasError || snapshot.data == null
             ? StoryStatsModel.empty(story.id)
@@ -34,23 +33,23 @@ class TrendingStoryStats extends StatelessWidget {
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-        
+
           children: [
             BottomIcon(
               icon: CupertinoIcons.book,
-        
+
               value: '${story.chapters.length} chapters',
             ),
-        
+
             BottomIcon(
               icon: CupertinoIcons.time,
-        
+
               value: '${formatCount(stats.reads)} reads',
             ),
-        
+
             BottomIcon(
               icon: CupertinoIcons.heart,
-        
+
               value: formatCount(stats.likes),
             ),
           ],
@@ -90,9 +89,12 @@ class StoryStatsLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [_StatPlaceholder(), _StatPlaceholder()],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [_StatPlaceholder(), _StatPlaceholder()],
+      ),
     );
   }
 }
@@ -109,13 +111,13 @@ class _StatPlaceholder extends StatelessWidget {
           height: 18,
           decoration: BoxDecoration(
             color: Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(4),
+            shape: BoxShape.circle,
           ),
         ),
         const SizedBox(width: 6),
         Container(
           width: 60,
-          height: 12,
+          height: 10,
           decoration: BoxDecoration(
             color: Colors.grey.shade300,
             borderRadius: BorderRadius.circular(4),

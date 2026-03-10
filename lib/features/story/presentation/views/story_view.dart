@@ -119,7 +119,7 @@ class _StoryViewState extends State<StoryView> {
                                 return PublishedStoryCard(
                                   story: story,
                                   title: story.title,
-                                  chapters: "${story.chapters.length} chapters",
+                                  chapters: '${story.chapters.length} chapters',
                                   updatedText: 'Published',
                                   onEdit: () => Get.toNamed(
                                     Routes.createStoryManually,

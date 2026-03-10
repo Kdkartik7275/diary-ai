@@ -33,7 +33,11 @@ abstract interface class StoryRemoteDataSource {
     required String userId,
   });
   Future<List<StoryModel>> getUserDrafts({required String userId});
-  Future<List<StoryModel>> getUserFeed({required String userId});
+
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})> getUserFeed({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  });
   Future<List<StoryModel>> getPublisedStories({required String userId});
   Future<List<StoryModel>> getPublishedStoriesByUser({required String userId});
   Future<String?> uploadStoryCoverImage(File image);
@@ -409,20 +413,23 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }
 
   @override
-  Future<List<StoryModel>> getUserFeed({required String userId}) async {
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})> getUserFeed({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  }) async {
     try {
       final db = DataBaseService.instance;
 
       List<String> followings = await db.getFollowings(userId);
 
       if (followings.isEmpty) {
-        final snapshot = await firestore
+        final followingSnapshot = await firestore
             .collection('user_following')
             .doc(userId)
             .collection('users')
             .get();
 
-        followings = snapshot.docs.map((e) => e.id).toList();
+        followings = followingSnapshot.docs.map((e) => e.id).toList();
 
         await db.insertFollowings(userId: userId, followingIds: followings);
       }
@@ -430,6 +437,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
       final userIds = [...followings, userId];
 
       List<StoryModel> stories = [];
+      DocumentSnapshot? newLastDoc;
 
       for (int i = 0; i < userIds.length; i += 10) {
         final chunk = userIds.sublist(
@@ -437,16 +445,27 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
           (i + 10 > userIds.length) ? userIds.length : i + 10,
         );
 
-        final snapshot = await firestore
+        Query query = firestore
             .collection('stories')
             .where('userId', whereIn: chunk)
             .where('isPublished', isEqualTo: true)
             .orderBy('publishedAt', descending: true)
-            .limit(20)
-            .get();
+            .limit(10);
+
+        if (lastDoc != null) {
+          query = query.startAfterDocument(lastDoc);
+        }
+
+        final snapshot = await query.get();
+
+        if (snapshot.docs.isNotEmpty) {
+          newLastDoc = snapshot.docs.last;
+        }
 
         stories.addAll(
-          snapshot.docs.map((e) => StoryModel.fromMap(e.data())).toList(),
+          snapshot.docs
+              .map((e) => StoryModel.fromMap(e.data() as Map<String, dynamic>))
+              .toList(),
         );
       }
 
@@ -461,10 +480,14 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
         return bTime.compareTo(aTime);
       });
 
-      return stories;
+      if (stories.length > 10) {
+        stories = stories.sublist(0, 10);
+      }
+
+      return (stories: stories, lastDoc: newLastDoc);
     } catch (e) {
       debugPrint(e.toString());
-      throw e.toString();
+      throw Exception(e.toString());
     }
   }
 }

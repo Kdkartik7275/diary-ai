@@ -1,32 +1,34 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mindloom/config/constants/typedefs.dart';
 import 'package:mindloom/core/usecases/usecases.dart';
+import 'package:mindloom/features/explore/domain/repository/explore_repository.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
-import 'package:mindloom/features/story/domain/repository/story_repository.dart';
 
-class GetUserFeed
+class GetStoriesByGenre
     implements
         UseCaseWithParams<
           ({List<StoryEntity> stories, DocumentSnapshot? lastDoc}),
-          GetUserFeedParams
+          GetStoriesByGenreParams
         > {
-  GetUserFeed({required this.repository});
+  GetStoriesByGenre({required this.repository});
 
-  final StoryRepository repository;
+  final ExploreRepository repository;
 
   @override
   ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})> call(
-    GetUserFeedParams params,
+    GetStoriesByGenreParams params,
   ) async {
-    return await repository.getUserFeed(
-      userId: params.userId,
+    return await repository.getStoriesByGenre(
+      genre: params.genre,
       lastDoc: params.lastDoc,
     );
   }
 }
 
-class GetUserFeedParams {
-  const GetUserFeedParams({required this.userId, this.lastDoc});
-  final String userId;
+class GetStoriesByGenreParams {
+  final String? genre;
   final DocumentSnapshot? lastDoc;
+
+  GetStoriesByGenreParams({this.genre, this.lastDoc});
 }

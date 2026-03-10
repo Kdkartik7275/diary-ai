@@ -33,6 +33,7 @@ import 'package:mindloom/features/explore/data/data_source/explore_remote_data_s
 import 'package:mindloom/features/explore/data/repo_impl/explore_repo_impl.dart';
 import 'package:mindloom/features/explore/domain/repository/explore_repository.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_recently_added_story.dart';
+import 'package:mindloom/features/explore/domain/usecases/get_stories_by_genre.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_story_author.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_trending_stories.dart';
 import 'package:mindloom/features/feedback/data/data_source/feedback_remote_data_source.dart';
@@ -45,6 +46,10 @@ import 'package:mindloom/features/notifications/domain/repository/notification_r
 import 'package:mindloom/features/notifications/domain/usecases/create_notification.dart';
 import 'package:mindloom/features/notifications/domain/usecases/get_user_notification.dart';
 import 'package:mindloom/features/notifications/domain/usecases/mark_notification_read.dart';
+import 'package:mindloom/features/search/data/data_source/search_story_remote_data_source.dart';
+import 'package:mindloom/features/search/data/repository_impl/search_repository_impl.dart';
+import 'package:mindloom/features/search/domain/repository/search_repository.dart';
+import 'package:mindloom/features/search/domain/usecase/search_story.dart';
 import 'package:mindloom/features/social/data/data_source/social_local_data_source.dart';
 import 'package:mindloom/features/social/data/data_source/social_remote_data_source.dart';
 import 'package:mindloom/features/social/data/repository_impl/social_repository_impl.dart';
