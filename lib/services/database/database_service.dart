@@ -596,7 +596,7 @@ CREATE TABLE $_followingsTable (
     final db = await database;
     final count = Sqflite.firstIntValue(
       await db.rawQuery(
-        'SELECT COUNT(*) FROM $_storyTableName WHERE $_storyUserId = ? AND $_storyIsPublished = 0',
+        'SELECT COUNT(*) FROM $_storyTableName WHERE $_storyUserId = ? AND $_storyIsPublished = 0 AND $_storyDeletedAt IS NULL',
         [userId],
       ),
     );

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
@@ -43,6 +44,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
   late StoryReadingController controller;
   late FollowController followController;
   late UserEntity currentUser;
+  late bool isDarkMode;
   final ExploreController exploreController = Get.find<ExploreController>();
 
   @override
@@ -56,6 +58,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
         createNotificationUseCase: sl<CreateNotification>(),
       ),
     );
+    isDarkMode = Get.find<ThemeController>().isDarkMode;
     followController = Get.find<FollowController>();
 
     currentUser = Get.find<UserController>().currentUser.value!;
@@ -108,7 +111,9 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
                     radius: 18,
-                    backgroundColor: AppColors.primary.withValues(alpha: .3),
+                    backgroundColor: isDarkMode
+                        ? AppColors.primary
+                        : AppColors.primary.withValues(alpha: .3),
                     child:
                         (user.profileUrl != null && user.profileUrl!.isNotEmpty)
                         ? ClipOval(
@@ -122,7 +127,9 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                                   child: Text(
                                     nameInitials(user.fullName),
                                     style: theme.titleSmall!.copyWith(
-                                      color: AppColors.text,
+                                      color: isDarkMode
+                                          ? AppColors.white
+                                          : AppColors.text,
                                       fontWeight: FontWeight.normal,
                                     ),
                                   ),
@@ -134,7 +141,9 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                             child: Text(
                               nameInitials(user.fullName),
                               style: theme.titleSmall!.copyWith(
-                                color: AppColors.text,
+                                color: isDarkMode
+                                    ? AppColors.white
+                                    : AppColors.text,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
@@ -348,7 +357,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
       bottomSheet: Container(
         height: 80,
         padding: EdgeInsets.symmetric(vertical: 12),
-        color: AppColors.white,
+        color:isDarkMode ?AppColors.dark: AppColors.white,
         child: Obx(() {
           if (controller.isLoadingStats) {
             return _BottomStatsLoading();

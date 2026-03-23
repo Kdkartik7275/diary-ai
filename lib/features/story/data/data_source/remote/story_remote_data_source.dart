@@ -38,7 +38,8 @@ abstract interface class StoryRemoteDataSource {
     required String userId,
     DocumentSnapshot? lastDoc,
   });
-  Future<List<StoryModel>> getPublisedStories({required String userId});
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStories({required String userId, DocumentSnapshot? lastDoc});
   Future<List<StoryModel>> getPublishedStoriesByUser({required String userId});
   Future<String?> uploadStoryCoverImage(File image);
 }
@@ -165,23 +166,37 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }
 
   @override
-  Future<List<StoryModel>> getPublisedStories({required String userId}) async {
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStories({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  }) async {
     try {
-      final storiesDoc = await firestore
+      Query query = firestore
           .collection('stories')
           .where('userId', isEqualTo: userId)
           .where('isPublished', isEqualTo: true)
           .where('publishedAt', isNotEqualTo: null)
-          .get();
+          .orderBy('publishedAt', descending: true)
+          .limit(10);
 
-      if (storiesDoc.docs.isEmpty) {
-        return [];
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
       }
 
-      List<StoryModel> stories = storiesDoc.docs
-          .map((story) => StoryModel.fromMap(story.data()))
+      final storiesDoc = await query.get();
+
+      if (storiesDoc.docs.isEmpty) {
+        return (stories: <StoryModel>[], lastDoc: null);
+      }
+
+      final stories = storiesDoc.docs
+          .map(
+            (story) => StoryModel.fromMap(story.data() as Map<String, dynamic>),
+          )
           .toList();
-      return stories;
+
+      return (stories: stories, lastDoc: storiesDoc.docs.last);
     } catch (e) {
       throw e.toString();
     }

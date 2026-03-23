@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/features/diary/presentation/view/diaries_view.dart';
 import 'package:mindloom/features/explore/presentation/view/explore_stories_view.dart';
@@ -21,6 +22,7 @@ class Tabs extends StatefulWidget {
 class _TabsState extends State<Tabs> {
   int _selectedIndex = 0;
   late UserController _userController;
+  late ThemeController themeController;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,6 +42,7 @@ class _TabsState extends State<Tabs> {
   void initState() {
     super.initState();
     _userController = Get.find<UserController>();
+    themeController = Get.find<ThemeController>();
     loadUser();
   }
 
@@ -79,10 +82,14 @@ class _TabsState extends State<Tabs> {
           highlightColor: Colors.transparent,
         ),
         child: BottomNavigationBar(
-          backgroundColor: AppColors.white,
+          backgroundColor: themeController.isDarkMode
+              ? AppColors.darkSurface
+              : AppColors.white,
           currentIndex: _selectedIndex,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.border,
+          unselectedItemColor:themeController.isDarkMode
+              ? AppColors.border.withValues(alpha: .4)
+              : AppColors.border,
           onTap: _onItemTapped,
           iconSize: 26,
           elevation: 0,

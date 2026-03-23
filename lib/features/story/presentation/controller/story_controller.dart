@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
+import 'package:cloud_firestore/cloud_firestore.dart'
+    show Timestamp, DocumentSnapshot;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -47,6 +48,10 @@ class StoryController extends GetxController {
   RxInt draftStoriesCount = RxInt(0);
   RxInt publishedStoriesCount = RxInt(0);
   RxString publishingStoryId = RxString('');
+
+  RxBool loadingMorePublished = RxBool(false);
+  RxBool hasMorePublished = RxBool(true);
+  DocumentSnapshot? _lastPublishedDoc;
 
   final Map<String, StoryStatsEntity> _statsCache = {};
 
@@ -121,21 +126,53 @@ class StoryController extends GetxController {
   Future<void> getUserPublishedStories() async {
     try {
       loading.value = true;
+      hasMorePublished.value = true;
+      _lastPublishedDoc = null;
+      published.clear();
+
       final result = await getPublishedStories.call(
-        sl<FirebaseAuth>().currentUser!.uid,
+        GetPublishedStoriesParams(userId: sl<FirebaseAuth>().currentUser!.uid),
       );
-      result.fold(
-        (l) => showErrorDialog(l.message),
-        (stories){
-debugPrint(stories.first.chapters.length.toString());
-           published.value = stories;
-        } ,
-      );
+
+      result.fold((l) => showErrorDialog(l.message), (data) {
+        published.value = data.stories;
+        _lastPublishedDoc = data.lastDoc;
+        if (data.stories.length < 10) {
+          hasMorePublished.value = false;
+        }
+      });
       await getPublishedCount();
     } catch (e) {
       showErrorDialog(e.toString());
     } finally {
       loading.value = false;
+    }
+  }
+
+  Future<void> loadMorePublishedStories() async {
+    if (loadingMorePublished.value || !hasMorePublished.value) return;
+
+    try {
+      loadingMorePublished.value = true;
+
+      final result = await getPublishedStories.call(
+        GetPublishedStoriesParams(
+          userId: sl<FirebaseAuth>().currentUser!.uid,
+          lastDoc: _lastPublishedDoc,
+        ),
+      );
+
+      result.fold((l) => showErrorDialog(l.message), (data) {
+        published.addAll(data.stories);
+        _lastPublishedDoc = data.lastDoc;
+        if (data.stories.length < 10) {
+          hasMorePublished.value = false;
+        }
+      });
+    } catch (e) {
+      showErrorDialog(e.toString());
+    } finally {
+      loadingMorePublished.value = false;
     }
   }
 

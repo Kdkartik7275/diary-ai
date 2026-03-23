@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 
-class StoryUserLoading extends StatelessWidget {
+class StoryUserLoading extends GetView<ThemeController> {
   const StoryUserLoading({super.key});
 
   @override
@@ -11,7 +14,9 @@ class StoryUserLoading extends StatelessWidget {
           width: 18,
           height: 18,
           decoration: BoxDecoration(
-            color: Colors.grey.shade300,
+            color: controller.isDarkMode
+                ? AppColors.filledDark
+                : Colors.grey.shade300,
             shape: BoxShape.circle,
           ),
         ),
@@ -20,7 +25,9 @@ class StoryUserLoading extends StatelessWidget {
           width: 60,
           height: 12,
           decoration: BoxDecoration(
-            color: Colors.grey.shade300,
+            color: controller.isDarkMode
+                ? AppColors.filledDark
+                : Colors.grey.shade300,
             borderRadius: BorderRadius.circular(4),
           ),
         ),

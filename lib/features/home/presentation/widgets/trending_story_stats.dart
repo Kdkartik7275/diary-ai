@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
 import 'package:mindloom/features/story/data/model/story_stats_model.dart';
@@ -67,14 +69,24 @@ class BottomIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
     return Row(
       children: [
-        Icon(icon, size: 15, color: AppColors.textLighter),
+        Icon(
+          icon,
+          size: 15,
+          color: isDarkMode
+              ? AppColors.white.withValues(alpha: .8)
+              : AppColors.textLighter,
+        ),
         SizedBox(width: 4),
         Text(
           value,
           style: Theme.of(context).textTheme.titleSmall!.copyWith(
-            color: AppColors.textLighter,
+            color: isDarkMode
+                ? AppColors.white.withValues(alpha: .8)
+                : AppColors.textLighter,
+
             fontWeight: FontWeight.normal,
             fontSize: 12,
           ),
@@ -99,7 +111,7 @@ class StoryStatsLoading extends StatelessWidget {
   }
 }
 
-class _StatPlaceholder extends StatelessWidget {
+class _StatPlaceholder extends GetView<ThemeController> {
   const _StatPlaceholder();
 
   @override
@@ -110,7 +122,7 @@ class _StatPlaceholder extends StatelessWidget {
           width: 18,
           height: 18,
           decoration: BoxDecoration(
-            color: Colors.grey.shade300,
+            color:controller.isDarkMode?AppColors.filledDark : Colors.grey.shade300,
             shape: BoxShape.circle,
           ),
         ),
@@ -119,7 +131,7 @@ class _StatPlaceholder extends StatelessWidget {
           width: 60,
           height: 10,
           decoration: BoxDecoration(
-            color: Colors.grey.shade300,
+            color:controller.isDarkMode?AppColors.filledDark : Colors.grey.shade300,
             borderRadius: BorderRadius.circular(4),
           ),
         ),

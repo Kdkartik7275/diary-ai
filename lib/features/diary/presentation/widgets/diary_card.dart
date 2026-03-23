@@ -1,7 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
@@ -15,6 +17,7 @@ class DiaryCard extends StatelessWidget {
     required this.height,
     required this.diary,
     required this.onDelete,
+    required this.isDarkMode,
   });
 
   final double width;
@@ -22,6 +25,7 @@ class DiaryCard extends StatelessWidget {
   final double height;
   final DiaryEntity diary;
   final VoidCallback onDelete;
+  final bool isDarkMode;
 
   String _formatDate(DateTime date) {
     return DateFormat('MMM d, yyyy').format(date);
@@ -52,7 +56,8 @@ class DiaryCard extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 28),
               padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: isDarkMode ? AppColors.darkSurface : AppColors.white,
+
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
@@ -105,7 +110,10 @@ class DiaryCard extends StatelessWidget {
                     'Once deleted, this diary entry will be permanently removed from your account.\n\nThis action cannot be undone.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: AppColors.textLighter,
+                      color: isDarkMode
+                          ? AppColors.textDarkSecondary
+                          : AppColors.textLighter,
+
                       fontWeight: FontWeight.normal,
                       height: 1.6,
                     ),
@@ -144,6 +152,7 @@ class DiaryCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
+                            side: BorderSide.none
                             ),
                           ),
                           child: Text(
@@ -205,6 +214,8 @@ class DiaryCard extends StatelessWidget {
         child: TRoundedContainer(
           width: width,
           radius: 20,
+          backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
+
           padding: const EdgeInsets.all(14),
           boxShadow: [
             BoxShadow(
@@ -259,7 +270,10 @@ class DiaryCard extends StatelessWidget {
                         Text(
                           _formatDate(diary.createdAt.toDate()),
                           style: theme.titleSmall?.copyWith(
-                            color: AppColors.textLighter,
+                            color: isDarkMode
+                                ? AppColors.textDarkSecondary
+                                : AppColors.textLighter,
+
                             fontSize: 11,
                           ),
                         ),
@@ -271,7 +285,10 @@ class DiaryCard extends StatelessWidget {
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: theme.titleSmall?.copyWith(
-                        color: AppColors.textLighter,
+                        color: isDarkMode
+                            ? AppColors.textDarkSecondary
+                            : AppColors.textLighter,
+
                         fontWeight: FontWeight.normal,
                         height: 1.55,
                         fontSize: 13,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/utils/helpers/greeting_helper.dart';
 import 'package:mindloom/features/diary/presentation/controller/diary_controller.dart';
 import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
@@ -32,6 +33,7 @@ class _HomeViewState extends State<HomeView> {
   late StoryController storyController;
   late ExploreController exploreController;
   late AppNotificationController notificationController;
+  late ThemeController themeController;
   late ScrollController scrollController;
   late String greeting;
   late String subtitle;
@@ -39,15 +41,20 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+
     greeting = GreetingHelper.getGreeting();
     subtitle = GreetingHelper.getSubtitle();
+
     controller = Get.find<UserController>();
     homeController = Get.find<HomeController>();
     diaryController = Get.find<DiaryController>();
     storyController = Get.find<StoryController>();
     notificationController = Get.find<AppNotificationController>();
     exploreController = Get.find<ExploreController>();
+    themeController = Get.find<ThemeController>();
+
     scrollController = ScrollController();
+
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
               scrollController.position.maxScrollExtent - 200 &&
@@ -71,6 +78,9 @@ class _HomeViewState extends State<HomeView> {
     final theme = Theme.of(context).textTheme;
 
     return Scaffold(
+      backgroundColor: themeController.isDarkMode
+          ? AppColors.dark
+          : AppColors.white,
       appBar: AppBar(
         title: Text(
           'MindLoom',
@@ -85,23 +95,25 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-          child: RefreshIndicator(
-            backgroundColor: AppColors.white,
-            color: AppColors.primary,
-            onRefresh: () async {
-              await diaryController.getDiaries();
-              await storyController.getDrafts();
-              await homeController.refreshFeed();
-              await exploreController.fetchTrendingStories();
-              await notificationController.getUserNotifications();
-            },
-            child: ListView(
-              controller: scrollController,
-              children: [
-                Column(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await diaryController.getDiaries();
+          await storyController.getDrafts();
+          await homeController.refreshFeed();
+          await exploreController.fetchTrendingStories();
+          await notificationController.getUserNotifications();
+        },
+        child: CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            /// Top spacing
+            SliverToBoxAdapter(child: SizedBox(height: height * 0.02)),
+
+            /// Greeting
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Obx(() {
@@ -111,25 +123,36 @@ class _HomeViewState extends State<HomeView> {
                         style: theme.titleMedium!.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       );
                     }),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: theme.titleSmall!.copyWith(
-                        fontWeight: FontWeight.w500,
                         color: AppColors.textLighter,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: height * 0.02),
-                TodayCard(width: width, height: height, theme: theme),
-                SizedBox(height: height * 0.03),
+              ),
+            ),
 
-                Row(
+            /// Today card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.04,
+                  vertical: height * 0.02,
+                ),
+                child: TodayCard(width: width, height: height, theme: theme),
+              ),
+            ),
+
+            /// Stats
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+                child: Row(
                   children: [
                     Expanded(
                       child: StatCard(
@@ -139,101 +162,121 @@ class _HomeViewState extends State<HomeView> {
                         theme: theme,
                       ),
                     ),
-
                     const SizedBox(width: 12),
-
                     Expanded(
-                      child: Obx(() {
-                        return StatCard(
+                      child: Obx(
+                        () => StatCard(
                           icon: CupertinoIcons.wand_stars,
                           label: 'Draft Stories',
                           value:
                               '${storyController.draftStoriesCount.value} Notes',
                           theme: theme,
-                        );
-                      }),
+                        ),
+                      ),
                     ),
                   ],
                 ),
+              ),
+            ),
 
-                SizedBox(height: height * 0.02),
-
-                Row(
+            /// Trending Title
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  width * 0.04,
+                  height * 0.02,
+                  width * 0.04,
+                  0,
+                ),
+                child: Row(
                   children: [
                     Icon(Icons.trending_up_rounded, color: AppColors.primary),
                     SizedBox(width: width * .02),
                     Text('Trending Stories', style: theme.titleLarge),
                   ],
                 ),
+              ),
+            ),
 
-                SizedBox(
-                  height: height * .33,
-                  width: width,
-                  child: Obx(() {
-                    if (exploreController.trendingLoading.value) {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 4,
-                        itemBuilder: (_, _) => const TrendingStoryLoadingCard(),
-                      );
-                    }
-
+            /// Trending List (horizontal is OK)
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: height * .33,
+                child: Obx(() {
+                  if (exploreController.trendingLoading.value) {
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: exploreController.trendingStories.length,
-                      itemBuilder: (context, index) {
-                        final story = exploreController.trendingStories[index];
-
-                        return TrendingStoryCard(
-                          story: story,
-                          height: height,
-                          width: width,
-                          exploreController: exploreController,
-                        );
-                      },
-                    );
-                  }),
-                ),
-
-                SizedBox(height: height * 0.02),
-
-                Text('From People You Follow', style: theme.titleLarge),
-
-                Obx(() {
-                  if (homeController.loadingFeeds.value &&
-                      homeController.feeds.isEmpty) {
-                    return ListView.builder(
-                      itemCount: 3,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (_, _) => const FeedCardLoader(),
+                      itemCount: 4,
+                      itemBuilder: (_, _) => const TrendingStoryLoadingCard(),
                     );
                   }
 
                   return ListView.builder(
-                    itemCount:
-                        homeController.feeds.length +
-                        (homeController.hasMore.value ? 1 : 0),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: exploreController.trendingStories.length,
                     itemBuilder: (context, index) {
-                      if (index < homeController.feeds.length) {
-                        final story = homeController.feeds[index];
-                        return FeedCard(story: story);
-                      }
+                      final story = exploreController.trendingStories[index];
 
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: FeedCardLoader(),
+                      return TrendingStoryCard(
+                        story: story,
+                        height: height,
+                        width: width,
+                        exploreController: exploreController,
                       );
                     },
                   );
                 }),
-
-                const SizedBox(height: 100),
-              ],
+              ),
             ),
-          ),
+
+            /// Feed Title
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  width * 0.04,
+                  height * 0.02,
+                  width * 0.04,
+                  0,
+                ),
+                child: Text('From People You Follow', style: theme.titleLarge),
+              ),
+            ),
+
+            /// Feed List (MAIN FIX 🚀)
+            Obx(() {
+              if (homeController.loadingFeeds.value &&
+                  homeController.feeds.isEmpty) {
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (_, _) => const FeedCardLoader(),
+                    childCount: 3,
+                  ),
+                );
+              }
+
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index < homeController.feeds.length) {
+                      final story = homeController.feeds[index];
+                      return FeedCard(story: story);
+                    }
+
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: FeedCardLoader(),
+                    );
+                  },
+                  childCount:
+                      homeController.feeds.length +
+                      (homeController.hasMore.value ? 1 : 0),
+                ),
+              );
+            }),
+
+            /// Bottom spacing
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          ],
         ),
       ),
 
@@ -244,8 +287,6 @@ class _HomeViewState extends State<HomeView> {
         onPressed: () => Get.toNamed(Routes.writeDiary),
         child: const Icon(Icons.add, color: AppColors.white),
       ),
-
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

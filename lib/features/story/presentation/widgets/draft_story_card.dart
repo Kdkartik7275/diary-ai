@@ -16,6 +16,7 @@ class DraftStoryCard extends GetView<StoryController> {
     required this.chapters,
     required this.updatedText,
     required this.story,
+    required this.isDarkMode,
     required this.onContinue,
     required this.onPublish,
     required this.onDelete,
@@ -25,7 +26,7 @@ class DraftStoryCard extends GetView<StoryController> {
   final String chapters;
   final String updatedText;
   final StoryEntity story;
-
+  final bool isDarkMode;
   final VoidCallback onContinue;
   final VoidCallback onPublish;
   final VoidCallback onDelete;
@@ -41,6 +42,7 @@ class DraftStoryCard extends GetView<StoryController> {
       return GestureDetector(
         onTap: () => Get.to(() => DraftPreview(story: story)),
         child: TRoundedContainer(
+          backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
           radius: 16,
           padding: const EdgeInsets.all(14),
           boxShadow: [
@@ -117,13 +119,17 @@ class DraftStoryCard extends GetView<StoryController> {
                           Icon(
                             CupertinoIcons.book,
                             size: 14,
-                            color: AppColors.textLighter,
+                            color: isDarkMode
+                                ? AppColors.textDarkSecondary
+                                : AppColors.textLighter,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             chapters,
                             style: theme.titleSmall!.copyWith(
-                              color: AppColors.textLighter,
+                              color: isDarkMode
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.textLighter,
                               fontWeight: FontWeight.normal,
                             ),
                           ),
@@ -131,7 +137,9 @@ class DraftStoryCard extends GetView<StoryController> {
                           Icon(
                             CupertinoIcons.time,
                             size: 14,
-                            color: AppColors.textLighter,
+                            color: isDarkMode
+                                ? AppColors.textDarkSecondary
+                                : AppColors.textLighter,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -140,7 +148,9 @@ class DraftStoryCard extends GetView<StoryController> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.titleSmall!.copyWith(
-                                color: AppColors.textLighter,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.textLighter,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),

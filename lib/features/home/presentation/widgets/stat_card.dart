@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 
-class StatCard extends StatelessWidget {
+class StatCard extends GetView<ThemeController> {
   const StatCard({
     super.key,
     required this.icon,
@@ -19,7 +21,7 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TRoundedContainer(
-      backgroundColor: AppColors.white,
+      backgroundColor:controller.isDarkMode ?AppColors.darkSurface: AppColors.white,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       boxShadow: [
         BoxShadow(

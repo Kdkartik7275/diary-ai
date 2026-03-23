@@ -43,4 +43,49 @@ class TTextFormFieldTheme {
       borderSide: const BorderSide(width: 1, color: Colors.red),
     ),
   );
+  static InputDecorationTheme darkInputDecorationTheme =
+    InputDecorationTheme(
+  errorMaxLines: 3,
+  prefixIconColor: AppColors.textDarkSecondary,
+  suffixIconColor: AppColors.textDarkSecondary,
+
+  labelStyle: GoogleFonts.aBeeZee(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textDarkSecondary,
+  ),
+  hintStyle: GoogleFonts.aBeeZee(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textDarkSecondary,
+  ),
+
+  filled: true,
+  fillColor: AppColors.filledDark,
+
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    borderSide: const BorderSide(color: AppColors.filledDark),
+  ),
+
+  enabledBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    borderSide: const BorderSide(color: AppColors.filledDark),
+  ),
+
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    borderSide: const BorderSide(color: AppColors.primary),
+  ),
+
+  errorBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    borderSide: const BorderSide(color: Colors.red),
+  ),
+
+  focusedErrorBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    borderSide: const BorderSide(color: Colors.red),
+  ),
+);
 }

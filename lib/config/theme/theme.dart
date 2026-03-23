@@ -19,4 +19,20 @@ class AppTheme {
       elevation: 0,
     ),
   );
+  static ThemeData darkTheme = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    primaryColor: AppColors.primary,
+    scaffoldBackgroundColor: AppColors.dark,
+
+    appBarTheme: TAppBarTheme.darkAppBarTheme,
+    inputDecorationTheme: TTextFormFieldTheme.darkInputDecorationTheme,
+    textTheme: TTextTheme.darkTextTheme,
+    elevatedButtonTheme: TElevatedButtonTheme.darkElevatedButtonTheme,
+
+    drawerTheme: const DrawerThemeData(
+      backgroundColor: AppColors.darkSurface,
+      elevation: 0,
+    ),
+  );
 }

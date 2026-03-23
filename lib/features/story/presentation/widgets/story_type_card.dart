@@ -1,12 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/story/presentation/views/story_type_view.dart';
 
-class StoryTypeCard extends StatelessWidget {
+class StoryTypeCard extends GetView<ThemeController> {
   final String title;
   final String description;
   final Color borderColor;
@@ -33,6 +35,9 @@ class StoryTypeCard extends StatelessWidget {
       onTap: onTap,
       child: TRoundedContainer(
         showBorder: true,
+        backgroundColor: controller.isDarkMode
+            ? AppColors.darkSurface
+            : AppColors.white,
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         borderColor: borderColor,

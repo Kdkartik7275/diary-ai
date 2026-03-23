@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/constants/genres.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/presentation/controller/create_story_controller.dart';
@@ -23,9 +24,13 @@ class CreateManualStory extends GetView<CreateStoryController> {
     double verticalPadding = height * 0.015;
     double moodSelectorHeight = height * 0.1;
 
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.primary.withValues(alpha: .1),
+        backgroundColor: isDarkMode
+            ? AppColors.darkSurface
+            : AppColors.primary.withValues(alpha: .1),
         title: Text('Manual Story', style: theme.titleLarge),
         actions: [
           Padding(
@@ -35,7 +40,7 @@ class CreateManualStory extends GetView<CreateStoryController> {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .7),
+                  color:isDarkMode ?AppColors.filledDark : Colors.white.withValues(alpha: .7),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
@@ -103,7 +108,9 @@ class CreateManualStory extends GetView<CreateStoryController> {
                     SizedBox(
                       height: moodSelectorHeight,
                       child: Container(
-                        color: AppColors.primary.withValues(alpha: .1),
+                        color: isDarkMode
+                            ? AppColors.darkSurface
+                            : AppColors.primary.withValues(alpha: .1),
                         height: 80,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
@@ -130,6 +137,8 @@ class CreateManualStory extends GetView<CreateStoryController> {
                                     decoration: BoxDecoration(
                                       color: isSelected
                                           ? AppColors.primary
+                                          : isDarkMode
+                                          ? AppColors.filledDark
                                           : Colors.white,
                                       borderRadius: BorderRadius.circular(14),
                                       border: Border.all(
@@ -142,6 +151,11 @@ class CreateManualStory extends GetView<CreateStoryController> {
                                         genre,
                                         style: theme.titleSmall!.copyWith(
                                           fontWeight: FontWeight.normal,
+                                          color: isSelected
+                                              ? AppColors.white
+                                              : isDarkMode
+                                              ? AppColors.textDarkSecondary
+                                              : AppColors.textLighter,
                                           fontSize: 13,
                                         ),
                                       ),
@@ -169,6 +183,9 @@ class CreateManualStory extends GetView<CreateStoryController> {
                               fontWeight: FontWeight.w500,
                             ),
                             decoration: InputDecoration(
+                              fillColor: isDarkMode
+                                  ? AppColors.dark
+                                  : AppColors.white,
                               hintText: 'Story Title',
                               hintStyle: theme.titleMedium!.copyWith(
                                 fontWeight: FontWeight.normal,
@@ -287,6 +304,10 @@ class CreateManualStory extends GetView<CreateStoryController> {
                                 fontWeight: FontWeight.w500,
                               ),
                               decoration: InputDecoration(
+                                fillColor: isDarkMode
+                                    ? AppColors.dark
+                                    : AppColors.white,
+
                                 hintText: 'Chapter Title',
                                 hintStyle: theme.titleLarge!.copyWith(
                                   fontWeight: FontWeight.normal,
@@ -320,6 +341,10 @@ class CreateManualStory extends GetView<CreateStoryController> {
                                   color: Colors.grey.shade500,
                                 ),
                                 decoration: InputDecoration(
+                                  fillColor: isDarkMode
+                                      ? AppColors.dark
+                                      : AppColors.white,
+
                                   hintText:
                                       'Start writing your story here... Let your imagination flow freely.',
                                   border: InputBorder.none,

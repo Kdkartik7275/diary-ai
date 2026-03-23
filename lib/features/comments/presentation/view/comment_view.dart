@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/features/comments/presentation/controller/comments_controller.dart';
 import 'package:mindloom/features/comments/presentation/widget/comment_tile.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
@@ -20,6 +21,7 @@ class _CommentViewState extends State<CommentView> {
   late String authorId;
   late String storyTitle;
   late int commentCount;
+  late bool isDarkMode;
   late ScrollController _scrollController;
 
   @override
@@ -27,6 +29,7 @@ class _CommentViewState extends State<CommentView> {
     super.initState();
     controller = Get.find<CommentsController>();
     final args = Get.arguments as Map<String, dynamic>;
+    isDarkMode = Get.find<ThemeController>().isDarkMode;
     storyId = args['storyId'] ?? '';
     storyTitle = args['storyTitle'] ?? '';
     authorId = args['authorId'] ?? '';
@@ -261,8 +264,8 @@ class _CommentViewState extends State<CommentView> {
                           ),
                           decoration: InputDecoration(
                             hintText: isReplying
-                                ? "Add a reply..."
-                                : "Add a comment...",
+                                ? 'Add a reply...'
+                                : 'Add a comment...',
                             hintStyle: TextStyle(
                               color: AppColors.textLighter.withValues(
                                 alpha: 0.6,

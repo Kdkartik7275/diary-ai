@@ -164,25 +164,29 @@ class StoryRepositoryImpl implements StoryRepository {
   }
 
   @override
-  ResultFuture<List<StoryEntity>> getPublisedStories({
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStories({
     required String userId,
+    DocumentSnapshot? lastDoc,
   }) async {
     try {
-      final isTableEmpty = await localDataSource.isStoryTableEmpty();
-      if (!isTableEmpty) {
+      if (!await connectionChecker.isConnected) {
         final stories = await localDataSource.getPublishedStories(
           userId: userId,
         );
-        return right(stories);
-      }
-      if (!await connectionChecker.isConnected) {
-        return left(FirebaseFailure(message: 'No Internet Connection'));
+
+        return right((lastDoc: null, stories: stories));
       }
 
-      final result = await remoteDataSource.getPublisedStories(userId: userId);
-      for (StoryModel story in result) {
+      final result = await remoteDataSource.getPublisedStories(
+        userId: userId,
+        lastDoc: lastDoc,
+      );
+
+      for (StoryModel story in result.stories) {
         await localDataSource.createStory(data: story);
       }
+
       return right(result);
     } catch (e) {
       return left(FirebaseFailure(message: e.toString()));

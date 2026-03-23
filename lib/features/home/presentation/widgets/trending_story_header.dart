@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
 
-class TrendingStoryHeader extends StatelessWidget {
+class TrendingStoryHeader extends GetView<ThemeController> {
   const TrendingStoryHeader({
     super.key,
 
@@ -35,7 +36,7 @@ class TrendingStoryHeader extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
 
-        color: AppColors.white,
+        color:controller.isDarkMode ?AppColors.filledDark : AppColors.white,
       ),
 
       child: Stack(

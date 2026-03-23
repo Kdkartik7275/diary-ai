@@ -19,4 +19,20 @@ class TAppBarTheme {
       color: AppColors.black,
     ),
   );
+
+  static AppBarTheme darkAppBarTheme = AppBarTheme(
+  elevation: 0,
+  centerTitle: true,
+  scrolledUnderElevation: 0,
+  backgroundColor: AppColors.dark,
+  surfaceTintColor: AppColors.dark,
+  iconTheme: const IconThemeData(color: AppColors.white),
+  actionsIconTheme: const IconThemeData(color: AppColors.white),
+  titleTextStyle: GoogleFonts.aBeeZee(
+    fontSize: 19,
+    fontWeight: FontWeight.w700,
+    color: AppColors.white,
+  ),
+);
 }
+

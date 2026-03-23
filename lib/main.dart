@@ -6,13 +6,13 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mindloom/config/routes/app_pages.dart';
 
 import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/config/theme/theme.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/firebase_options.dart';
-import 'package:mindloom/services/push_notification/notification_service.dart';
-import 'config/routes/app_pages.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -45,15 +45,16 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: '.env');
 
   DependencyInjection.init();
 
-  await NotificationService.instance.init();
+  // await NotificationService.instance.init();
 
-  await NotificationService.instance.getFcmToken();
+  // await NotificationService.instance.getFcmToken();
 
   final initialRoute = await resolveInitialRoute();
+  Get.put(ThemeController());
 
   runApp(LifelineApp(initialRoute: initialRoute));
 
@@ -61,18 +62,23 @@ Future<void> main() async {
 }
 
 class LifelineApp extends StatelessWidget {
-  final String initialRoute;
-
   const LifelineApp({super.key, required this.initialRoute});
+  final String initialRoute;
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: "Mindloom",
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      initialRoute: initialRoute,
-      getPages: AppPages.routes,
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(
+      () => GetMaterialApp(
+        title: 'Mindloom',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: themeController.themeMode.value,
+        initialRoute: initialRoute,
+        getPages: AppPages.routes,
+      ),
     );
   }
 }

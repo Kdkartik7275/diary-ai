@@ -4,13 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/story/presentation/controller/generate_story_controller.dart';
-import 'package:mindloom/features/story/presentation/widgets/date_field.dart';
 import 'package:mindloom/features/story/presentation/widgets/genre_selector.dart';
 
-class CreateStoryView extends GetView<GenerateStoryController> {
+class CreateStoryView extends StatefulWidget {
   const CreateStoryView({super.key});
+
+  @override
+  State<CreateStoryView> createState() => _CreateStoryViewState();
+}
+
+class _CreateStoryViewState extends State<CreateStoryView> {
+  late GenerateStoryController controller;
+  bool isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<GenerateStoryController>();
+    isDarkMode = Get.find<ThemeController>().isDarkMode;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +52,9 @@ class CreateStoryView extends GetView<GenerateStoryController> {
               'Transform your diary into a magical tale',
               style: theme.titleSmall!.copyWith(
                 fontWeight: FontWeight.w500,
-                color: AppColors.textLighter,
+                color: isDarkMode
+                    ? AppColors.textDarkSecondary
+                    : AppColors.textLighter,
               ),
             ),
             SizedBox(height: height * 0.02),
@@ -46,16 +63,39 @@ class CreateStoryView extends GetView<GenerateStoryController> {
             _MainContainer(
               width: width,
               height: height,
+              isDarkMode: isDarkMode,
               title: 'Date Range',
               icon: Icons.calendar_month_outlined,
               child: Row(
                 children: [
                   Expanded(
-                    child: SizedBox(height: height * .05, child: DateField()),
+                    child: Obx(() {
+                      final date = controller.startDate.value;
+
+                      return GestureDetector(
+                        onTap: () => controller.pickDate(isStart: true),
+                        child: _dateBox(
+                          text: date == null
+                              ? 'Start Date'
+                              : '${date.day}/${date.month}/${date.year}',
+                        ),
+                      );
+                    }),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: SizedBox(height: height * .05, child: DateField()),
+                    child: Obx(() {
+                      final date = controller.endDate.value;
+
+                      return GestureDetector(
+                        onTap: () => controller.pickDate(isStart: false),
+                        child: _dateBox(
+                          text: date == null
+                              ? 'End Date'
+                              : '${date.day}/${date.month}/${date.year}',
+                        ),
+                      );
+                    }),
                   ),
                 ],
               ),
@@ -67,9 +107,10 @@ class CreateStoryView extends GetView<GenerateStoryController> {
             _MainContainer(
               width: width,
               height: height,
+              isDarkMode: isDarkMode,
               title: 'Story Style',
               icon: CupertinoIcons.wand_stars,
-              child: const GenreSelector(),
+              child: GenreSelector(isDarkMode: isDarkMode),
             ),
 
             SizedBox(height: height * 0.02),
@@ -78,6 +119,7 @@ class CreateStoryView extends GetView<GenerateStoryController> {
             _MainContainer(
               width: width,
               height: height,
+              isDarkMode: isDarkMode,
               title: 'Main Character Name',
               icon: CupertinoIcons.person,
               child: SizedBox(
@@ -109,6 +151,7 @@ class CreateStoryView extends GetView<GenerateStoryController> {
             _MainContainer(
               width: width,
               height: height,
+              isDarkMode: isDarkMode,
               title: 'Story Tone',
               icon: Icons.emoji_emotions_outlined,
               child: GridView.builder(
@@ -130,6 +173,7 @@ class CreateStoryView extends GetView<GenerateStoryController> {
                     return GenreChip(
                       label: tone,
                       isSelected: isSelected,
+                      isDarkMode: isDarkMode,
                       onTap: () => controller.setTone(tone),
                     );
                   });
@@ -140,10 +184,7 @@ class CreateStoryView extends GetView<GenerateStoryController> {
             SizedBox(height: height * 0.03),
 
             InkWell(
-              onTap: () => controller.navigateToAnimation(
-                DateTime(2026, 02, 17),
-                DateTime(2026, 02, 17),
-              ),
+              onTap: () => controller.goToSummaryPage(),
               child: Container(
                 margin: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -181,12 +222,31 @@ class CreateStoryView extends GetView<GenerateStoryController> {
   }
 }
 
+Widget _dateBox({required String text}) {
+  return Container(
+    alignment: Alignment.centerLeft,
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+    decoration: BoxDecoration(
+      border: Border.all(color: AppColors.border),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Text(
+      text,
+      style: Theme.of(Get.context!).textTheme.titleSmall!.copyWith(
+        color: AppColors.textLighter,
+        fontWeight: FontWeight.normal,
+      ),
+    ),
+  );
+}
+
 class _MainContainer extends StatelessWidget {
   const _MainContainer({
     required this.width,
     required this.height,
     required this.title,
     required this.icon,
+    required this.isDarkMode,
     required this.child,
   });
 
@@ -195,6 +255,7 @@ class _MainContainer extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -203,13 +264,16 @@ class _MainContainer extends StatelessWidget {
     return TRoundedContainer(
       width: width,
       padding: const EdgeInsets.all(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: .07),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
+      backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
+      boxShadow: isDarkMode
+          ? null
+          : [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .07),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

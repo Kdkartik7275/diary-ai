@@ -1,31 +1,33 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/features/story/presentation/controller/generate_story_controller.dart';
 
 class GenreSelector extends StatelessWidget {
-  const GenreSelector({super.key});
+  const GenreSelector({super.key, required this.isDarkMode});
+  final bool isDarkMode;
 
   final List<String> genres = const [
-    "Romance",
-    "Adventure",
-    "Fantasy",
-    "Sci-Fi",
-    "Mystery",
-    "Thriller",
-    "Horror",
-    "Comedy",
-    "Drama",
-    "Slice of Life",
-    "Inspirational",
-    "Motivational",
-    "Personal Growth",
-    "Mindfulness",
-    "Daily Life",
-    "Crime",
-    "Action",
-    "Supernatural",
-    "Historical",
+    'Romance',
+    'Adventure',
+    'Fantasy',
+    'Sci-Fi',
+    'Mystery',
+    'Thriller',
+    'Horror',
+    'Comedy',
+    'Drama',
+    'Slice of Life',
+    'Inspirational',
+    'Motivational',
+    'Personal Growth',
+    'Mindfulness',
+    'Daily Life',
+    'Crime',
+    'Action',
+    'Supernatural',
+    'Historical',
   ];
 
   final int visibleCount = 6;
@@ -35,7 +37,6 @@ class GenreSelector extends StatelessWidget {
     final controller = Get.find<GenerateStoryController>();
     final theme = Theme.of(context).textTheme;
     final visibleGenres = genres.take(visibleCount).toList();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -58,6 +59,7 @@ class GenreSelector extends StatelessWidget {
               return GenreChip(
                 label: genre,
                 isSelected: isSelected,
+                isDarkMode: isDarkMode,
                 onTap: () => controller.setGenre(genre),
               );
             });
@@ -114,89 +116,84 @@ class GenreSelector extends StatelessWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) {
-        return Obx(() {
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.7,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          decoration: BoxDecoration(
+            color: isDarkMode ? AppColors.darkSurface : AppColors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 12),
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
 
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Choose Your Story Style',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.normal,
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Text(
+                      'Choose Your Story Style',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppColors.border.withValues(alpha: 0.3),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.close_rounded,
+                          size: 20,
+                          color: isDarkMode ? AppColors.white : AppColors.text,
                         ),
                       ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: AppColors.border.withValues(alpha: 0.3),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.close_rounded,
-                            size: 20,
-                            color: AppColors.text,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
 
-                Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                    itemCount: genres.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          childAspectRatio: 2.8,
-                        ),
-                    itemBuilder: (_, index) {
-                      final genre = genres[index];
-
-                      final isSelected =
-                          controller.selectedGenre.value == genre;
-
-                      return GenreChip(
-                        label: genre,
-                        isSelected: isSelected,
-                        onTap: () {
-                          controller.setGenre(genre);
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  itemCount: genres.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 2.8,
                   ),
+                  itemBuilder: (_, index) {
+                    final genre = genres[index];
+
+                    final isSelected = controller.selectedGenre.value == genre;
+
+                    return GenreChip(
+                      label: genre,
+                      isSelected: isSelected,
+                      isDarkMode: isDarkMode,
+                      onTap: () {
+                        controller.setGenre(genre);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
                 ),
-              ],
-            ),
-          );
-        });
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -207,11 +204,13 @@ class GenreChip extends StatefulWidget {
     super.key,
     required this.label,
     required this.isSelected,
+    required this.isDarkMode,
     required this.onTap,
   });
 
   final String label;
   final bool isSelected;
+  final bool isDarkMode;
   final VoidCallback onTap;
 
   @override
@@ -263,7 +262,11 @@ class _GenreChipState extends State<GenreChip> {
           child: Text(
             widget.label,
             style: theme.titleSmall!.copyWith(
-              color: widget.isSelected ? AppColors.primary : AppColors.text,
+              color: widget.isSelected
+                  ? AppColors.primary
+                  : widget.isDarkMode
+                  ? AppColors.textDarkSecondary
+                  : AppColors.text,
               fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.w500,
               fontSize: 13,
             ),

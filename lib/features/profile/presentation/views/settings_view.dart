@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/profile/presentation/views/account_details.dart';
 import 'package:mindloom/features/profile/presentation/widgets/setting_section.dart';
@@ -18,6 +19,7 @@ class SettingsView extends StatelessWidget {
     final width = size.width;
     final height = size.height;
     final theme = Theme.of(context).textTheme;
+    final themeController = Get.find<ThemeController>();
 
     return Scaffold(
       appBar: AppBar(),
@@ -52,8 +54,10 @@ class SettingsView extends StatelessWidget {
                     subtitle: 'Switch between light and dark theme',
                     trailing: Switch.adaptive(
                       activeThumbColor: AppColors.primary,
-                      value: false,
-                      onChanged: (_) {},
+                      value: themeController.isDarkMode,
+                      onChanged: (val) {
+                        themeController.toggleTheme();
+                      },
                     ),
                   ),
                 ),

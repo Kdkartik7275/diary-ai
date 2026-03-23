@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/presentation/controller/story_controller.dart';
 import 'package:mindloom/features/story/presentation/views/draft_preview.dart';
@@ -16,6 +17,7 @@ class PublishedStoryCard extends StatelessWidget {
     required this.chapters,
     required this.updatedText,
     required this.story,
+    required this.isDarkMode,
     required this.onEdit,
     required this.onView,
   });
@@ -24,7 +26,7 @@ class PublishedStoryCard extends StatelessWidget {
   final String chapters;
   final String updatedText;
   final StoryEntity story;
-
+  final bool isDarkMode;
   final VoidCallback onEdit;
   final VoidCallback onView;
 
@@ -35,6 +37,7 @@ class PublishedStoryCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Get.to(() => DraftPreview(story: story)),
       child: TRoundedContainer(
+        backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
         radius: 16,
         padding: const EdgeInsets.all(14),
         boxShadow: [
@@ -126,13 +129,17 @@ class PublishedStoryCard extends StatelessWidget {
                             Icon(
                               CupertinoIcons.book,
                               size: 14,
-                              color: AppColors.textLighter,
+                              color: isDarkMode
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.textLighter,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               chapters,
                               style: theme.titleSmall!.copyWith(
-                                color: AppColors.textLighter,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.textLighter,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
@@ -140,15 +147,19 @@ class PublishedStoryCard extends StatelessWidget {
                             Icon(
                               CupertinoIcons.time,
                               size: 14,
-                              color: AppColors.textLighter,
+                              color: isDarkMode
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.textLighter,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '1.2k reads',
+                              '${formatCount(stat.reads)} reads',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.titleSmall!.copyWith(
-                                color: AppColors.textLighter,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.textLighter,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
@@ -160,11 +171,13 @@ class PublishedStoryCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '234',
+                              formatCount(stat.likes),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.titleSmall!.copyWith(
-                                color: AppColors.textLighter,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.textLighter,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),

@@ -83,8 +83,7 @@ class StoryTypeView extends StatelessWidget {
 }
 
 class StoryTag {
+  const StoryTag(this.label, this.color);
   final String label;
   final Color color;
-
-  const StoryTag(this.label, this.color);
 }

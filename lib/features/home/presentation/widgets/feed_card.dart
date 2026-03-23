@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
 import 'package:mindloom/features/explore/presentation/view/reading_view.dart';
@@ -12,7 +13,7 @@ import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
-class FeedCard extends StatelessWidget {
+class FeedCard extends GetView<ThemeController> {
   const FeedCard({super.key, required this.story});
 
   final StoryEntity story;
@@ -23,6 +24,7 @@ class FeedCard extends StatelessWidget {
     final width = size.width;
     final height = size.height;
     final theme = Theme.of(context).textTheme;
+    final isDarkMode = controller.isDarkMode;
     return GestureDetector(
       onTap: () =>
           Get.to(() => StoryReadingView(story: story, authorId: story.userId)),
@@ -33,7 +35,7 @@ class FeedCard extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12),
 
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: isDarkMode ? AppColors.darkSurface : AppColors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -111,9 +113,7 @@ class FeedCard extends StatelessWidget {
                               CircleAvatar(
                                 radius: 14,
 
-                                backgroundColor: AppColors.primary.withValues(
-                                  alpha: .3,
-                                ),
+                                backgroundColor: AppColors.primary,
 
                                 child: user.profileUrl != null
                                     ? ClipOval(
@@ -134,7 +134,9 @@ class FeedCard extends StatelessWidget {
 
                                                     style: theme.titleSmall!
                                                         .copyWith(
-                                                          color: AppColors.text,
+                                                          color: isDarkMode
+                                                              ? AppColors.white
+                                                              : AppColors.text,
 
                                                           fontWeight:
                                                               FontWeight.normal,
@@ -149,7 +151,9 @@ class FeedCard extends StatelessWidget {
                                           nameInitials(user.fullName),
 
                                           style: theme.titleLarge!.copyWith(
-                                            color: AppColors.text,
+                                            color: isDarkMode
+                                                ? AppColors.white
+                                                : AppColors.text,
 
                                             fontWeight: FontWeight.normal,
                                           ),
@@ -166,7 +170,9 @@ class FeedCard extends StatelessWidget {
                                     user.fullName,
 
                                     style: theme.titleSmall!.copyWith(
-                                      color: AppColors.textLighter,
+                                      color: isDarkMode
+                                          ? AppColors.white
+                                          : AppColors.textLighter,
 
                                       fontWeight: FontWeight.normal,
                                     ),

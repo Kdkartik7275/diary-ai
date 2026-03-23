@@ -39,7 +39,8 @@ abstract interface class StoryRepository {
     required String storyId,
     required String userId,
   });
-  ResultFuture<List<StoryEntity>> getPublisedStories({required String userId});
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStories({required String userId, DocumentSnapshot? lastDoc});
   ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
     required String userId,
   });

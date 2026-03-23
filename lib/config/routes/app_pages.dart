@@ -24,6 +24,7 @@ import 'package:mindloom/features/story/presentation/bindings/generate_story_bin
 import 'package:mindloom/features/story/presentation/bindings/story_binding.dart';
 import 'package:mindloom/features/story/presentation/views/create_manual_story.dart';
 import 'package:mindloom/features/story/presentation/views/create_story_view.dart';
+import 'package:mindloom/features/story/presentation/views/story_summary_view.dart';
 import 'package:mindloom/features/story/presentation/views/story_type_view.dart';
 import 'package:mindloom/features/user/presentation/binding/user_binding.dart';
 import 'package:mindloom/tabs.dart';
@@ -101,6 +102,10 @@ class AppPages {
       name: Routes.search,
       page: () => SearchStoryView(),
       binding: SearchStoryBinding(),
+    ),
+    GetPage(
+      name: Routes.storySummary,
+      page: () => StorySummaryView(),
     ),
   ];
 }

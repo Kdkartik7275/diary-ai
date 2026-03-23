@@ -2,13 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/explore/presentation/widgets/user_place_holder.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
-class TrendingStoryAuthorDetails extends StatelessWidget {
+class TrendingStoryAuthorDetails extends GetView<ThemeController> {
   const TrendingStoryAuthorDetails({
     super.key,
     required this.story,
@@ -20,6 +21,7 @@ class TrendingStoryAuthorDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = controller.isDarkMode;
     return FutureBuilder<UserEntity>(
       future: Get.find<UserController>().getUserById(userId: story.userId),
 
@@ -46,7 +48,7 @@ class TrendingStoryAuthorDetails extends StatelessWidget {
               CircleAvatar(
                 radius: 18,
 
-                backgroundColor: AppColors.primary.withValues(alpha: .3),
+                backgroundColor: AppColors.primary,
 
                 child: user.profileUrl != null
                     ? ClipOval(
@@ -64,7 +66,7 @@ class TrendingStoryAuthorDetails extends StatelessWidget {
                               nameInitials(user.fullName),
 
                               style: theme.titleSmall!.copyWith(
-                                color: AppColors.text,
+                                color:isDarkMode ?AppColors.white : AppColors.text,
 
                                 fontWeight: FontWeight.normal,
                               ),
@@ -77,7 +79,7 @@ class TrendingStoryAuthorDetails extends StatelessWidget {
                           nameInitials(user.fullName),
 
                           style: theme.titleLarge!.copyWith(
-                            color: AppColors.text,
+                            color:isDarkMode ?AppColors.white : AppColors.text,
 
                             fontWeight: FontWeight.normal,
                           ),
@@ -94,7 +96,7 @@ class TrendingStoryAuthorDetails extends StatelessWidget {
                     user.fullName,
 
                     style: theme.titleLarge!.copyWith(
-                      color: AppColors.textLighter,
+                      color:isDarkMode ?AppColors.white.withValues(alpha: .8) : AppColors.textLighter,
 
                       fontWeight: FontWeight.normal,
                     ),
@@ -104,7 +106,7 @@ class TrendingStoryAuthorDetails extends StatelessWidget {
                       '@${user.username}',
 
                       style: theme.titleSmall!.copyWith(
-                        color: AppColors.textLighter,
+                          color:isDarkMode ?AppColors.white.withValues(alpha: .8) : AppColors.textLighter,
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
                       ),

@@ -37,4 +37,36 @@ class TTextTheme {
       color: AppColors.black,
     ),
   );
+  static TextTheme get darkTextTheme => TextTheme(
+  headlineLarge: GoogleFonts.aBeeZee(
+    fontSize: 32,
+    fontWeight: FontWeight.w900,
+    color: AppColors.white,
+  ),
+  headlineMedium: GoogleFonts.aBeeZee(
+    fontSize: 30,
+    fontWeight: FontWeight.w700,
+    color: AppColors.white,
+  ),
+  headlineSmall: GoogleFonts.aBeeZee(
+    fontSize: 24,
+    fontWeight: FontWeight.w500,
+    color: AppColors.white,
+  ),
+  titleLarge: GoogleFonts.aBeeZee(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textDark,
+  ),
+  titleMedium: GoogleFonts.aBeeZee(
+    fontSize: 19,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textDark,
+  ),
+  titleSmall: GoogleFonts.aBeeZee(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textDarkSecondary,
+  ),
+);
 }
