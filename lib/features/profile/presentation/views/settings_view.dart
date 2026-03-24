@@ -20,7 +20,7 @@ class SettingsView extends StatelessWidget {
     final height = size.height;
     final theme = Theme.of(context).textTheme;
     final themeController = Get.find<ThemeController>();
-
+    final isDarkMode = themeController.isDarkMode;
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -44,6 +44,7 @@ class SettingsView extends StatelessWidget {
 
             SettingsSection(
               title: 'Appearance',
+              isDarkMode: isDarkMode,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -52,6 +53,7 @@ class SettingsView extends StatelessWidget {
                     icon: CupertinoIcons.brightness,
                     title: 'Dark Mode',
                     subtitle: 'Switch between light and dark theme',
+                    isDarkMode: isDarkMode,
                     trailing: Switch.adaptive(
                       activeThumbColor: AppColors.primary,
                       value: themeController.isDarkMode,
@@ -67,10 +69,12 @@ class SettingsView extends StatelessWidget {
 
             SettingsSection(
               title: 'Account',
+              isDarkMode: isDarkMode,
               children: [
                 SettingsTile(
                   icon: CupertinoIcons.person,
                   title: 'Account Details',
+                  isDarkMode: isDarkMode,
                   onTap: () => Get.to(() => const AccountDetailsView()),
                 ),
                 Padding(
@@ -79,6 +83,7 @@ class SettingsView extends StatelessWidget {
                     icon: CupertinoIcons.refresh_thin,
                     title: 'Data Backup',
                     subtitle: 'Last synced: 2 hours ago',
+                    isDarkMode: isDarkMode,
                   ),
                 ),
               ],
@@ -87,6 +92,7 @@ class SettingsView extends StatelessWidget {
 
             SettingsSection(
               title: 'Notifications',
+              isDarkMode: isDarkMode,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -95,6 +101,7 @@ class SettingsView extends StatelessWidget {
                     icon: CupertinoIcons.bell,
                     title: 'Daily Reminders',
                     subtitle: 'Get reminded to write daily',
+                    isDarkMode: isDarkMode,
                     trailing: Switch.adaptive(
                       activeThumbColor: AppColors.primary,
                       value: true,
@@ -108,17 +115,20 @@ class SettingsView extends StatelessWidget {
 
             SettingsSection(
               title: 'Preferences',
+              isDarkMode: isDarkMode,
               children: [
                 SettingsTile(
                   icon: CupertinoIcons.globe,
                   title: 'Language',
                   subtitle: 'English',
+                  isDarkMode: isDarkMode,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: SettingsTile(
                     icon: CupertinoIcons.lock,
                     title: 'Privacy Settings',
+                    isDarkMode: isDarkMode,
                   ),
                 ),
               ],
@@ -137,17 +147,23 @@ class SettingsView extends StatelessWidget {
               child: TRoundedContainer(
                 width: width,
                 height: height * .06,
+                backgroundColor: isDarkMode ? Colors.red : AppColors.white,
                 borderColor: Colors.red,
                 radius: 16,
                 showBorder: true,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.logout_outlined, color: Colors.red),
+                    Icon(
+                      Icons.logout_outlined,
+                      color: isDarkMode ? Colors.white : Colors.red,
+                    ),
                     SizedBox(width: width * .01),
                     Text(
                       'Log Out',
-                      style: theme.titleLarge!.copyWith(color: Colors.red),
+                      style: theme.titleLarge!.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.red,
+                      ),
                     ),
                   ],
                 ),
@@ -175,6 +191,7 @@ class SettingsTile extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    required this.isDarkMode,
     this.subtitle,
     this.trailing,
     this.onTap,
@@ -185,6 +202,7 @@ class SettingsTile extends StatelessWidget {
   final String? subtitle;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {

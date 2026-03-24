@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/profile/presentation/controller/edit_profile_controller.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
@@ -17,10 +18,12 @@ class EditProfileView extends StatefulWidget {
 
 class _EditProfileViewState extends State<EditProfileView> {
   late EditProfileController controller;
+  late bool isDarkMode;
   @override
   void initState() {
     super.initState();
     controller = Get.find<EditProfileController>();
+    isDarkMode = Get.find<ThemeController>().isDarkMode;
     final user = Get.arguments as UserEntity?;
     if (user != null) {
       controller.initData(user);
@@ -85,18 +88,24 @@ class _EditProfileViewState extends State<EditProfileView> {
                         height: 40,
                         width: 40,
                         radius: 30,
-                        backgroundColor: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: .1),
-                            blurRadius: 6,
-                          ),
-                        ],
+                        backgroundColor: isDarkMode
+                            ? AppColors.darkSurface
+                            : Colors.white,
+                        boxShadow: isDarkMode
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: .1),
+                                  blurRadius: 6,
+                                ),
+                              ],
                         alignment: Alignment.center,
-                        child: const Icon(
+                        child: Icon(
                           CupertinoIcons.camera,
                           size: 22,
-                          color: AppColors.primary,
+                          color: isDarkMode
+                              ? AppColors.white
+                              : AppColors.primary,
                         ),
                       ),
                     ),
@@ -108,7 +117,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
             Center(
               child: Text(
-                "Tap to change photo",
+                'Tap to change photo',
                 style: theme.titleSmall!.copyWith(
                   color: AppColors.textLighter,
                   fontWeight: FontWeight.normal,
@@ -121,6 +130,7 @@ class _EditProfileViewState extends State<EditProfileView> {
             /// Full Name
             UserInputBox(
               height: height,
+              isDarkMode: isDarkMode,
               title: 'Full Name',
               hintText: 'Enter your full name',
               controller: controller.fullname.value,
@@ -129,6 +139,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
             UserInputBox(
               height: height,
+              isDarkMode: isDarkMode,
               title: 'Username',
               hintText: 'Choose a unique username',
               controller: controller.username.value,
@@ -137,6 +148,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
             UserInputBox(
               height: height,
+              isDarkMode: isDarkMode,
               title: 'Phone Number',
               hintText: 'Enter your phone number',
               controller: controller.phone.value,
@@ -145,6 +157,7 @@ class _EditProfileViewState extends State<EditProfileView> {
 
             UserInputBox(
               height: height,
+              isDarkMode: isDarkMode,
               title: 'Location',
               hintText: 'Enter your city or location',
               controller: controller.location.value,
@@ -159,6 +172,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                 SizedBox(height: height * .01),
                 TRoundedContainer(
                   radius: 14,
+                  backgroundColor: isDarkMode
+                      ? AppColors.darkSurface
+                      : AppColors.white,
+                  padding: EdgeInsets.only(bottom: 12),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: .07),
@@ -175,6 +192,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                       fontSize: 15,
                     ),
                     decoration: InputDecoration(
+                      fillColor: isDarkMode
+                          ? AppColors.darkSurface
+                          : AppColors.white,
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -196,6 +216,9 @@ class _EditProfileViewState extends State<EditProfileView> {
             SizedBox(height: height * 0.02),
             TRoundedContainer(
               margin: EdgeInsets.zero,
+              backgroundColor: isDarkMode
+                  ? AppColors.darkSurface
+                  : AppColors.white,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: .07),
@@ -293,12 +316,14 @@ class UserInputBox extends StatelessWidget {
     required this.title,
     required this.hintText,
     required this.controller,
+    required this.isDarkMode,
   });
 
   final double height;
   final String title;
   final String hintText;
   final TextEditingController controller;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -311,14 +336,17 @@ class UserInputBox extends StatelessWidget {
         SizedBox(height: height * .01),
         TRoundedContainer(
           height: height * 0.055,
+          backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
           radius: 14,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .07),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow: isDarkMode
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .07),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
           child: TextField(
             controller: controller,
             style: theme.titleLarge!.copyWith(
@@ -326,6 +354,8 @@ class UserInputBox extends StatelessWidget {
               fontSize: 15,
             ),
             decoration: InputDecoration(
+              fillColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
+
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,

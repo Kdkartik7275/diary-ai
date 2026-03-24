@@ -7,10 +7,12 @@ class SettingsSection extends StatelessWidget {
     super.key,
     required this.title,
     required this.children,
+    required this.isDarkMode,
   });
 
   final String title;
   final List<Widget> children;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +20,16 @@ class SettingsSection extends StatelessWidget {
 
     return TRoundedContainer(
       margin: EdgeInsets.zero,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: .07),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
+      backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
+      boxShadow: isDarkMode
+          ? null
+          : [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .07),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

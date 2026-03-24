@@ -41,7 +41,6 @@ class SearchStoryController extends GetxController {
 
     try {
       loading.value = true;
-
       if (!loadMore) {
         lastDoc = null;
         hasMore.value = true;

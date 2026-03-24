@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/explore/presentation/widgets/story_card.dart';
 import 'package:mindloom/features/search/presentation/controller/search_story_controller.dart';
@@ -17,17 +18,19 @@ class _SearchStoryViewState extends State<SearchStoryView> {
   final ScrollController scrollController = ScrollController();
 
   late SearchStoryController controller;
+  late bool isDarkMode;
 
   @override
   void initState() {
     super.initState();
 
     controller = Get.find<SearchStoryController>();
+    isDarkMode = Get.find<ThemeController>().isDarkMode;
 
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
           scrollController.position.maxScrollExtent - 200) {
-        //   controller.searchStories(loadMore: true);
+           controller.searchStories(loadMore: true);
       }
     });
   }
@@ -59,6 +62,7 @@ class _SearchStoryViewState extends State<SearchStoryView> {
               padding: EdgeInsets.all(size.width * 0.04),
               child: TRoundedContainer(
                 height: size.height * 0.05,
+                backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
                 radius: 14,
                 boxShadow: [
                   BoxShadow(
@@ -83,6 +87,7 @@ class _SearchStoryViewState extends State<SearchStoryView> {
                         },
                         style: theme.titleSmall,
                         decoration: InputDecoration(
+                          fillColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
                           hintText: 'Search stories...',
                           hintStyle: theme.titleSmall!.copyWith(
                             color: AppColors.hintText,

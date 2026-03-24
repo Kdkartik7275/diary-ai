@@ -1,17 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mindloom/config/constants/colors.dart';
 
 class ProfileStats extends StatelessWidget {
   const ProfileStats({
     super.key,
     required this.totalWordsCount,
     required this.totalEntries,
+    required this.isDarkMode,
     required this.publishedStoriesCount,
   });
   final int totalWordsCount;
   final int totalEntries;
   final int publishedStoriesCount;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +78,7 @@ class ProfileStats extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
@@ -101,7 +104,7 @@ class ProfileStats extends StatelessWidget {
               value,
               style: theme.titleLarge!.copyWith(
                 fontWeight: FontWeight.w700,
-                color: Colors.black87,
+                color: isDarkMode ? AppColors.textDark : Colors.black87,
               ),
             ),
             const SizedBox(height: 4),
@@ -109,7 +112,7 @@ class ProfileStats extends StatelessWidget {
               label,
               style: theme.titleLarge!.copyWith(
                 fontSize: 13,
-                color: Colors.black54,
+                color: isDarkMode ? AppColors.textDark : Colors.black54,
               ),
             ),
           ],

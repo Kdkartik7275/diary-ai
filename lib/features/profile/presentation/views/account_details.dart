@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/profile/presentation/views/upgrade_premium_view.dart';
 import 'package:mindloom/features/profile/presentation/widgets/personal_info_tile.dart';
@@ -20,6 +21,7 @@ class AccountDetailsView extends GetView<UserController> {
     final width = size.width;
     final height = size.height;
     final theme = Theme.of(context).textTheme;
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
 
     return Scaffold(
       appBar: AppBar(),
@@ -46,6 +48,9 @@ class AccountDetailsView extends GetView<UserController> {
               SizedBox(height: height * 0.02),
               TRoundedContainer(
                 margin: EdgeInsets.zero,
+                backgroundColor: isDarkMode
+                    ? AppColors.darkSurface
+                    : AppColors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: .07),
@@ -67,6 +72,7 @@ class AccountDetailsView extends GetView<UserController> {
                     PersonalInfoTile(
                       height: height,
                       width: width,
+                      isDarkMode: isDarkMode,
                       backgroundColor: const Color(0xFF8BC6FF),
                       icon: CupertinoIcons.mail,
                       title: 'Email Address',
@@ -76,6 +82,7 @@ class AccountDetailsView extends GetView<UserController> {
                       PersonalInfoTile(
                         height: height,
                         width: width,
+                        isDarkMode: isDarkMode,
                         backgroundColor: const Color(0xFFB095FF),
                         icon: CupertinoIcons.phone,
                         title: 'Phone Number',
@@ -85,6 +92,7 @@ class AccountDetailsView extends GetView<UserController> {
                       PersonalInfoTile(
                         height: height,
                         width: width,
+                        isDarkMode: isDarkMode,
                         backgroundColor: const Color(0xFFFFB175),
                         icon: CupertinoIcons.location_solid,
                         title: 'Location',
@@ -93,6 +101,7 @@ class AccountDetailsView extends GetView<UserController> {
                     PersonalInfoTile(
                       height: height,
                       width: width,
+                      isDarkMode: isDarkMode,
                       backgroundColor: const Color(0xFF8BC6FF),
                       icon: CupertinoIcons.calendar,
                       title: 'Member Since',
@@ -130,6 +139,10 @@ class AccountDetailsView extends GetView<UserController> {
               SizedBox(height: height * 0.02),
               TRoundedContainer(
                 margin: EdgeInsets.zero,
+                backgroundColor: isDarkMode
+                    ? AppColors.darkSurface
+                    : AppColors.white,
+
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: .07),
@@ -161,7 +174,10 @@ class AccountDetailsView extends GetView<UserController> {
                       subtitle: Text(
                         'Last changed 3 months ago',
                         style: theme.titleSmall!.copyWith(
-                          color: AppColors.textLighter,
+                          color: isDarkMode
+                              ? AppColors.textDarkSecondary
+                              : AppColors.textLighter,
+
                           fontWeight: FontWeight.normal,
                           fontSize: 12,
                         ),
@@ -191,7 +207,10 @@ class AccountDetailsView extends GetView<UserController> {
                       subtitle: Text(
                         'Not enabled',
                         style: theme.titleSmall!.copyWith(
-                          color: AppColors.textLighter,
+                          color: isDarkMode
+                              ? AppColors.textDarkSecondary
+                              : AppColors.textLighter,
+
                           fontWeight: FontWeight.normal,
                           fontSize: 12,
                         ),
@@ -211,6 +230,10 @@ class AccountDetailsView extends GetView<UserController> {
               SizedBox(height: height * 0.02),
               TRoundedContainer(
                 margin: EdgeInsets.zero,
+                backgroundColor: isDarkMode
+                    ? AppColors.darkSurface
+                    : AppColors.white,
+
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: .07),
@@ -237,9 +260,11 @@ class AccountDetailsView extends GetView<UserController> {
                                 'Free Plan',
                                 style: theme.titleSmall!.copyWith(
                                   fontWeight: FontWeight.normal,
-                                  color: AppColors.textLighter.withValues(
-                                    alpha: .7,
-                                  ),
+                                  color: isDarkMode
+                                      ? AppColors.textDarkSecondary
+                                      : AppColors.textLighter.withValues(
+                                          alpha: .7,
+                                        ),
                                 ),
                               ),
                             ],
@@ -299,6 +324,9 @@ class AccountDetailsView extends GetView<UserController> {
 
               TRoundedContainer(
                 width: width,
+                backgroundColor: isDarkMode
+                    ? AppColors.darkSurface
+                    : AppColors.white,
 
                 borderColor: Colors.red,
                 radius: 16,
@@ -330,7 +358,9 @@ class AccountDetailsView extends GetView<UserController> {
                       subtitle: Text(
                         'Permanently delete your account and all data',
                         style: theme.titleSmall!.copyWith(
-                          color: AppColors.textLighter,
+                          color: isDarkMode
+                              ? AppColors.textDarkSecondary
+                              : AppColors.textLighter,
                           fontWeight: FontWeight.normal,
                           fontSize: 12,
                         ),

@@ -10,6 +10,7 @@ class ProfileHeader extends StatefulWidget {
   const ProfileHeader({
     super.key,
     required this.user,
+    required this.isDarkMode,
     this.followersCount = 0,
     this.followingCount = 0,
   });
@@ -17,6 +18,7 @@ class ProfileHeader extends StatefulWidget {
   final UserEntity? user;
   final int followersCount;
   final int followingCount;
+  final bool isDarkMode;
 
   @override
   State<ProfileHeader> createState() => _ProfileHeaderState();
@@ -40,14 +42,16 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary.withValues(alpha: 0.08),
-            AppColors.primary.withValues(alpha: 0.02),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+        gradient: widget.isDarkMode
+            ? null
+            : LinearGradient(
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.08),
+                  AppColors.primary.withValues(alpha: 0.02),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
       ),
       child: SafeArea(
         bottom: false,
@@ -72,7 +76,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                       child: Container(
                         padding: EdgeInsets.all(isSmallScreen ? 8 : 10),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: widget.isDarkMode
+                              ? AppColors.darkSurface
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
@@ -100,14 +106,16 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               width: avatarSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    AppColors.primary.withValues(alpha: .85),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                gradient: widget.isDarkMode
+                    ? null
+                    : LinearGradient(
+                        colors: [
+                          AppColors.primary,
+                          AppColors.primary.withValues(alpha: .85),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
               ),
               child: user.profileUrl != null && user.profileUrl!.isNotEmpty
                   ? ClipOval(
@@ -139,7 +147,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 user.fullName,
                 style: theme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: widget.isDarkMode
+                      ? AppColors.textDark
+                      : Colors.black87,
                   letterSpacing: -0.5,
                 ),
                 textAlign: TextAlign.center,
@@ -153,9 +163,11 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: Text(
-                  "@${user.username}",
+                  '@${user.username}',
                   style: theme.titleSmall?.copyWith(
-                    color: AppColors.textLighter,
+                    color: widget.isDarkMode
+                        ? AppColors.textDarkSecondary
+                        : AppColors.textLighter,
                     fontWeight: FontWeight.w500,
                     fontSize: isSmallScreen ? 14 : null,
                   ),
@@ -216,11 +228,13 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                     AnimatedCrossFade(
                       firstChild: Text(
                         user.bio!.length > 100
-                            ? "${user.bio!.substring(0, 100)}..."
+                            ? '${user.bio!.substring(0, 100)}...'
                             : user.bio!,
                         textAlign: TextAlign.center,
                         style: theme.titleSmall?.copyWith(
-                          color: Colors.black87,
+                          color: widget.isDarkMode
+                              ? AppColors.textDarkSecondary
+                              : Colors.black87,
                           fontWeight: FontWeight.normal,
                           height: 1.5,
                           fontSize: 13,
@@ -230,7 +244,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         user.bio!,
                         textAlign: TextAlign.center,
                         style: theme.titleSmall?.copyWith(
-                          color: Colors.black87,
+                          color: widget.isDarkMode
+                              ? AppColors.textDarkSecondary
+                              : Colors.black87,
                           fontWeight: FontWeight.normal,
                           height: 1.5,
                           fontSize: 13,
@@ -250,7 +266,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                           });
                         },
                         child: Text(
-                          bioExpanded ? "Show less" : "Show more",
+                          bioExpanded ? 'Show less' : 'Show more',
                           style: theme.titleSmall?.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.normal,
@@ -274,6 +290,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   Widget _followStat({
     required String label,
     required int count,
+
     required TextTheme theme,
     VoidCallback? onTap,
   }) {
@@ -286,7 +303,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             _formatCount(count),
             style: theme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              color: Colors.black87,
+              color: widget.isDarkMode
+                  ? AppColors.textDarkSecondary
+                  : Colors.black87,
               letterSpacing: -0.5,
             ),
           ),
@@ -294,7 +313,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           Text(
             label,
             style: theme.titleSmall?.copyWith(
-              color: AppColors.textLighter,
+              color: widget.isDarkMode
+                  ? AppColors.textDarkSecondary
+                  : AppColors.textLighter,
               fontWeight: FontWeight.w500,
               fontSize: 12,
             ),
