@@ -4,7 +4,8 @@ import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/features/feedback/presentation/widgets/issue_details.dart';
 
 class GeneralFeedback extends StatelessWidget {
-  const GeneralFeedback({super.key});
+  const GeneralFeedback({super.key, required this.isDarkMode});
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class GeneralFeedback extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(

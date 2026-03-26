@@ -76,11 +76,9 @@ class _HomeViewState extends State<HomeView> {
     final width = size.width;
     final height = size.height;
     final theme = Theme.of(context).textTheme;
-
+    final isDarkMode = themeController.isDarkMode;
     return Scaffold(
-      backgroundColor: themeController.isDarkMode
-          ? AppColors.dark
-          : AppColors.white,
+      backgroundColor: isDarkMode ? AppColors.dark : AppColors.white,
       appBar: AppBar(
         title: Text(
           'MindLoom',
@@ -222,6 +220,7 @@ class _HomeViewState extends State<HomeView> {
                         height: height,
                         width: width,
                         exploreController: exploreController,
+                        isDarkMode: isDarkMode,
                       );
                     },
                   );
@@ -259,7 +258,7 @@ class _HomeViewState extends State<HomeView> {
                   (context, index) {
                     if (index < homeController.feeds.length) {
                       final story = homeController.feeds[index];
-                      return FeedCard(story: story);
+                      return FeedCard(story: story, isDarkMode: isDarkMode);
                     }
 
                     return const Padding(

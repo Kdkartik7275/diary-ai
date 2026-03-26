@@ -10,10 +10,16 @@ import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class CommentTile extends GetView<CommentsController> {
-  const CommentTile({super.key, required this.comment, this.isReply = false});
+  const CommentTile({
+    super.key,
+    required this.comment,
+    this.isReply = false,
+    required this.isDarkMode,
+  });
 
   final CommentEntity comment;
   final bool isReply;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +33,7 @@ class CommentTile extends GetView<CommentsController> {
       future: userController.getUserById(userId: comment.userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _CommentLoading(isReply: isReply);
+          return _CommentLoading(isReply: isReply,isDarkMode: isDarkMode);
         }
 
         if (snapshot.hasError) {
@@ -61,7 +67,9 @@ class CommentTile extends GetView<CommentsController> {
                                   child: Text(
                                     nameInitials(user.fullName),
                                     style: theme.titleSmall!.copyWith(
-                                      color: AppColors.text,
+                                      color: isDarkMode
+                                          ? AppColors.textDarkSecondary
+                                          : AppColors.text,
                                       fontWeight: FontWeight.normal,
                                       fontSize: isReply ? 11 : 13,
                                     ),
@@ -74,7 +82,9 @@ class CommentTile extends GetView<CommentsController> {
                             child: Text(
                               nameInitials(user.fullName),
                               style: theme.titleSmall!.copyWith(
-                                color: AppColors.text,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.text,
                                 fontWeight: FontWeight.normal,
                                 fontSize: isReply ? 11 : 13,
                               ),
@@ -94,7 +104,9 @@ class CommentTile extends GetView<CommentsController> {
                                 style: theme.titleMedium!.copyWith(
                                   fontWeight: FontWeight.w600,
                                   fontSize: isReply ? 13 : 14,
-                                  color: AppColors.text,
+                                  color: isDarkMode
+                                      ? AppColors.textDarkSecondary
+                                      : AppColors.text,
                                 ),
                               ),
                               const TextSpan(text: '  '),
@@ -103,7 +115,9 @@ class CommentTile extends GetView<CommentsController> {
                                 style: theme.titleSmall!.copyWith(
                                   fontWeight: FontWeight.normal,
                                   fontSize: isReply ? 13 : 14,
-                                  color: AppColors.text,
+                                  color: isDarkMode
+                                      ? AppColors.textDarkSecondary
+                                      : AppColors.text,
                                   height: 1.4,
                                 ),
                               ),
@@ -118,7 +132,9 @@ class CommentTile extends GetView<CommentsController> {
                               getCommentTime(comment.createdAt),
                               style: theme.titleSmall!.copyWith(
                                 fontWeight: FontWeight.normal,
-                                color: AppColors.textLighter,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.textLighter,
                                 fontSize: 12,
                               ),
                             ),
@@ -128,7 +144,9 @@ class CommentTile extends GetView<CommentsController> {
                                 '${comment.likesCount} ${comment.likesCount == 1 ? 'like' : 'likes'}',
                                 style: theme.titleSmall!.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textLighter,
+                                  color: isDarkMode
+                                      ? AppColors.textDarkSecondary
+                                      : AppColors.textLighter,
                                   fontSize: 12,
                                 ),
                               ),
@@ -143,7 +161,9 @@ class CommentTile extends GetView<CommentsController> {
                                   'Reply',
                                   style: theme.titleSmall!.copyWith(
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.textLighter,
+                                    color: isDarkMode
+                                        ? AppColors.textDarkSecondary
+                                        : AppColors.textLighter,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -163,7 +183,9 @@ class CommentTile extends GetView<CommentsController> {
                               child: Icon(
                                 Icons.more_horiz,
                                 size: 16,
-                                color: AppColors.textLighter,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.textLighter,
                               ),
                             ),
                           ],
@@ -185,9 +207,11 @@ class CommentTile extends GetView<CommentsController> {
                                     Container(
                                       width: 24,
                                       height: 1,
-                                      color: AppColors.textLighter.withValues(
-                                        alpha: 0.3,
-                                      ),
+                                      color: isDarkMode
+                                          ? AppColors.textDarkSecondary
+                                          : AppColors.textLighter.withValues(
+                                              alpha: 0.3,
+                                            ),
                                     ),
                                     const SizedBox(width: 12),
                                     Text(
@@ -196,7 +220,9 @@ class CommentTile extends GetView<CommentsController> {
                                           : 'View ${comment.repliesCount} ${comment.repliesCount == 1 ? 'reply' : 'replies'}',
                                       style: theme.titleSmall!.copyWith(
                                         fontSize: 12,
-                                        color: AppColors.textLighter,
+                                        color: isDarkMode
+                                            ? AppColors.textDarkSecondary
+                                            : AppColors.textLighter,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -239,10 +265,12 @@ class CommentTile extends GetView<CommentsController> {
                                         ),
                                         const SizedBox(width: 10),
                                         Text(
-                                          "Loading replies...",
+                                          'Loading replies...',
                                           style: theme.titleSmall!.copyWith(
                                             fontSize: 12,
-                                            color: AppColors.textLighter,
+                                            color: isDarkMode
+                                                ? AppColors.textDarkSecondary
+                                                : AppColors.textLighter,
                                           ),
                                         ),
                                       ],
@@ -270,10 +298,13 @@ class CommentTile extends GetView<CommentsController> {
                                               );
                                             },
                                             child: Text(
-                                              "View more replies",
+                                              'View more replies',
                                               style: theme.titleSmall!.copyWith(
                                                 fontSize: 12,
-                                                color: AppColors.textLighter,
+                                                color: isDarkMode
+                                                    ? AppColors
+                                                          .textDarkSecondary
+                                                    : AppColors.textLighter,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
@@ -301,13 +332,14 @@ class CommentTile extends GetView<CommentsController> {
                                               ),
                                               const SizedBox(width: 10),
                                               Text(
-                                                "Loading more replies...",
-                                                style: theme.titleSmall!
-                                                    .copyWith(
-                                                      fontSize: 12,
-                                                      color:
-                                                          AppColors.textLighter,
-                                                    ),
+                                                'Loading more replies...',
+                                                style: theme.titleSmall!.copyWith(
+                                                  fontSize: 12,
+                                                  color: isDarkMode
+                                                      ? AppColors
+                                                            .textDarkSecondary
+                                                      : AppColors.textLighter,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -336,7 +368,11 @@ class CommentTile extends GetView<CommentsController> {
                       },
                       child: Icon(
                         isLiked ? Icons.favorite : Icons.favorite_border,
-                        color: isLiked ? Colors.red : AppColors.textLighter,
+                        color: isLiked
+                            ? Colors.red
+                            : isDarkMode
+                            ? AppColors.textDarkSecondary
+                            : AppColors.textLighter,
                         size: 18,
                       ),
                     );
@@ -352,9 +388,10 @@ class CommentTile extends GetView<CommentsController> {
 }
 
 class _CommentLoading extends StatelessWidget {
-  const _CommentLoading({required this.isReply});
+  const _CommentLoading({required this.isReply,required this.isDarkMode});
 
   final bool isReply;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -367,7 +404,9 @@ class _CommentLoading extends StatelessWidget {
             width: isReply ? 32 : 44,
             height: isReply ? 32 : 44,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: isDarkMode
+                    ? AppColors.darkSurface
+                    : Colors.grey.shade300,
               shape: BoxShape.circle,
             ),
           ),
@@ -380,7 +419,9 @@ class _CommentLoading extends StatelessWidget {
                   height: 12,
                   width: 120,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: isDarkMode
+                    ? AppColors.darkSurface
+                    : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -389,7 +430,9 @@ class _CommentLoading extends StatelessWidget {
                   height: 12,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: isDarkMode
+                    ? AppColors.darkSurface
+                    : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -412,7 +455,7 @@ class _CommentError extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(top: 6, left: isReply ? 48 : 0),
       child: const Text(
-        "Failed to load user",
+        'Failed to load user',
         style: TextStyle(color: Colors.redAccent, fontSize: 12),
       ),
     );

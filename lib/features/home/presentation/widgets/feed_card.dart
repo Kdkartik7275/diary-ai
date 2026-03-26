@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
-import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
 import 'package:mindloom/features/explore/presentation/view/reading_view.dart';
@@ -13,9 +11,9 @@ import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
-class FeedCard extends GetView<ThemeController> {
-  const FeedCard({super.key, required this.story});
-
+class FeedCard extends StatelessWidget {
+  const FeedCard({super.key, required this.story,required this.isDarkMode});
+final bool isDarkMode;
   final StoryEntity story;
 
   @override
@@ -24,7 +22,6 @@ class FeedCard extends GetView<ThemeController> {
     final width = size.width;
     final height = size.height;
     final theme = Theme.of(context).textTheme;
-    final isDarkMode = controller.isDarkMode;
     return GestureDetector(
       onTap: () =>
           Get.to(() => StoryReadingView(story: story, authorId: story.userId)),

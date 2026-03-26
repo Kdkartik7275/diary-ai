@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/features/notifications/presentation/controller/app_notification_controller.dart';
 import 'package:mindloom/features/notifications/presentation/widgets/notification_tile.dart';
 
 class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, required this.isDarkMode});
   final String title;
-
-  const _SectionHeader({required this.title});
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: AppColors.filled,
+      color: isDarkMode ? AppColors.darkSurface : AppColors.filled,
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge!.copyWith(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: AppColors.hintText,
+          color: isDarkMode ? AppColors.textDarkSecondary : AppColors.hintText,
           letterSpacing: 0.8,
         ),
       ),
@@ -78,17 +79,16 @@ class NotificationView extends GetView<AppNotificationController> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
     return Scaffold(
-      backgroundColor: AppColors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
         elevation: 0,
         title: Text(
           'Notifications',
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
             fontSize: 18,
             fontWeight: FontWeight.normal,
-            color: AppColors.text,
+            color: isDarkMode ? AppColors.white : AppColors.text,
           ),
         ),
       ),
@@ -109,10 +109,11 @@ class NotificationView extends GetView<AppNotificationController> {
         return ListView(
           children: [
             for (final entry in controller.sortedNotifications.entries) ...[
-              _SectionHeader(title: entry.key),
+              _SectionHeader(title: entry.key, isDarkMode: isDarkMode),
               ...entry.value.map(
                 (n) => NotificationTile(
                   notification: n,
+                  isDarkMode: isDarkMode,
                   onTap: () async {
                     await controller.markNotifRead(notifId: n.id);
                   },

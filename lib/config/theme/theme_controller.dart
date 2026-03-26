@@ -25,7 +25,7 @@ class ThemeController extends GetxController {
     } else if (savedTheme == 'light') {
       themeMode.value = ThemeMode.light;
     } else {
-      themeMode.value = ThemeMode.system;
+      themeMode.value = ThemeMode.light;
     }
 
     Get.changeThemeMode(themeMode.value);

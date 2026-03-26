@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/features/social/presentation/controllers/follow_controller.dart';
 import 'package:mindloom/features/social/presentation/widgets/user_tile.dart';
 
@@ -27,11 +28,13 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
   final RxString _searchQuery = ''.obs;
 
   late final FollowController controller;
+  late bool isDarkMode;
 
   @override
   void initState() {
     super.initState();
     controller = Get.find<FollowController>();
+    isDarkMode = Get.find<ThemeController>().isDarkMode;
     controller.fetchFollowers();
     controller.fetchFollowing();
     _tabController = TabController(
@@ -56,9 +59,8 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
     final theme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? AppColors.dark : AppColors.white,
         elevation: 0,
         title: Text(
           'Connections',
@@ -80,7 +82,9 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
                   fontSize: 14,
                 ),
                 labelColor: AppColors.primary,
-                unselectedLabelColor: Colors.black45,
+                unselectedLabelColor: isDarkMode
+                    ? AppColors.textDarkSecondary
+                    : Colors.black45,
                 indicatorColor: AppColors.primary,
                 indicatorWeight: 2.5,
                 indicatorSize: TabBarIndicatorSize.label,
@@ -95,13 +99,13 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
         ),
       ),
       body: Material(
-        color: AppColors.white,
+        color: isDarkMode ? AppColors.dark : AppColors.white,
         child: TabBarView(
           controller: _tabController,
 
           children: [
-            _FollowList(type: _ListType.followers),
-            _FollowList(type: _ListType.following),
+            _FollowList(type: _ListType.followers,isDarkMode: isDarkMode),
+            _FollowList(type: _ListType.following,isDarkMode: isDarkMode),
           ],
         ),
       ),
@@ -112,9 +116,10 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
 enum _ListType { followers, following }
 
 class _FollowList extends StatelessWidget {
-  const _FollowList({required this.type});
+  const _FollowList({required this.type,required this.isDarkMode});
 
   final _ListType type;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +144,7 @@ class _FollowList extends StatelessWidget {
       }
 
       return RefreshIndicator(
-        backgroundColor: AppColors.white,
+        backgroundColor:isDarkMode ?AppColors.darkSurface : AppColors.white,
         color: AppColors.primary,
         onRefresh: () async {
           if (type == _ListType.followers) {
@@ -153,7 +158,7 @@ class _FollowList extends StatelessWidget {
           itemCount: source.length,
           separatorBuilder: (_, _) => const SizedBox(height: 10),
           itemBuilder: (context, index) {
-            return UserTile(userId: source[index].id);
+            return UserTile(userId: source[index].id,isDarkMode: isDarkMode);
           },
         ),
       );

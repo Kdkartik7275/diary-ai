@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/social/presentation/controllers/follow_controller.dart';
 import 'package:mindloom/features/social/presentation/widgets/stories.dart';
@@ -23,12 +24,14 @@ class _UserProfilePageState extends State<UserProfilePage>
   late UserController controller;
   late FollowController followController;
   late UserEntity currentUser;
+  late bool isDarkMode;
 
   @override
   void initState() {
     super.initState();
 
     controller = Get.find<UserController>();
+    isDarkMode = Get.find<ThemeController>().isDarkMode;
 
     followController = Get.find<FollowController>();
 
@@ -48,7 +51,6 @@ class _UserProfilePageState extends State<UserProfilePage>
     final tt = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
       appBar: AppBar(),
       body: FutureBuilder<UserEntity>(
         future: controller.getUserById(userId: widget.userId),
@@ -87,7 +89,9 @@ class _UserProfilePageState extends State<UserProfilePage>
           return SafeArea(
             child: RefreshIndicator(
               color: AppColors.primary,
-              backgroundColor: AppColors.white,
+              backgroundColor: isDarkMode
+                  ? AppColors.darkSurface
+                  : AppColors.white,
               onRefresh: () async {
                 setState(() {});
                 followController.checkFollowStatus(
@@ -97,7 +101,7 @@ class _UserProfilePageState extends State<UserProfilePage>
               },
               child: ListView(
                 children: [
-                  _buildHeader(tt, user),
+                  _buildHeader(tt, user, isDarkMode),
                   Stories(userId: user.id),
                 ],
               ),
@@ -108,20 +112,22 @@ class _UserProfilePageState extends State<UserProfilePage>
     );
   }
 
-  Widget _buildHeader(TextTheme tt, UserEntity user) {
+  Widget _buildHeader(TextTheme tt, UserEntity user, bool isDarkMode) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDarkMode ? AppColors.darkSurface : AppColors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: isDarkMode
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: .1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Column(
         children: [
@@ -145,7 +151,9 @@ class _UserProfilePageState extends State<UserProfilePage>
                           child: Text(
                             nameInitials(user.fullName),
                             style: tt.titleSmall!.copyWith(
-                              color: AppColors.text,
+                              color: isDarkMode
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.text,
                               fontWeight: FontWeight.normal,
                             ),
                           ),
@@ -179,9 +187,12 @@ class _UserProfilePageState extends State<UserProfilePage>
           if (user.bio != null && user.bio!.isNotEmpty) ...[
             Text(
               user.bio!,
-              style: const TextStyle(
+              style: tt.titleSmall!.copyWith(
                 fontSize: 13.5,
-                color: AppColors.textLighter,
+                fontWeight: FontWeight.normal,
+                color: isDarkMode
+                    ? AppColors.textDarkSecondary
+                    : AppColors.textLighter,
                 height: 1.55,
               ),
             ),
@@ -237,7 +248,7 @@ class _UserProfilePageState extends State<UserProfilePage>
               return Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.filled.withValues(alpha: .4),
+                  color:isDarkMode ?AppColors.dark: AppColors.filled.withValues(alpha: .4),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Row(
@@ -247,18 +258,21 @@ class _UserProfilePageState extends State<UserProfilePage>
                       tt,
                       (stat?.storiesCount ?? 0).toString(),
                       'Stories',
+                      isDarkMode,
                     ),
                     _vertDivider(),
                     _statItem(
                       tt,
                       formatCount(stat?.followersCount ?? 0),
                       'Followers',
+                      isDarkMode,
                     ),
                     _vertDivider(),
                     _statItem(
                       tt,
                       formatCount(stat?.followingCount ?? 0),
                       'Following',
+                      isDarkMode,
                     ),
                   ],
                 ),
@@ -278,7 +292,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     );
   }
 
-  Widget _statItem(TextTheme tt, String value, String label) {
+  Widget _statItem(TextTheme tt, String value, String label, bool isDarkMode) {
     return Column(
       children: [
         Text(
@@ -289,7 +303,9 @@ class _UserProfilePageState extends State<UserProfilePage>
         Text(
           label,
           style: tt.titleSmall?.copyWith(
-            color: AppColors.hintText,
+            color: isDarkMode
+                ? AppColors.textDarkSecondary
+                : AppColors.hintText,
             fontWeight: FontWeight.normal,
             fontSize: 12,
           ),

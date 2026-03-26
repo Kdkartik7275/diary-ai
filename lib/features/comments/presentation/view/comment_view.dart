@@ -73,7 +73,9 @@ class _CommentViewState extends State<CommentView> {
               '$commentCount comments',
               style: theme.titleSmall!.copyWith(
                 fontWeight: FontWeight.normal,
-                color: AppColors.textLighter,
+                color: isDarkMode
+                    ? AppColors.textDarkSecondary
+                    : AppColors.textLighter,
               ),
             ),
           ],
@@ -95,7 +97,9 @@ class _CommentViewState extends State<CommentView> {
                       child: Text(
                         'No comments yet',
                         style: theme.titleSmall!.copyWith(
-                          color: AppColors.textLighter,
+                          color: isDarkMode
+                              ? AppColors.textDarkSecondary
+                              : AppColors.textLighter,
                         ),
                       ),
                     )
@@ -115,6 +119,7 @@ class _CommentViewState extends State<CommentView> {
                         itemBuilder: (context, index) {
                           return CommentTile(
                             comment: controller.comments[index],
+                            isDarkMode: isDarkMode,
                           );
                         },
                         separatorBuilder: (BuildContext context, int index) {
@@ -154,20 +159,22 @@ class _CommentViewState extends State<CommentView> {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.fromLTRB(18, 12, 18, 22),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: isDarkMode ? AppColors.dark : AppColors.white,
               border: Border(
                 top: BorderSide(
                   color: AppColors.textLighter.withValues(alpha: 0.1),
                   width: 1,
                 ),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, -4),
-                ),
-              ],
+              boxShadow: isDarkMode
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -182,7 +189,9 @@ class _CommentViewState extends State<CommentView> {
                             'Replying to user',
                             //  'Replying to ${controller.replyingTo.value!.userName}',
                             style: theme.titleSmall!.copyWith(
-                              color: AppColors.textLighter,
+                              color: isDarkMode
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.textLighter,
                               fontSize: 12,
                             ),
                           ),
@@ -194,7 +203,9 @@ class _CommentViewState extends State<CommentView> {
                           child: Icon(
                             Icons.close,
                             size: 18,
-                            color: AppColors.textLighter,
+                            color: isDarkMode
+                                ? AppColors.textDarkSecondary
+                                : AppColors.textLighter,
                           ),
                         ),
                       ],
@@ -219,7 +230,9 @@ class _CommentViewState extends State<CommentView> {
                                     child: Text(
                                       user.fullName.substring(0, 2),
                                       style: theme.titleSmall!.copyWith(
-                                        color: AppColors.text,
+                                        color: isDarkMode
+                                            ? AppColors.textDarkSecondary
+                                            : AppColors.text,
                                         fontWeight: FontWeight.normal,
                                       ),
                                     ),
@@ -231,7 +244,9 @@ class _CommentViewState extends State<CommentView> {
                               child: Text(
                                 user!.fullName.substring(0, 2),
                                 style: theme.titleSmall!.copyWith(
-                                  color: AppColors.text,
+                                  color: isDarkMode
+                                      ? AppColors.textDarkSecondary
+                                      : AppColors.text,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -246,10 +261,14 @@ class _CommentViewState extends State<CommentView> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.white,
+                          color: isDarkMode
+                              ? AppColors.darkSurface
+                              : AppColors.white,
                           borderRadius: BorderRadius.circular(22),
                           border: Border.all(
-                            color: AppColors.textLighter.withValues(alpha: .15),
+                            color: isDarkMode
+                                ? AppColors.darkSurface
+                                : AppColors.textLighter.withValues(alpha: .15),
                             width: 1,
                           ),
                         ),
@@ -257,21 +276,29 @@ class _CommentViewState extends State<CommentView> {
                           controller: controller.contentController,
                           maxLines: 5,
                           minLines: 1,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: AppColors.text,
-                            height: 1.4,
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge!
+                              .copyWith(
+                                fontSize: 15,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.text,
+                                height: 1.4,
+                              ),
                           decoration: InputDecoration(
                             hintText: isReplying
                                 ? 'Add a reply...'
                                 : 'Add a comment...',
                             hintStyle: TextStyle(
-                              color: AppColors.textLighter.withValues(
-                                alpha: 0.6,
-                              ),
+                              color: isDarkMode
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.textLighter.withValues(
+                                      alpha: 0.6,
+                                    ),
                               fontSize: 15,
                             ),
+                            fillColor: isDarkMode
+                                ? AppColors.darkSurface
+                                : AppColors.white,
                             border: InputBorder.none,
                             enabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
@@ -321,6 +348,8 @@ class _CommentViewState extends State<CommentView> {
                               style: theme.titleMedium!.copyWith(
                                 color: hasText
                                     ? AppColors.primary
+                                    : isDarkMode
+                                    ? AppColors.textDarkSecondary
                                     : AppColors.textLighter.withValues(
                                         alpha: 0.5,
                                       ),

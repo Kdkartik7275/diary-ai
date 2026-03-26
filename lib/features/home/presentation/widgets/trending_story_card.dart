@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
-import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
 import 'package:mindloom/features/explore/presentation/view/reading_view.dart';
@@ -9,19 +8,21 @@ import 'package:mindloom/features/home/presentation/widgets/trending_story_autho
 import 'package:mindloom/features/home/presentation/widgets/trending_story_header.dart';
 import 'package:mindloom/features/home/presentation/widgets/trending_story_stats.dart';
 
-class TrendingStoryCard extends GetView<ThemeController> {
+class TrendingStoryCard extends StatelessWidget {
   const TrendingStoryCard({
     super.key,
     required this.story,
     required this.height,
     required this.width,
     required this.exploreController,
+    required this.isDarkMode
   });
 
   final TrendingStoryEntity story;
   final double height;
   final double width;
   final ExploreController exploreController;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class TrendingStoryCard extends GetView<ThemeController> {
         margin: EdgeInsets.all(12),
         padding: EdgeInsets.only(bottom: 6),
         decoration: BoxDecoration(
-          color: controller.isDarkMode
+          color: isDarkMode
               ? AppColors.darkSurface
               : AppColors.white,
           borderRadius: BorderRadius.circular(16),

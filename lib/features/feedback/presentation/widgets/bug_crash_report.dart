@@ -1,11 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:mindloom/config/constants/colors.dart';
 
 import 'package:mindloom/features/feedback/presentation/widgets/bug_dropdown.dart';
 import 'package:mindloom/features/feedback/presentation/widgets/issue_details.dart';
 
 class BugOrCrashReport extends StatefulWidget {
-  const BugOrCrashReport({super.key});
+  const BugOrCrashReport({super.key,required this.isDarkMode});
+  final bool isDarkMode;
 
   @override
   State<BugOrCrashReport> createState() => _BugOrCrashReportState();
@@ -51,6 +53,7 @@ class _BugOrCrashReportState extends State<BugOrCrashReport> {
                     width: triggerWidth,
                     child: BugDropdownMenu(
                       items: categories,
+                      isDarkMode: widget.isDarkMode,
                       selected: selectedCategory,
                       onSelect: (val) {
                         setState(() => selectedCategory = val);
@@ -98,7 +101,7 @@ class _BugOrCrashReportState extends State<BugOrCrashReport> {
               duration: const Duration(milliseconds: 180),
               height: 56,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color:widget.isDarkMode ?AppColors.darkSurface : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: _open

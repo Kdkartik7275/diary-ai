@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/features/explore/presentation/view/reading_view.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
@@ -62,7 +62,7 @@ class _ProfileStoriesEmptyState extends StatelessWidget {
           const SizedBox(height: 28),
 
           Text(
-            "No stories published",
+            'No stories published',
             style: tt.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
               letterSpacing: -0.3,
@@ -73,7 +73,7 @@ class _ProfileStoriesEmptyState extends StatelessWidget {
           const SizedBox(height: 10),
 
           Text(
-            "When they publish their first story,\nit will appear here.",
+            'When they publish their first story,\nit will appear here.',
             style: tt.titleSmall?.copyWith(
               color: AppColors.hintText,
               fontWeight: FontWeight.normal,
@@ -94,21 +94,24 @@ class UserStoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
 
     return GestureDetector(
       onTap: () =>
           Get.to(() => StoryReadingView(story: story, authorId: story.userId)),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: isDarkMode ? AppColors.darkSurface : AppColors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: isDarkMode
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +121,7 @@ class UserStoryCard extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: isDarkMode ? AppColors.darkSurface : AppColors.white,
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
@@ -135,10 +138,9 @@ class UserStoryCard extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                       )
-                    : Icon(
-                        CupertinoIcons.book,
-                        color: AppColors.white,
-                        size: 40,
+                    : Image.asset(
+                        'assets/icons/logo_new.png',
+                        fit: BoxFit.cover,
                       ),
               ),
             ),
@@ -149,15 +151,21 @@ class UserStoryCard extends StatelessWidget {
                 children: [
                   Text(
                     story.title,
-                    style: tt.titleSmall?.copyWith(color: AppColors.text),
+                    style: tt.titleSmall?.copyWith(
+                      color: isDarkMode
+                          ? AppColors.textDarkSecondary
+                          : AppColors.text,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "${story.chapters.length} Chapters",
+                    '${story.chapters.length} Chapters',
                     style: tt.titleSmall?.copyWith(
-                      color: AppColors.hintText,
+                      color: isDarkMode
+                          ? AppColors.textDarkSecondary
+                          : AppColors.hintText,
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
                     ),
