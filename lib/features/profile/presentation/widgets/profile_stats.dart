@@ -27,9 +27,9 @@ class ProfileStats extends StatelessWidget {
             children: [
               _statCard(
                 color: const Color(0xFF8BC6FF),
-                icon: CupertinoIcons.arrow_up_right,
-                value: '12 days',
-                label: 'Writing Streak',
+                icon: CupertinoIcons.bookmark,
+                value: '0',
+                label: 'Saved Stories',
                 theme: theme,
               ),
               const SizedBox(width: 14),
@@ -38,6 +38,7 @@ class ProfileStats extends StatelessWidget {
                 icon: CupertinoIcons.pencil_outline,
                 value: totalEntries.toString(),
                 label: 'Total Entries',
+
                 theme: theme,
               ),
             ],
@@ -73,49 +74,56 @@ class ProfileStats extends StatelessWidget {
     required String value,
     required String label,
     required TextTheme theme,
+    Function()? onTap,
   }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isDarkMode ? AppColors.darkSurface : Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .07),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: .2),
-                borderRadius: BorderRadius.circular(12),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isDarkMode ? AppColors.darkSurface : Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .07),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: theme.titleLarge!.copyWith(
-                fontWeight: FontWeight.w700,
-                color: isDarkMode ? AppColors.textDark : Colors.black87,
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: .2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 22),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: theme.titleLarge!.copyWith(
-                fontSize: 13,
-                color: isDarkMode ? AppColors.textDark : Colors.black54,
+              const SizedBox(height: 12),
+              Text(
+                value,
+                style: theme.titleLarge!.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: isDarkMode ? AppColors.textDark : Colors.black87,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: theme.titleLarge!.copyWith(
+                  fontSize: 13,
+                  color: isDarkMode ? AppColors.textDark : Colors.black54,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

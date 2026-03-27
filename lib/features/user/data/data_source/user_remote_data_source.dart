@@ -57,6 +57,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         totalLikesReceived: 0,
         totalReadsReceived: 0,
         commentsCount: 0,
+        savedStoriesCount: 0,
       );
       await firestore
           .collection('user_stats')

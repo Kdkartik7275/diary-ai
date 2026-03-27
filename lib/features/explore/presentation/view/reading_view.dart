@@ -56,6 +56,9 @@ class _StoryReadingViewState extends State<StoryReadingView> {
         markStoryReadUseCase: sl<MarkStoryRead>(),
         unlikeStoryUseCase: sl<UnlikeStory>(),
         createNotificationUseCase: sl<CreateNotification>(),
+        saveStoryUseCase: sl(),
+        savedByYouUseCase: sl(),
+        removeSavedUseCase: sl(),
       ),
     );
     isDarkMode = Get.find<ThemeController>().isDarkMode;
@@ -68,6 +71,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
         targetUserId: widget.authorId,
       );
       controller.initializeStory(story: widget.story);
+      controller.savedByYouStatus(widget.story.id);
     });
 
     controller.markStoryRead(storyId: widget.story.id);
@@ -196,14 +200,26 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                               onPressed: isLoading
                                   ? null
                                   : () {
-                                      followController.followUser(
-                                        currentUserId: currentUser.id,
+                                      if (!isFollowing) {
+                                        followController.followUser(
+                                          currentUserId: currentUser.id,
 
-                                        targetUserId: user.id,
+                                          targetUserId: user.id,
 
-                                        currentUserFullName:
-                                            currentUser.fullName,
-                                      );
+                                          currentUserFullName:
+                                              currentUser.fullName,
+                                        );
+                                      }
+                                      if (isFollowing) {
+                                        followController.unfollowUser(
+                                          currentUserId: currentUser.id,
+
+                                          targetUserId: user.id,
+
+                                          currentUserFullName:
+                                              currentUser.fullName,
+                                        );
+                                      }
                                     },
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
@@ -357,7 +373,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
       bottomSheet: Container(
         height: 80,
         padding: EdgeInsets.symmetric(vertical: 12),
-        color:isDarkMode ?AppColors.dark: AppColors.white,
+        color: isDarkMode ? AppColors.dark : AppColors.white,
         child: Obx(() {
           if (controller.isLoadingStats) {
             return _BottomStatsLoading();
@@ -424,18 +440,29 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  Icon(Icons.bookmark_border, color: AppColors.border),
-                  Text(
-                    'Save',
-                    style: theme.titleSmall!.copyWith(
-                      fontWeight: FontWeight.normal,
-                      color: AppColors.textLighter,
-                    ),
+              Obx(() {
+                final isSaved = controller.savedMap[widget.story.id] ?? false;
+                return GestureDetector(
+                  onTap: () => isSaved
+                      ? controller.removeFromSaved(widget.story.id)
+                      : controller.saveStory(widget.story.id),
+                  child: Column(
+                    children: [
+                      Icon(
+                        isSaved ? Icons.bookmark : Icons.bookmark_border,
+                        color: isSaved ? AppColors.primary : AppColors.border,
+                      ),
+                      Text(
+                        isSaved ? 'Saved' : 'Save',
+                        style: theme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.normal,
+                          color: AppColors.textLighter,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              }),
             ],
           );
         }),

@@ -17,6 +17,7 @@ import 'package:mindloom/features/home/presentation/widgets/trending_story_card.
 import 'package:mindloom/features/home/presentation/widgets/trending_story_loading_card.dart';
 import 'package:mindloom/features/notifications/presentation/controller/app_notification_controller.dart';
 import 'package:mindloom/features/story/presentation/controller/story_controller.dart';
+import 'package:mindloom/features/streak/presentation/controller/streak_controller.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class HomeView extends StatefulWidget {
@@ -34,6 +35,7 @@ class _HomeViewState extends State<HomeView> {
   late ExploreController exploreController;
   late AppNotificationController notificationController;
   late ThemeController themeController;
+  late StreakController streakController;
   late ScrollController scrollController;
   late String greeting;
   late String subtitle;
@@ -52,7 +54,9 @@ class _HomeViewState extends State<HomeView> {
     notificationController = Get.find<AppNotificationController>();
     exploreController = Get.find<ExploreController>();
     themeController = Get.find<ThemeController>();
+    streakController = Get.find<StreakController>();
 
+    streakController.loadStreak();
     scrollController = ScrollController();
 
     scrollController.addListener(() {
@@ -94,6 +98,8 @@ class _HomeViewState extends State<HomeView> {
         ],
       ),
       body: RefreshIndicator(
+        backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
+        color: AppColors.primary,
         onRefresh: () async {
           await diaryController.getDiaries();
           await storyController.getDrafts();
@@ -153,11 +159,13 @@ class _HomeViewState extends State<HomeView> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: StatCard(
-                        icon: Icons.trending_up_rounded,
-                        label: 'Writing Streak',
-                        value: '0 Days',
-                        theme: theme,
+                      child: Obx(
+                        () => StatCard(
+                          icon: Icons.trending_up_rounded,
+                          label: 'Writing Streak',
+                          value: '${streakController.currentStreak.value} Days',
+                          theme: theme,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),

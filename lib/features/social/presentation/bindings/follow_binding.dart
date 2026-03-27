@@ -12,6 +12,7 @@ class FollowBinding extends Bindings {
         getFollowersUseCase: sl(),
         getFollowingsUseCase: sl(),
         createNotificationUseCase: sl(),
+        unFollowUserUseCase: sl()
       ),
       fenix: true,
     );

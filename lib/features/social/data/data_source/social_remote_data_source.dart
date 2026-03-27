@@ -8,7 +8,10 @@ abstract interface class SocialRemoteDataSource {
     required String currentUserId,
     required String targetUserId,
   });
-
+  Future<void> unfollowUser({
+    required String currentUserId,
+    required String targetUserId,
+  });
   Future<FollowStatusModel> getFollowStatus({
     required String currentUserId,
     required String targetUserId,
@@ -136,5 +139,44 @@ class SocialRemoteDataSourceImpl implements SocialRemoteDataSource {
     } catch (e) {
       throw e.toString();
     }
+  }
+
+  @override
+  Future<void> unfollowUser({
+    required String currentUserId,
+    required String targetUserId,
+  }) async {
+    final followingRef = firestore
+        .collection('user_following')
+        .doc(currentUserId)
+        .collection('users')
+        .doc(targetUserId);
+
+    final followerRef = firestore
+        .collection('user_followers')
+        .doc(targetUserId)
+        .collection('users')
+        .doc(currentUserId);
+
+    final currentStats = firestore.collection('user_stats').doc(currentUserId);
+
+    final targetStats = firestore.collection('user_stats').doc(targetUserId);
+
+    await firestore.runTransaction((tx) async {
+      final alreadyFollowing = await tx.get(followingRef);
+
+      if (!alreadyFollowing.exists) return;
+
+      tx.delete(followingRef);
+      tx.delete(followerRef);
+
+      tx.set(currentStats, {
+        'followingCount': FieldValue.increment(-1),
+      }, SetOptions(merge: true));
+
+      tx.set(targetStats, {
+        'followersCount': FieldValue.increment(-1),
+      }, SetOptions(merge: true));
+    });
   }
 }

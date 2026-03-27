@@ -12,12 +12,18 @@ import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
 import 'package:mindloom/features/diary/domain/usecases/create_diary.dart';
 import 'package:mindloom/features/diary/domain/usecases/update_diary.dart';
 import 'package:mindloom/features/diary/presentation/controller/diary_controller.dart';
+import 'package:mindloom/features/streak/domain/usecases/update_streak.dart';
 
 class CreateDiaryController extends GetxController {
   final CreateDiary createDiary;
   final UpdateDiary updateDiary;
+  final UpdateStreak updateStreak;
 
-  CreateDiaryController({required this.createDiary, required this.updateDiary});
+  CreateDiaryController({
+    required this.createDiary,
+    required this.updateDiary,
+    required this.updateStreak,
+  });
 
   RxBool creating = false.obs;
   RxString mood = ''.obs;
@@ -49,32 +55,32 @@ class CreateDiaryController extends GetxController {
   }
 
   final List<String> suggestedTags = [
-    "Work",
-    "Mood",
-    "Health",
-    "Focus",
-    "Gratitude",
-    "Personal",
-    "Family",
-    "Friends",
-    "Fitness",
-    "Stress",
-    "Sleep",
-    "Habits",
-    "Goals",
-    "Learning",
-    "Nature",
-    "Travel",
-    "Productivity",
-    "Mindfulness",
-    "Finance",
-    "Creativity",
-    "Memories",
-    "Hobby",
-    "Relationships",
-    "Food",
-    "Relaxation",
-    "Growth",
+    'Work',
+    'Mood',
+    'Health',
+    'Focus',
+    'Gratitude',
+    'Personal',
+    'Family',
+    'Friends',
+    'Fitness',
+    'Stress',
+    'Sleep',
+    'Habits',
+    'Goals',
+    'Learning',
+    'Nature',
+    'Travel',
+    'Productivity',
+    'Mindfulness',
+    'Finance',
+    'Creativity',
+    'Memories',
+    'Hobby',
+    'Relationships',
+    'Food',
+    'Relaxation',
+    'Growth',
   ];
 
   void addCustomTag(String tag) {
@@ -107,7 +113,7 @@ class CreateDiaryController extends GetxController {
     if (text.trim().isEmpty) return 0;
     return text
         .trim()
-        .split(RegExp(r"\s+"))
+        .split(RegExp(r'\s+'))
         .where((word) => word.isNotEmpty)
         .length;
   }
@@ -143,13 +149,14 @@ class CreateDiaryController extends GetxController {
         'tags': selectedTags,
       };
       final result = await createDiary.call(diary);
-      result.fold((error) => showErrorDialog(error.message), (entry) {
+      result.fold((error) => showErrorDialog(error.message), (entry) async {
         showSuccessDialog(
           'Your entry has been saved. Thanks for taking a moment for yourself today.',
         );
         isEdit.value = true;
         editingId = entry.id;
         diaryController.updateDiary(entry);
+        await _updateStreakAfterEntry();
       });
     } catch (e) {
       showErrorDialog(e.toString());
@@ -196,5 +203,26 @@ class CreateDiaryController extends GetxController {
   String formattedEffectiveDate(Timestamp? updatedAt, Timestamp createdAt) {
     final effective = updatedAt?.toDate() ?? createdAt.toDate();
     return DateFormat('MMMM d, yyyy').format(effective);
+  }
+
+  Future<void> _updateStreakAfterEntry() async {
+    try {
+      final userId = sl<FirebaseAuth>().currentUser!.uid;
+
+      final result = await updateStreak(
+        UpdateStreakParams(userId: userId, entryDate: Timestamp.now()),
+      );
+
+      result.fold(
+        (failure) {
+          debugPrint('Streak update failed: ${failure.message}');
+        },
+        (_) {
+          debugPrint('Streak updated successfully');
+        },
+      );
+    } catch (e) {
+      debugPrint('Streak error: $e');
+    }
   }
 }

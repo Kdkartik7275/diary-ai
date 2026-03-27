@@ -629,6 +629,7 @@ class TestingApp {
       totalLikesReceived: 0,
       totalReadsReceived: 0,
       commentsCount: 0,
+      savedStoriesCount: 0,
     );
     await firestore.collection('user_stats').doc(userId).set(userStat.toMap());
   }
@@ -724,7 +725,6 @@ class TestingApp {
       final batch = firestore.batch();
 
       for (final doc in snapshot.docs) {
-
         final data = doc.data();
 
         final title = data['title'];

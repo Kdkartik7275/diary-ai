@@ -13,20 +13,28 @@ import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/domain/entity/story_stats.dart';
 import 'package:mindloom/features/story/domain/usecases/like_story.dart';
 import 'package:mindloom/features/story/domain/usecases/mark_story_read.dart';
+import 'package:mindloom/features/story/domain/usecases/remove_saved.dart';
+import 'package:mindloom/features/story/domain/usecases/save_story.dart';
+import 'package:mindloom/features/story/domain/usecases/saved_by_you.dart';
 import 'package:mindloom/features/story/domain/usecases/unlike_story.dart';
 
 class StoryReadingController extends GetxController {
-  final LikeStory likeStoryUseCase;
-  final UnlikeStory unlikeStoryUseCase;
-  final MarkStoryRead markStoryReadUseCase;
-  final CreateNotification createNotificationUseCase;
-
   StoryReadingController({
     required this.likeStoryUseCase,
     required this.markStoryReadUseCase,
     required this.unlikeStoryUseCase,
     required this.createNotificationUseCase,
+    required this.saveStoryUseCase,
+    required this.removeSavedUseCase,
+    required this.savedByYouUseCase,
   });
+  final LikeStory likeStoryUseCase;
+  final UnlikeStory unlikeStoryUseCase;
+  final MarkStoryRead markStoryReadUseCase;
+  final CreateNotification createNotificationUseCase;
+  final SaveStory saveStoryUseCase;
+  final RemoveSaved removeSavedUseCase;
+  final SavedByYou savedByYouUseCase;
 
   final exploreController = Get.find<ExploreController>();
 
@@ -40,6 +48,8 @@ class StoryReadingController extends GetxController {
   StoryStatsEntity? get stats => _stats.value;
 
   final _isLoadingStats = false.obs;
+
+  RxMap<String, bool> savedMap = RxMap({});
   bool get isLoadingStats => _isLoadingStats.value;
 
   void initializeStory({required StoryEntity story}) {
@@ -235,16 +245,62 @@ class StoryReadingController extends GetxController {
       showErrorDialog(e.toString());
     }
   }
+
+  Future<void> saveStory(String storyId) async {
+    try {
+      savedMap[storyId] = true;
+      await saveStoryUseCase.call(
+        SaveStoryParams(
+          userId: sl<FirebaseAuth>().currentUser!.uid,
+          storyId: storyId,
+        ),
+      );
+    } catch (e) {
+      showErrorDialog(e.toString());
+    }
+  }
+
+  Future<void> removeFromSaved(String storyId) async {
+    try {debugPrint('Status not available');
+      savedMap[storyId] = false;
+      await removeSavedUseCase.call(
+        RemoveSavedParams(
+          userId: sl<FirebaseAuth>().currentUser!.uid,
+          storyId: storyId,
+        ),
+      );
+    } catch (e) {
+      showErrorDialog(e.toString());
+    }
+  }
+
+  Future<void> savedByYouStatus(String storyId) async {
+    try {
+      if (savedMap.containsKey(storyId)) {
+        return;
+      }
+
+      final result = await savedByYouUseCase.call(
+        SavedByYouParams(
+          userId: sl<FirebaseAuth>().currentUser!.uid,
+          storyId: storyId,
+        ),
+      );
+
+      result.fold((err) {}, (r) => savedMap[storyId] = r);
+    } catch (e) {
+      //
+    }
+  }
 }
 
 class _ReaderPage {
-  final String chapterTitle;
-  final String content;
-  final int chapterNumber;
-
   const _ReaderPage({
     required this.chapterTitle,
     required this.content,
     required this.chapterNumber,
   });
+  final String chapterTitle;
+  final String content;
+  final int chapterNumber;
 }

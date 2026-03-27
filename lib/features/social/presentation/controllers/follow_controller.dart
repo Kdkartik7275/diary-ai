@@ -9,22 +9,24 @@ import 'package:mindloom/features/social/domain/usecases/follow_user.dart';
 import 'package:mindloom/features/social/domain/usecases/get_follow_status.dart';
 import 'package:mindloom/features/social/domain/usecases/get_followers.dart';
 import 'package:mindloom/features/social/domain/usecases/get_followings.dart';
+import 'package:mindloom/features/social/domain/usecases/unfollow_user.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class FollowController extends GetxController {
-  final FollowUser followUserUseCase;
-  final GetFollowStatus getFollowStatusUseCase;
-  final GetFollowers getFollowersUseCase;
-  final GetFollowings getFollowingsUseCase;
-  final CreateNotification createNotificationUseCase;
-
   FollowController({
     required this.followUserUseCase,
     required this.getFollowStatusUseCase,
     required this.getFollowersUseCase,
     required this.getFollowingsUseCase,
     required this.createNotificationUseCase,
+    required this.unFollowUserUseCase,
   });
+  final FollowUser followUserUseCase;
+  final UnFollowUser unFollowUserUseCase;
+  final GetFollowStatus getFollowStatusUseCase;
+  final GetFollowers getFollowersUseCase;
+  final GetFollowings getFollowingsUseCase;
+  final CreateNotification createNotificationUseCase;
 
   RxBool isFollowing = false.obs;
   RxBool isFollowedBy = false.obs;
@@ -86,6 +88,31 @@ class FollowController extends GetxController {
           username: currentUserFullName,
           referenceId: currentUserId,
         );
+      },
+    );
+  }
+
+  Future<void> unfollowUser({
+    required String currentUserId,
+    required String targetUserId,
+    required String currentUserFullName,
+  }) async {
+    isFollowing.value = false;
+    final params = UnfollowUserParams(
+      currentUserId: currentUserId,
+      targetUserId: targetUserId,
+    );
+
+    final result = await unFollowUserUseCase.call(params);
+
+    result.fold(
+      (failure) {
+        isLoading.value = false;
+        isFollowing.value = false;
+      },
+      (_) {
+        userController.updateFollowingCount(-1);
+        isLoading.value = false;
       },
     );
   }

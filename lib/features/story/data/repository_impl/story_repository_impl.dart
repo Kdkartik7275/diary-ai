@@ -370,4 +370,61 @@ class StoryRepositoryImpl implements StoryRepository {
       return left(FirebaseFailure(message: e.toString()));
     }
   }
+
+  @override
+  ResultVoid saveStory({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      await remoteDataSource.saveStory(userId: userId, storyId: storyId);
+
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<bool> savedByYou({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.savedByYou(
+        userId: userId,
+        storyId: storyId,
+      );
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultVoid removeFromSaved({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      await remoteDataSource.removeSaved(userId: userId, storyId: storyId);
+
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
 }

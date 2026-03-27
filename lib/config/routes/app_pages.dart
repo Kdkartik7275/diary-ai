@@ -26,6 +26,7 @@ import 'package:mindloom/features/story/presentation/views/create_manual_story.d
 import 'package:mindloom/features/story/presentation/views/create_story_view.dart';
 import 'package:mindloom/features/story/presentation/views/story_summary_view.dart';
 import 'package:mindloom/features/story/presentation/views/story_type_view.dart';
+import 'package:mindloom/features/streak/presentation/binding/streak_binding.dart';
 import 'package:mindloom/features/user/presentation/binding/user_binding.dart';
 import 'package:mindloom/tabs.dart';
 import 'package:mindloom/features/onboarding/binding/onboarding_binding.dart';
@@ -63,6 +64,7 @@ class AppPages {
         ExploreBinding(),
         FollowBinding(),
         NotificationBinding(),
+        StreakBinding()
       ],
     ),
     GetPage(

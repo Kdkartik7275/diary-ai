@@ -25,13 +25,16 @@ abstract interface class StoryRemoteDataSource {
   });
   Future<void> likeStory({required String storyId, required String userId});
   Future<void> unlikeStory({required String storyId, required String userId});
-
+  Future<bool> savedByYou({required String storyId, required String userId});
   Future<void> markStoryRead({required String storyId, required String userId});
 
   Future<StoryModel> publishStory({
     required String storyId,
     required String userId,
   });
+  Future saveStory({required String storyId, required String userId});
+  Future removeSaved({required String storyId, required String userId});
+
   Future<List<StoryModel>> getUserDrafts({required String userId});
 
   Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})> getUserFeed({
@@ -502,6 +505,108 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
       return (stories: stories, lastDoc: newLastDoc);
     } catch (e) {
       debugPrint(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<void> saveStory({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      final statsRef = firestore.collection('story_stats').doc(storyId);
+
+      final savedRef = firestore
+          .collection('user_saved_stories')
+          .doc(userId)
+          .collection('stories')
+          .doc(storyId);
+
+      final userStatsRef = firestore.collection('user_stats').doc(userId);
+
+      await firestore.runTransaction((transaction) async {
+        final savedDoc = await transaction.get(savedRef);
+
+        if (savedDoc.exists) return;
+
+        transaction.set(savedRef, {
+          'storyId': storyId,
+          'savedAt': Timestamp.now(),
+        });
+
+        transaction.set(statsRef, {
+          'storyId': storyId,
+          'saved': FieldValue.increment(1),
+        }, SetOptions(merge: true));
+
+        transaction.set(userStatsRef, {
+          'userId': userId,
+          'savedStoriesCount': FieldValue.increment(1),
+        }, SetOptions(merge: true));
+      });
+
+      await _updateTrendingScore(storyId: storyId, savedDelta: 1);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<bool> savedByYou({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      final savedRef = firestore
+          .collection('user_saved_stories')
+          .doc(userId)
+          .collection('stories')
+          .doc(storyId);
+
+      final doc = await savedRef.get();
+      return doc.exists;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<void> removeSaved({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      final statsRef = firestore.collection('story_stats').doc(storyId);
+
+      final savedRef = firestore
+          .collection('user_saved_stories')
+          .doc(userId)
+          .collection('stories')
+          .doc(storyId);
+
+      final userStatsRef = firestore.collection('user_stats').doc(userId);
+
+      await firestore.runTransaction((transaction) async {
+        final savedDoc = await transaction.get(savedRef);
+
+        if (!savedDoc.exists) return;
+
+        transaction.delete(savedRef);
+
+        transaction.set(statsRef, {
+          'storyId': storyId,
+          'saved': FieldValue.increment(-1),
+        }, SetOptions(merge: true));
+
+        transaction.set(userStatsRef, {
+          'userId': userId,
+          'savedCount': FieldValue.increment(-1),
+        }, SetOptions(merge: true));
+      });
+
+      await _updateTrendingScore(storyId: storyId, savedDelta: -1);
+    } catch (e) {
       throw Exception(e.toString());
     }
   }

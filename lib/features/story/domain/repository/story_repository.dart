@@ -18,6 +18,9 @@ abstract interface class StoryRepository {
     required String storyId,
     required String userId,
   });
+
+  ResultVoid saveStory({required String storyId, required String userId});
+  ResultVoid removeFromSaved({required String storyId, required String userId});
   ResultFuture<StoryEntity> editStory({required Map<String, dynamic> data});
 
   ResultFuture<List<StoryEntity>> getUserDrafts({required String userId});
@@ -30,6 +33,11 @@ abstract interface class StoryRepository {
     required String userId,
   });
   ResultFuture<void> unlikeStory({
+    required String storyId,
+    required String userId,
+  });
+
+  ResultFuture<bool> savedByYou({
     required String storyId,
     required String userId,
   });

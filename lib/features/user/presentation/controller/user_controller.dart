@@ -109,6 +109,7 @@ class UserController extends GetxController {
       followingCount: userStats.value!.followingCount + delta,
     );
   }
+  
 
   void updateUser(UserEntity user) {
     currentUser.value = user;
