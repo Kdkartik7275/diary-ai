@@ -8,7 +8,6 @@ import 'package:mindloom/features/user/domain/usecases/get_user.dart';
 import 'package:mindloom/features/user/domain/usecases/get_user_stats.dart';
 
 class UserController extends GetxController {
-
   UserController({
     required this.getUserUseCase,
     required this.getPublishedStoriesByUserUseCase,
@@ -109,7 +108,14 @@ class UserController extends GetxController {
       followingCount: userStats.value!.followingCount + delta,
     );
   }
-  
+
+  Future<void> updateSavedStoryCount(int delta) async {
+    if (userStats.value == null) return;
+
+    userStats.value = userStats.value!.copyWith(
+      savedStoriesCount: userStats.value!.savedStoriesCount + delta,
+    );
+  }
 
   void updateUser(UserEntity user) {
     currentUser.value = user;

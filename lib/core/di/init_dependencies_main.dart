@@ -154,6 +154,7 @@ void _initStory() {
   sl.registerLazySingleton(() => SaveStory(repository: sl()));
   sl.registerLazySingleton(() => RemoveSaved(repository: sl()));
   sl.registerLazySingleton(() => SavedByYou(repository: sl()));
+  sl.registerLazySingleton(() => GetSavedStories(repository: sl()));
 }
 
 void _initExplore() {

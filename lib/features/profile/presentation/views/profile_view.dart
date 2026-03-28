@@ -45,6 +45,7 @@ class ProfileView extends GetView<UserController> {
               ),
               ProfileStats(
                 publishedStoriesCount: publishedStories,
+                savedCount: controller.userStats.value?.savedStoriesCount ?? 0,
                 totalWordsCount: totalWordsCount,
                 isDarkMode: isDarkMode,
                 totalEntries: diaryController.diaries.length,

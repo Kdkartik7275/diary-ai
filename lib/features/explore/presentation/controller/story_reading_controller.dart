@@ -17,6 +17,7 @@ import 'package:mindloom/features/story/domain/usecases/remove_saved.dart';
 import 'package:mindloom/features/story/domain/usecases/save_story.dart';
 import 'package:mindloom/features/story/domain/usecases/saved_by_you.dart';
 import 'package:mindloom/features/story/domain/usecases/unlike_story.dart';
+import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class StoryReadingController extends GetxController {
   StoryReadingController({
@@ -37,6 +38,7 @@ class StoryReadingController extends GetxController {
   final SavedByYou savedByYouUseCase;
 
   final exploreController = Get.find<ExploreController>();
+  final userController = Get.find<UserController>();
 
   final _currentPage = 0.obs;
   int get currentPage => _currentPage.value;
@@ -255,13 +257,15 @@ class StoryReadingController extends GetxController {
           storyId: storyId,
         ),
       );
+      await userController.updateSavedStoryCount(1);
     } catch (e) {
       showErrorDialog(e.toString());
     }
   }
 
   Future<void> removeFromSaved(String storyId) async {
-    try {debugPrint('Status not available');
+    try {
+      debugPrint('Status not available');
       savedMap[storyId] = false;
       await removeSavedUseCase.call(
         RemoveSavedParams(
@@ -269,6 +273,7 @@ class StoryReadingController extends GetxController {
           storyId: storyId,
         ),
       );
+      await userController.updateSavedStoryCount(-1);
     } catch (e) {
       showErrorDialog(e.toString());
     }

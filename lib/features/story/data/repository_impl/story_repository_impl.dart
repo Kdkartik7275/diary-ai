@@ -427,4 +427,28 @@ class StoryRepositoryImpl implements StoryRepository {
       return left(FirebaseFailure(message: e.toString()));
     }
   }
+
+  @override
+  ResultFuture<
+    ({DocumentSnapshot<Object?>? lastDoc, List<StoryEntity> stories})
+  >
+  getSavedStories({
+    required String userId,
+    DocumentSnapshot<Object?>? lastDoc,
+  }) async {
+    try {
+      final result = await remoteDataSource.getSavedStories(
+        userId: userId,
+        lastDoc: lastDoc,
+      );
+
+      for (StoryModel story in result.stories) {
+        await localDataSource.createStory(data: story);
+      }
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
 }

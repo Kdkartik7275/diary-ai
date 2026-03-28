@@ -45,6 +45,9 @@ abstract interface class StoryRemoteDataSource {
   getPublisedStories({required String userId, DocumentSnapshot? lastDoc});
   Future<List<StoryModel>> getPublishedStoriesByUser({required String userId});
   Future<String?> uploadStoryCoverImage(File image);
+
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getSavedStories({required String userId, DocumentSnapshot? lastDoc});
 }
 
 class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
@@ -601,12 +604,78 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
 
         transaction.set(userStatsRef, {
           'userId': userId,
-          'savedCount': FieldValue.increment(-1),
+          'savedStoriesCount': FieldValue.increment(-1),
         }, SetOptions(merge: true));
       });
 
       await _updateTrendingScore(storyId: storyId, savedDelta: -1);
     } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getSavedStories({required String userId, DocumentSnapshot? lastDoc}) async {
+    try {
+      debugPrint('🟡 getSavedStories START → userId: $userId');
+
+      Query query = firestore
+          .collection('user_saved_stories')
+          .doc(userId)
+          .collection('stories')
+          .orderBy('savedAt', descending: true)
+          .limit(10);
+
+      if (lastDoc != null) {
+        debugPrint('📌 Applying pagination...');
+        query = query.startAfterDocument(lastDoc);
+      }
+
+      final snapshot = await query.get();
+
+      debugPrint('📄 Saved docs fetched: ${snapshot.docs.length}');
+
+      if (snapshot.docs.isEmpty) {
+        return (stories: <StoryModel>[], lastDoc: null);
+      }
+
+      final storyIds = snapshot.docs.map((doc) => doc.id).toList();
+
+      debugPrint('🧾 Story IDs: $storyIds');
+
+      // 🔥 Fetch stories in chunks (Firestore whereIn limit = 10)
+      List<StoryModel> stories = [];
+
+      for (int i = 0; i < storyIds.length; i += 10) {
+        final chunk = storyIds.sublist(
+          i,
+          (i + 10 > storyIds.length) ? storyIds.length : i + 10,
+        );
+
+        final storyQuery = await firestore
+            .collection('stories')
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get();
+
+        final chunkStories = storyQuery.docs
+            .map((doc) => StoryModel.fromMap(doc.data()))
+            .toList();
+
+        stories.addAll(chunkStories);
+      }
+
+      // 🔥 Maintain correct order (because whereIn breaks order)
+      final storyMap = {for (var story in stories) story.id: story};
+
+      final orderedStories = storyIds
+          .map((id) => storyMap[id])
+          .whereType<StoryModel>()
+          .toList();
+
+      return (stories: orderedStories, lastDoc: snapshot.docs.last);
+    } catch (e, stack) {
+      debugPrintStack(stackTrace: stack);
       throw Exception(e.toString());
     }
   }

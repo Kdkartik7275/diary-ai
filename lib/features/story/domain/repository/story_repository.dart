@@ -61,4 +61,7 @@ abstract interface class StoryRepository {
 
   ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
   getUserFeed({required String userId, DocumentSnapshot? lastDoc});
+
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getSavedStories({required String userId, DocumentSnapshot? lastDoc});
 }

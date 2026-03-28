@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/features/saved/presentation/saved_view.dart';
 
 class ProfileStats extends StatelessWidget {
   const ProfileStats({
@@ -10,10 +12,12 @@ class ProfileStats extends StatelessWidget {
     required this.totalEntries,
     required this.isDarkMode,
     required this.publishedStoriesCount,
+    required this.savedCount,
   });
   final int totalWordsCount;
   final int totalEntries;
   final int publishedStoriesCount;
+  final int savedCount;
   final bool isDarkMode;
 
   @override
@@ -28,9 +32,10 @@ class ProfileStats extends StatelessWidget {
               _statCard(
                 color: const Color(0xFF8BC6FF),
                 icon: CupertinoIcons.bookmark,
-                value: '0',
+                value: savedCount.toString(),
                 label: 'Saved Stories',
                 theme: theme,
+                onTap: () => Get.to(() => SavedView())
               ),
               const SizedBox(width: 14),
               _statCard(

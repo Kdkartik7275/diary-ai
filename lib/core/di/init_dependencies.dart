@@ -71,6 +71,7 @@ import 'package:mindloom/features/story/domain/usecases/get_drafts_count.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_count.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_stories.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_stories_by_user.dart';
+import 'package:mindloom/features/story/domain/usecases/get_saved_stories.dart';
 import 'package:mindloom/features/story/domain/usecases/get_story_stats.dart';
 import 'package:mindloom/features/story/domain/usecases/get_user_drafts.dart';
 import 'package:mindloom/features/story/domain/usecases/get_user_feed.dart';
