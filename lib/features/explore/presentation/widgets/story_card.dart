@@ -129,6 +129,30 @@ class StoryCard extends GetView<ExploreController> {
                         return SizedBox.shrink();
                       }
                       final user = asyncSnapshot.data!;
+                      final isDeleted = user.isDeleted ?? false;
+                      if (isDeleted) {
+                        return Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 10,
+                              backgroundColor: Colors.grey.shade300,
+                              child: const Icon(
+                                Icons.person_off,
+                                size: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Deleted User',
+                              style: theme.titleSmall!.copyWith(
+                                fontSize: 12,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
                       return Row(
                         children: [
                           Container(

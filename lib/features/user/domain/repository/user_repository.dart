@@ -10,10 +10,12 @@ abstract interface class UserRepository {
     required String userId,
     required String fullName,
   });
-  ResultFuture<UserEntity> getUserFromDatabase({required String userId});
+  ResultFuture<UserEntity> getUserFromDatabase({required String userId, required bool isCurrentUser});
 
   ResultFuture<UserEntity> editUser({required Map<String, dynamic> data});
   ResultFuture<String?> uploadUserProfile(File file);
 
   ResultFuture<UserStats> getUserStats({required String userId});
+
+  ResultVoid deleteUser({required String password});
 }

@@ -39,6 +39,34 @@ class TrendingStoryAuthorDetails extends GetView<ThemeController> {
         }
 
         final user = asyncSnapshot.data!;
+        final isDeleted = user.isDeleted ?? false;
+
+        if (isDeleted) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.grey.shade300,
+                  child: const Icon(
+                    Icons.person_off,
+                    size: 12,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Deleted User',
+                  style: theme.titleSmall!.copyWith(
+                    fontSize: 12,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -66,7 +94,9 @@ class TrendingStoryAuthorDetails extends GetView<ThemeController> {
                               nameInitials(user.fullName),
 
                               style: theme.titleSmall!.copyWith(
-                                color:isDarkMode ?AppColors.white : AppColors.text,
+                                color: isDarkMode
+                                    ? AppColors.white
+                                    : AppColors.text,
 
                                 fontWeight: FontWeight.normal,
                               ),
@@ -79,7 +109,9 @@ class TrendingStoryAuthorDetails extends GetView<ThemeController> {
                           nameInitials(user.fullName),
 
                           style: theme.titleLarge!.copyWith(
-                            color:isDarkMode ?AppColors.white : AppColors.text,
+                            color: isDarkMode
+                                ? AppColors.white
+                                : AppColors.text,
 
                             fontWeight: FontWeight.normal,
                           ),
@@ -96,7 +128,9 @@ class TrendingStoryAuthorDetails extends GetView<ThemeController> {
                     user.fullName,
 
                     style: theme.titleLarge!.copyWith(
-                      color:isDarkMode ?AppColors.white.withValues(alpha: .8) : AppColors.textLighter,
+                      color: isDarkMode
+                          ? AppColors.white.withValues(alpha: .8)
+                          : AppColors.textLighter,
 
                       fontWeight: FontWeight.normal,
                     ),
@@ -106,7 +140,9 @@ class TrendingStoryAuthorDetails extends GetView<ThemeController> {
                       '@${user.username}',
 
                       style: theme.titleSmall!.copyWith(
-                          color:isDarkMode ?AppColors.white.withValues(alpha: .8) : AppColors.textLighter,
+                        color: isDarkMode
+                            ? AppColors.white.withValues(alpha: .8)
+                            : AppColors.textLighter,
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
                       ),

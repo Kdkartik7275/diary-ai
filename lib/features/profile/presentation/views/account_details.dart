@@ -8,6 +8,7 @@ import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/features/profile/presentation/views/delete_account_view.dart';
 import 'package:mindloom/features/profile/presentation/views/upgrade_premium_view.dart';
 import 'package:mindloom/features/profile/presentation/widgets/personal_info_tile.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
@@ -343,6 +344,7 @@ class AccountDetailsView extends GetView<UserController> {
                     ),
                     Divider(color: AppColors.border.withValues(alpha: .3)),
                     ListTile(
+                      onTap: () => Get.to(() => DeleteAccountView()),
                       leading: Icon(
                         CupertinoIcons.delete,
                         color: AppColors.primary,

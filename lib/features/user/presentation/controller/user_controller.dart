@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_stories_by_user.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/domain/entity/user_stats.dart';
+import 'package:mindloom/features/user/domain/usecases/delete_user.dart';
 import 'package:mindloom/features/user/domain/usecases/get_user.dart';
 import 'package:mindloom/features/user/domain/usecases/get_user_stats.dart';
 
@@ -12,8 +15,10 @@ class UserController extends GetxController {
     required this.getUserUseCase,
     required this.getPublishedStoriesByUserUseCase,
     required this.getUserStatsUseCase,
+    required this.deleteUserUseCase,
   });
   final GetUser getUserUseCase;
+  final DeleteUser deleteUserUseCase;
   final GetUserStats getUserStatsUseCase;
   final GetPublishedStoriesByUser getPublishedStoriesByUserUseCase;
 
@@ -31,7 +36,7 @@ class UserController extends GetxController {
     try {
       loading.value = true;
 
-      final result = await getUserUseCase.call(uid);
+      final result = await getUserUseCase.call(GetUserParams(userId: uid, isCurrrentUser: true));
 
       result.fold(
         (failure) {
@@ -63,7 +68,7 @@ class UserController extends GetxController {
       if (usersCache.containsKey(userId)) {
         return usersCache[userId]!;
       }
-      final result = await getUserUseCase.call(userId);
+      final result = await getUserUseCase.call(GetUserParams(userId: userId, isCurrrentUser: false));
 
       return result.fold((err) => throw Exception(err.message), (user) {
         usersCache[user.id] = user;
@@ -115,6 +120,28 @@ class UserController extends GetxController {
     userStats.value = userStats.value!.copyWith(
       savedStoriesCount: userStats.value!.savedStoriesCount + delta,
     );
+  }
+
+  Future<void> deleteAccount(String password) async {
+    try {
+      loading.value = true;
+      final result = await deleteUserUseCase.call(password);
+      result.fold(
+        (failure) {
+          showErrorDialog(  failure.message);
+          debugPrint('Error deleting account: ${failure.message}');
+        },
+        (success) {
+          debugPrint('Account deleted successfully');
+          Get.offAllNamed(Routes.login);
+        },
+      );
+    } catch (e) {
+      showErrorDialog(  e.toString());
+      debugPrint('Exception deleting account: $e');
+    } finally {
+      loading.value = false;
+    }
   }
 
   void updateUser(UserEntity user) {

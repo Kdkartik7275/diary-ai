@@ -8,6 +8,8 @@ class UserEntity {
   final String? bio;
   final bool? isStoriesPublic;
   final bool? profileVisibility;
+  final bool? isDeleted;
+  final Timestamp? deletedAt;
   final String email;
   final String? profileUrl;
   final String? phone;
@@ -19,6 +21,8 @@ class UserEntity {
     required this.fullName,
     this.username,
     this.bio,
+    this.isDeleted,
+    this.deletedAt,
     this.isStoriesPublic,
     this.profileVisibility,
     required this.email,

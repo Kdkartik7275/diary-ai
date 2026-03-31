@@ -93,6 +93,7 @@ import 'package:mindloom/features/user/data/data_source/user_local_data_source.d
 import 'package:mindloom/features/user/data/data_source/user_remote_data_source.dart';
 import 'package:mindloom/features/user/data/repository_impl/user_repository_impl.dart';
 import 'package:mindloom/features/user/domain/repository/user_repository.dart';
+import 'package:mindloom/features/user/domain/usecases/delete_user.dart';
 import 'package:mindloom/features/user/domain/usecases/edit_user.dart';
 import 'package:mindloom/features/user/domain/usecases/get_user.dart';
 import 'package:mindloom/features/user/domain/usecases/get_user_stats.dart';

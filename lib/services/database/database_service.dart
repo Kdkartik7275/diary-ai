@@ -215,44 +215,55 @@ CREATE TABLE $_followingsTable (
     }
   }
 
-  Future<bool> deleteUser({required String userId}) async {
-    try {
-      final db = await database;
+Future<bool> deleteUser({required String userId}) async {
+  try {
+    final db = await database;
 
-      await db.transaction((txn) async {
-        await txn.delete(
-          _diaryTableName,
-          where: '$_diaryUserId = ?',
-          whereArgs: [userId],
-        );
+    await db.transaction((txn) async {
+      await txn.delete(
+        _diaryTableName,
+        where: '$_diaryUserId = ?',
+        whereArgs: [userId],
+      );
 
-        await txn.delete(
-          _chapterTableName,
-          where:
-              '$_chapterStoryId IN (SELECT $_storyId FROM $_storyTableName WHERE $_storyUserId = ?)',
-          whereArgs: [userId],
-        );
+      await txn.delete(
+        _chapterTableName,
+        where:
+            '$_chapterStoryId IN (SELECT $_storyId FROM $_storyTableName WHERE $_storyUserId = ?)',
+        whereArgs: [userId],
+      );
 
-        await txn.delete(
-          _storyTableName,
-          where: '$_storyUserId = ?',
-          whereArgs: [userId],
-        );
+      await txn.delete(
+        _storyTableName,
+        where: '$_storyUserId = ?',
+        whereArgs: [userId],
+      );
 
-        await txn.delete(
-          _userTableName,
-          where: '$_userId = ?',
-          whereArgs: [userId],
-        );
-      });
+      await txn.delete(
+        _followingsTable,
+        where: '$_followingUserId = ? OR $_followingId = ?',
+        whereArgs: [userId, userId],
+      );
 
-      debugPrint('All user data deleted successfully');
-      return true;
-    } catch (e) {
-      debugPrint('Error deleting user data: $e');
-      return false;
-    }
+      await txn.delete(
+        _followingsTable,
+       
+      );
+
+      await txn.delete(
+        _userTableName,
+        where: '$_userId = ?',
+        whereArgs: [userId],
+      );
+    });
+
+    debugPrint('All user data deleted successfully');
+    return true;
+  } catch (e) {
+    debugPrint('Error deleting user data: $e');
+    return false;
   }
+}
 
   Future<void> updateUser({
     required Map<String, dynamic> data,

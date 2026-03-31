@@ -12,8 +12,8 @@ import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class FeedCard extends StatelessWidget {
-  const FeedCard({super.key, required this.story,required this.isDarkMode});
-final bool isDarkMode;
+  const FeedCard({super.key, required this.story, required this.isDarkMode});
+  final bool isDarkMode;
   final StoryEntity story;
 
   @override
@@ -104,6 +104,30 @@ final bool isDarkMode;
                           }
 
                           final user = asyncSnapshot.data!;
+                          final isDeleted = user.isDeleted ?? false;
+                          if (isDeleted) {
+                            return Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 14,
+                                  backgroundColor: Colors.grey.shade300,
+                                  child: const Icon(
+                                    Icons.person_off,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Deleted User',
+                                  style: theme.titleSmall!.copyWith(
+                                    fontSize: 12,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
 
                           return Row(
                             children: [

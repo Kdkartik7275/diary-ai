@@ -30,7 +30,7 @@ class UserRepositoryImpl implements UserRepository {
   }) async {
     try {
       if (!await (connectionChecker.isConnected)) {
-        return left(FirebaseFailure(message: "No Internet Connection"));
+        return left(FirebaseFailure(message: 'No Internet Connection'));
       }
       final user = await remoteDataSource.saveUserToDatabase(
         email: email,
@@ -44,8 +44,15 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  ResultFuture<UserEntity> getUserFromDatabase({required String userId}) async {
+  ResultFuture<UserEntity> getUserFromDatabase({
+    required String userId,
+    required bool isCurrentUser,
+  }) async {
     try {
+      if (!isCurrentUser) {
+        final user = await remoteDataSource.getUserFromDatabase(userId: userId);
+        return right(user);
+      }
       final existLocally = await localDataSource.userExists(userId: userId);
       if (existLocally) {
         final data = await localDataSource.getUser(userId: userId);
@@ -53,7 +60,7 @@ class UserRepositoryImpl implements UserRepository {
         return right(data);
       }
       if (!await (connectionChecker.isConnected)) {
-        return left(FirebaseFailure(message: "No Internet Connection"));
+        return left(FirebaseFailure(message: 'No Internet Connection'));
       }
 
       final user = await remoteDataSource.getUserFromDatabase(userId: userId);
@@ -70,7 +77,7 @@ class UserRepositoryImpl implements UserRepository {
   }) async {
     try {
       if (!await (connectionChecker.isConnected)) {
-        return left(FirebaseFailure(message: "No Internet Connection"));
+        return left(FirebaseFailure(message: 'No Internet Connection'));
       }
 
       final user = await remoteDataSource.editUser(userData: data);
@@ -85,7 +92,7 @@ class UserRepositoryImpl implements UserRepository {
   ResultFuture<String?> uploadUserProfile(File file) async {
     try {
       if (!await (connectionChecker.isConnected)) {
-        return left(FirebaseFailure(message: "No Internet Connection"));
+        return left(FirebaseFailure(message: 'No Internet Connection'));
       }
       final url = await remoteDataSource.uploadUserProfile(file);
       return right(url);
@@ -98,10 +105,23 @@ class UserRepositoryImpl implements UserRepository {
   ResultFuture<UserStats> getUserStats({required String userId}) async {
     try {
       if (!await (connectionChecker.isConnected)) {
-        return left(FirebaseFailure(message: "No Internet Connection"));
+        return left(FirebaseFailure(message: 'No Internet Connection'));
       }
       final stats = await remoteDataSource.getUserStats(userId: userId);
       return right(stats);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultVoid deleteUser({required String password}) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+      await remoteDataSource.deleteUser(password: password);
+      return right(null);
     } catch (e) {
       return left(FirebaseFailure(message: e.toString()));
     }

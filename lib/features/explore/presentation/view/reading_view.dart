@@ -110,6 +110,22 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                 }
 
                 final user = asyncSnapshot.data!;
+                final isDeleted = user.isDeleted ?? false;
+                if (isDeleted) {
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.grey.shade300,
+                      child: const Icon(
+                        Icons.person_off,
+                        size: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                    title: Text('Deleted User', style: theme.titleLarge),
+                  );
+                }
                 return ListTile(
                   onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
                   contentPadding: EdgeInsets.zero,

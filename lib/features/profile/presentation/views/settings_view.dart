@@ -7,6 +7,7 @@ import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/profile/presentation/views/account_details.dart';
+import 'package:mindloom/features/profile/presentation/views/privacy_setting_view.dart';
 import 'package:mindloom/features/profile/presentation/widgets/setting_section.dart';
 import 'package:mindloom/services/database/database_service.dart';
 
@@ -21,6 +22,7 @@ class SettingsView extends StatelessWidget {
     final theme = Theme.of(context).textTheme;
     final themeController = Get.find<ThemeController>();
     final isDarkMode = themeController.isDarkMode;
+    String selectedLanguage = 'English';
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -118,14 +120,26 @@ class SettingsView extends StatelessWidget {
               isDarkMode: isDarkMode,
               children: [
                 SettingsTile(
+                  onTap: () {
+                    showLanguageModal(
+                      isDarkMode: isDarkMode,
+                      selectedLanguage: selectedLanguage,
+                      onSelect: (lang) {
+                        selectedLanguage = lang;
+
+                      
+                      },
+                    );
+                  },
                   icon: CupertinoIcons.globe,
                   title: 'Language',
-                  subtitle: 'English',
+                  subtitle: selectedLanguage,
                   isDarkMode: isDarkMode,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: SettingsTile(
+                    onTap: () => Get.to(() => const PrivacySettingsView()),
                     icon: CupertinoIcons.lock,
                     title: 'Privacy Settings',
                     isDarkMode: isDarkMode,
@@ -235,4 +249,67 @@ class SettingsTile extends StatelessWidget {
       visualDensity: const VisualDensity(vertical: -4),
     );
   }
+}
+
+void showLanguageModal({
+  required bool isDarkMode,
+  required String selectedLanguage,
+  required Function(String) onSelect,
+}) {
+  final languages = ['English', 'Hindi', 'Spanish', 'French', 'German'];
+
+  Get.bottomSheet(
+    Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      decoration: BoxDecoration(
+        color: isDarkMode ? Colors.black : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Wrap(
+        children: [
+          /// Handle bar
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+
+          /// Title
+          const Text(
+            'Select Language',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+
+          const SizedBox(height: 16),
+
+          /// Language List
+          ...languages.map((lang) {
+            final isSelected = selectedLanguage == lang;
+
+            return ListTile(
+              onTap: () {
+                onSelect(lang);
+                Get.back();
+              },
+              leading: const Icon(CupertinoIcons.globe),
+              title: Text(lang),
+              trailing: Icon(
+                isSelected
+                    ? CupertinoIcons.check_mark_circled_solid
+                    : CupertinoIcons.circle,
+                color: isSelected ? AppColors.primary : Colors.grey,
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            );
+          }),
+        ],
+      ),
+    ),
+  );
 }
