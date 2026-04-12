@@ -412,7 +412,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                       : 'Follow',
                   style: tt.titleLarge?.copyWith(
                     color: isFollowing ? AppColors.primary : AppColors.white,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w700, 
                   ),
                 ),
               ),

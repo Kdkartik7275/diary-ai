@@ -8,6 +8,8 @@ import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
+import 'package:mindloom/core/snackbars/info_dialog.dart';
+import 'package:mindloom/features/profile/presentation/views/change_password.dart';
 import 'package:mindloom/features/profile/presentation/views/delete_account_view.dart';
 import 'package:mindloom/features/profile/presentation/views/upgrade_premium_view.dart';
 import 'package:mindloom/features/profile/presentation/widgets/personal_info_tile.dart';
@@ -160,6 +162,7 @@ class AccountDetailsView extends GetView<UserController> {
                     ),
                     Divider(color: AppColors.border.withValues(alpha: .3)),
                     ListTile(
+                      onTap: () => Get.to(() => const ChangePasswordView()),
                       leading: Icon(
                         Icons.security_outlined,
                         color: AppColors.primary,
@@ -193,6 +196,9 @@ class AccountDetailsView extends GetView<UserController> {
                     ),
                     Divider(color: AppColors.border.withValues(alpha: .3)),
                     ListTile(
+                      onTap: () => showInfoDialog(
+                        'Two-Factor Authentication is not yet available.',
+                      ),
                       leading: Icon(
                         Icons.security_outlined,
                         color: AppColors.primary,

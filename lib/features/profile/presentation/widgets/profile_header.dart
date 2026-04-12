@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
-import 'package:mindloom/features/profile/presentation/views/settings_view.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/features/social/presentation/views/followers_followings_view.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 
@@ -71,7 +71,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () => Get.to(() => SettingsView()),
+                      onTap: () => Get.toNamed(Routes.settings),
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
                         padding: EdgeInsets.all(isSmallScreen ? 8 : 10),

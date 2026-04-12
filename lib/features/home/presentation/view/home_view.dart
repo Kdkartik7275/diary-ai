@@ -95,6 +95,7 @@ class _HomeViewState extends State<HomeView> {
               onTap: () => Get.toNamed(Routes.notification),
             ),
           ),
+        
         ],
       ),
       body: RefreshIndicator(

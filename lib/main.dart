@@ -54,7 +54,7 @@ Future<void> main() async {
   // await NotificationService.instance.getFcmToken();
 
   final initialRoute = await resolveInitialRoute();
-  Get.put(ThemeController(),permanent: true);
+  Get.put(ThemeController(), permanent: true);
 
   runApp(LifelineApp(initialRoute: initialRoute));
 

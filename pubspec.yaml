@@ -57,6 +57,7 @@ dependencies:
   googleapis_auth: ^2.0.0
   cached_network_image: ^3.4.1
   shared_preferences: ^2.5.4
+  socket_io_client: ^3.1.4
 
 
 dev_dependencies:

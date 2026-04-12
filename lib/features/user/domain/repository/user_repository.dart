@@ -10,7 +10,10 @@ abstract interface class UserRepository {
     required String userId,
     required String fullName,
   });
-  ResultFuture<UserEntity> getUserFromDatabase({required String userId, required bool isCurrentUser});
+  ResultFuture<UserEntity> getUserFromDatabase({
+    required String userId,
+    required bool isCurrentUser,
+  });
 
   ResultFuture<UserEntity> editUser({required Map<String, dynamic> data});
   ResultFuture<String?> uploadUserProfile(File file);
@@ -18,4 +21,9 @@ abstract interface class UserRepository {
   ResultFuture<UserStats> getUserStats({required String userId});
 
   ResultVoid deleteUser({required String password});
+  ResultVoid changeUserPassword({
+    required String oldPassword,
+    required String newPassword,
+  });
+  ResultVoid resetPassword({required String email});
 }

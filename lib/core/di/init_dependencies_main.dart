@@ -87,6 +87,8 @@ void _initUser() {
   sl.registerLazySingleton(() => GetUserStats(repository: sl()));
   sl.registerLazySingleton(() => UploadUserProfile(repository: sl()));
   sl.registerLazySingleton(() => DeleteUser(repository: sl()));
+  sl.registerLazySingleton(() => ChangeUserPassword(repository: sl()));
+  sl.registerLazySingleton(() => ResetPassword(repository: sl()));
 }
 
 void _initDiary() {

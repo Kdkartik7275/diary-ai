@@ -126,4 +126,36 @@ class UserRepositoryImpl implements UserRepository {
       return left(FirebaseFailure(message: e.toString()));
     }
   }
+
+  @override
+  ResultVoid changeUserPassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+      await remoteDataSource.changeUserPassword(
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      );
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultVoid resetPassword({required String email}) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+      await remoteDataSource.resetPassword(email: email);
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
 }

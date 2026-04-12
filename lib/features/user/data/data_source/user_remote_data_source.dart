@@ -22,6 +22,11 @@ abstract interface class UserRemoteDataSource {
   Future<String?> uploadUserProfile(File file);
   Future<UserStatModel> getUserStats({required String userId});
   Future<void> deleteUser({required String password});
+  Future<void> changeUserPassword({
+    required String oldPassword,
+    required String newPassword,
+  });
+  Future<void> resetPassword({required String email});
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -126,9 +131,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     final firestore = FirebaseFirestore.instance;
 
     try {
-      debugPrint('🔐 Re-authenticating...');
-
-      /// ✅ 1. Re-auth
       final cred = EmailAuthProvider.credential(
         email: user.email!,
         password: password,
@@ -136,26 +138,18 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
       await user.reauthenticateWithCredential(cred);
 
-      debugPrint('✅ Re-auth success');
-
-      /// ✅ 2. Get user data (for admin log)
       final userDoc = await firestore.collection('users').doc(userId).get();
 
       final userData = userDoc.data();
 
-      debugPrint('📦 Fetched user data');
-
-      /// ✅ 3. Batch write (important)
       final batch = firestore.batch();
 
-      /// 🔥 Update user (soft delete)
       batch.set(firestore.collection('users').doc(userId), {
         'isDeleted': true,
         'deletedAt': FieldValue.serverTimestamp(),
-        'email': null, // optional
+        'email': null,
       }, SetOptions(merge: true));
 
-      /// 🔥 Add to admin collection
       batch.set(firestore.collection('admin_deleted_users').doc(userId), {
         'userId': userId,
         'deletedAt': FieldValue.serverTimestamp(),
@@ -165,20 +159,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'reason': 'user_initiated',
       });
 
-      debugPrint('📝 Writing batch...');
-
       await batch.commit();
 
-      debugPrint('✅ Firestore updated');
-
-      /// ✅ 4. Delete auth
-      debugPrint('💀 Deleting auth account...');
       await user.delete();
-
-      debugPrint('✅ Account deleted');
     } on FirebaseAuthException catch (e) {
-      debugPrint('❌ Auth Error: ${e.code}');
-
       if (e.code == 'wrong-password') {
         throw Exception('Wrong password');
       }
@@ -188,8 +172,59 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         throw Exception(e.message ?? 'Auth error');
       }
     } catch (e) {
-      debugPrint('❌ Error: $e');
       throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<void> changeUserPassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null || user.email == null) {
+        throw FirebaseAuthException(
+          code: 'no-user',
+          message: 'User not logged in',
+        );
+      }
+
+      if (newPassword.length < 6) {
+        throw FirebaseAuthException(
+          code: 'weak-password',
+          message: 'Password must be at least 6 characters',
+        );
+      }
+
+      final cred = EmailAuthProvider.credential(
+        email: user.email!,
+        password: oldPassword,
+      );
+
+      await user.reauthenticateWithCredential(cred);
+
+      await user.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-credential') {
+        throw 'The password you entered is incorrect. Please try again.';
+      } else if (e.code == 'weak-password') {
+        throw 'Password must be at least 6 characters';
+      } else {
+        throw Exception(e.message ?? 'Auth error');
+      }
+    } catch (e) {
+      throw Exception('Something went wrong');
+    }
+  }
+
+  @override
+  Future<void> resetPassword({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw e.toString();
     }
   }
 }

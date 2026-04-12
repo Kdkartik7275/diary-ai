@@ -15,7 +15,9 @@ import 'package:mindloom/features/home/presentation/home_binding.dart';
 import 'package:mindloom/features/notifications/presentation/binding/notification_binding.dart';
 import 'package:mindloom/features/notifications/presentation/views/notification_view.dart';
 import 'package:mindloom/features/profile/presentation/bindings/edit_profile_binding.dart';
+import 'package:mindloom/features/profile/presentation/bindings/settings_binding.dart';
 import 'package:mindloom/features/profile/presentation/views/edit_profile_view.dart';
+import 'package:mindloom/features/profile/presentation/views/settings_view.dart';
 import 'package:mindloom/features/search/presentation/binding/search_story_binding.dart';
 import 'package:mindloom/features/search/presentation/view/search_story_view.dart';
 import 'package:mindloom/features/social/presentation/bindings/follow_binding.dart';
@@ -64,7 +66,7 @@ class AppPages {
         ExploreBinding(),
         FollowBinding(),
         NotificationBinding(),
-        StreakBinding()
+        StreakBinding(),
       ],
     ),
     GetPage(
@@ -105,9 +107,12 @@ class AppPages {
       page: () => SearchStoryView(),
       binding: SearchStoryBinding(),
     ),
+    GetPage(name: Routes.storySummary, page: () => StorySummaryView()),
     GetPage(
-      name: Routes.storySummary,
-      page: () => StorySummaryView(),
+      name: Routes.settings,
+      binding: SettingsBinding(),
+      page: () => SettingsView(),
     ),
+
   ];
 }
