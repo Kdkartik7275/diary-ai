@@ -5,9 +5,9 @@ import 'package:mindloom/features/story/domain/repository/story_repository.dart'
 
 class CreateStory
     implements UseCaseWithParams<StoryEntity, Map<String, dynamic>> {
-  final StoryRepository repository;
 
   CreateStory({required this.repository});
+  final StoryRepository repository;
   @override
   ResultFuture<StoryEntity> call(Map<String, dynamic> data) async {
     return await repository.createStory(data: data);

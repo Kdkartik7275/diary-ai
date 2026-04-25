@@ -109,13 +109,14 @@ class _GeneratingStoryViewState extends State<GeneratingStoryView>
       }
     });
     _textController.forward();
-    controller.generateStory(
-      startDate: widget.startDate,
-      endDate: widget.endDate,
-      genre: widget.genre,
-      tone: widget.tone,
-      characterName: widget.characterName,
-    );
+    // controller.generateStory(
+    //   startDate: widget.startDate,
+    //   endDate: widget.endDate,
+    //   genre: widget.genre,
+    //   tone: widget.tone,
+    //   characterName: widget.characterName,
+    
+    // );
   }
 
   @override

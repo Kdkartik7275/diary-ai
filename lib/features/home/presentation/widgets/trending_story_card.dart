@@ -15,12 +15,14 @@ class TrendingStoryCard extends StatelessWidget {
     required this.height,
     required this.width,
     required this.exploreController,
+    required this.isDarkMode
   });
 
   final TrendingStoryEntity story;
   final double height;
   final double width;
   final ExploreController exploreController;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,9 @@ class TrendingStoryCard extends StatelessWidget {
         margin: EdgeInsets.all(12),
         padding: EdgeInsets.only(bottom: 6),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: isDarkMode
+              ? AppColors.darkSurface
+              : AppColors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

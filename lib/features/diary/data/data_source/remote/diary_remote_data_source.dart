@@ -13,9 +13,9 @@ abstract interface class DiaryRemoteDataSource {
 }
 
 class DiaryRemoteDataSourceImpl implements DiaryRemoteDataSource {
-  final FirebaseFirestore firestore;
 
   DiaryRemoteDataSourceImpl({required this.firestore});
+  final FirebaseFirestore firestore;
   @override
   Future<DiaryModel> createDiary({required Map<String, dynamic> diary}) async {
     try {

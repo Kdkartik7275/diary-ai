@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
@@ -13,8 +12,8 @@ import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class FeedCard extends StatelessWidget {
-  const FeedCard({super.key, required this.story});
-
+  const FeedCard({super.key, required this.story, required this.isDarkMode});
+  final bool isDarkMode;
   final StoryEntity story;
 
   @override
@@ -33,7 +32,7 @@ class FeedCard extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12),
 
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: isDarkMode ? AppColors.darkSurface : AppColors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -50,7 +49,7 @@ class FeedCard extends StatelessWidget {
               width: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                color: AppColors.primary,
+                color: AppColors.white,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -65,14 +64,9 @@ class FeedCard extends StatelessWidget {
 
                         fit: BoxFit.cover,
                       )
-                    : Center(
-                        child: Icon(
-                          CupertinoIcons.book,
-
-                          color: AppColors.white,
-
-                          size: 40,
-                        ),
+                    : Image.asset(
+                        'assets/icons/logo_new.png',
+                        fit: BoxFit.cover,
                       ),
               ),
             ),
@@ -110,15 +104,37 @@ class FeedCard extends StatelessWidget {
                           }
 
                           final user = asyncSnapshot.data!;
+                          final isDeleted = user.isDeleted ?? false;
+                          if (isDeleted) {
+                            return Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 14,
+                                  backgroundColor: Colors.grey.shade300,
+                                  child: const Icon(
+                                    Icons.person_off,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Deleted User',
+                                  style: theme.titleSmall!.copyWith(
+                                    fontSize: 12,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
 
                           return Row(
                             children: [
                               CircleAvatar(
                                 radius: 14,
 
-                                backgroundColor: AppColors.primary.withValues(
-                                  alpha: .3,
-                                ),
+                                backgroundColor: AppColors.primary,
 
                                 child: user.profileUrl != null
                                     ? ClipOval(
@@ -139,7 +155,9 @@ class FeedCard extends StatelessWidget {
 
                                                     style: theme.titleSmall!
                                                         .copyWith(
-                                                          color: AppColors.text,
+                                                          color: isDarkMode
+                                                              ? AppColors.white
+                                                              : AppColors.text,
 
                                                           fontWeight:
                                                               FontWeight.normal,
@@ -154,7 +172,9 @@ class FeedCard extends StatelessWidget {
                                           nameInitials(user.fullName),
 
                                           style: theme.titleLarge!.copyWith(
-                                            color: AppColors.text,
+                                            color: isDarkMode
+                                                ? AppColors.white
+                                                : AppColors.text,
 
                                             fontWeight: FontWeight.normal,
                                           ),
@@ -171,7 +191,9 @@ class FeedCard extends StatelessWidget {
                                     user.fullName,
 
                                     style: theme.titleSmall!.copyWith(
-                                      color: AppColors.textLighter,
+                                      color: isDarkMode
+                                          ? AppColors.white
+                                          : AppColors.textLighter,
 
                                       fontWeight: FontWeight.normal,
                                     ),

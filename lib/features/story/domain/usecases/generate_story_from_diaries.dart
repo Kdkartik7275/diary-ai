@@ -4,9 +4,9 @@ import 'package:mindloom/features/story/domain/repository/story_repository.dart'
 
 class GenerateStoryFromDiaries
     implements UseCaseWithParams<Map<String, dynamic>, Map<String, dynamic>> {
-  final StoryRepository repository;
 
   GenerateStoryFromDiaries({required this.repository});
+  final StoryRepository repository;
 
   @override
   ResultFuture<Map<String, dynamic>> call(Map<String, dynamic> params) async {
@@ -15,6 +15,8 @@ class GenerateStoryFromDiaries
       genre: params['genre'] ?? '',
       tone: params['tone'] ?? '',
       characterName: params['characterName'] ?? '',
+      summary: params['summary'],
+
     );
   }
 }

@@ -13,6 +13,7 @@ class UserBinding extends Bindings {
         getUserUseCase: sl<GetUser>(),
         getUserStatsUseCase: sl<GetUserStats>(),
         getPublishedStoriesByUserUseCase: sl<GetPublishedStoriesByUser>(),
+        deleteUserUseCase: sl(),
       ),
     );
   }

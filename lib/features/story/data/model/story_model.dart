@@ -3,6 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 
 class StoryChapterModel extends StoryChapterEntity {
+  // From SQL (SQLite)
+  factory StoryChapterModel.fromSql(Map<String, dynamic> map) {
+    return StoryChapterModel(
+      id: map['id'] as String,
+      title: map['title'] as String,
+      content: map['content'] as String,
+      createdAt: Timestamp.fromMillisecondsSinceEpoch(map['createdAt'] as int),
+    );
+  }
   StoryChapterModel({
     required super.id,
     required super.title,
@@ -32,16 +41,6 @@ class StoryChapterModel extends StoryChapterEntity {
     };
   }
 
-  // From SQL (SQLite)
-  factory StoryChapterModel.fromSql(Map<String, dynamic> map) {
-    return StoryChapterModel(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      content: map['content'] as String,
-      createdAt: Timestamp.fromMillisecondsSinceEpoch(map['createdAt'] as int),
-    );
-  }
-
   // To SQL (SQLite)
   Map<String, dynamic> toSql() {
     return {
@@ -69,6 +68,36 @@ class StoryChapterModel extends StoryChapterEntity {
 }
 
 class StoryModel extends StoryEntity {
+  factory StoryModel.fromSql(
+    Map<String, dynamic> map, {
+    List<StoryChapterModel>? chapters,
+  }) {
+    return StoryModel(
+      id: map['id'] as String,
+      userId: map['userId'] as String,
+      title: map['title'] as String,
+      tags: (map['tags'] as String)
+          .split(',')
+          .where((tag) => tag.isNotEmpty)
+          .toList(),
+      chapters: chapters ?? [],
+      isPublished: (map['isPublished'] as int) == 1,
+      generatedByAI: (map['generatedByAI'] as int) == 1,
+      publishedAt: map['publishedAt'] != null
+          ? Timestamp.fromMillisecondsSinceEpoch(map['publishedAt'] as int)
+          : null,
+      createdAt: Timestamp.fromMillisecondsSinceEpoch(map['createdAt'] as int),
+      updatedAt: map['updatedAt'] != null
+          ? Timestamp.fromMillisecondsSinceEpoch(map['updatedAt'] as int)
+          : null,
+      deletedAt: map['deletedAt'] != null
+          ? Timestamp.fromMillisecondsSinceEpoch(map['deletedAt'] as int)
+          : null,
+      coverImageUrl: map['coverImageUrl'] != null
+          ? map['coverImageUrl'] as String
+          : null,
+    );
+  }
   StoryModel({
     required super.id,
     required super.userId,
@@ -113,6 +142,7 @@ class StoryModel extends StoryEntity {
       'id': id,
       'userId': userId,
       'title': title,
+      'titleLower': title.toLowerCase(),
       'tags': tags,
       'chapters': chapters
           .map((chapter) => (chapter as StoryChapterModel).toMap())
@@ -125,37 +155,6 @@ class StoryModel extends StoryEntity {
       'deletedAt': deletedAt,
       'coverImageUrl': coverImageUrl,
     };
-  }
-
-  factory StoryModel.fromSql(
-    Map<String, dynamic> map, {
-    List<StoryChapterModel>? chapters,
-  }) {
-    return StoryModel(
-      id: map['id'] as String,
-      userId: map['userId'] as String,
-      title: map['title'] as String,
-      tags: (map['tags'] as String)
-          .split(',')
-          .where((tag) => tag.isNotEmpty)
-          .toList(),
-      chapters: chapters ?? [],
-      isPublished: (map['isPublished'] as int) == 1,
-      generatedByAI: (map['generatedByAI'] as int) == 1,
-      publishedAt: map['publishedAt'] != null
-          ? Timestamp.fromMillisecondsSinceEpoch(map['publishedAt'] as int)
-          : null,
-      createdAt: Timestamp.fromMillisecondsSinceEpoch(map['createdAt'] as int),
-      updatedAt: map['updatedAt'] != null
-          ? Timestamp.fromMillisecondsSinceEpoch(map['updatedAt'] as int)
-          : null,
-      deletedAt: map['deletedAt'] != null
-          ? Timestamp.fromMillisecondsSinceEpoch(map['deletedAt'] as int)
-          : null,
-      coverImageUrl: map['coverImageUrl'] != null
-          ? map['coverImageUrl'] as String
-          : null,
-    );
   }
 
   // To SQL (SQLite) - Note: chapters stored separately in related table

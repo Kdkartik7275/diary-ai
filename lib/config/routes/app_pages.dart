@@ -15,14 +15,20 @@ import 'package:mindloom/features/home/presentation/home_binding.dart';
 import 'package:mindloom/features/notifications/presentation/binding/notification_binding.dart';
 import 'package:mindloom/features/notifications/presentation/views/notification_view.dart';
 import 'package:mindloom/features/profile/presentation/bindings/edit_profile_binding.dart';
+import 'package:mindloom/features/profile/presentation/bindings/settings_binding.dart';
 import 'package:mindloom/features/profile/presentation/views/edit_profile_view.dart';
+import 'package:mindloom/features/profile/presentation/views/settings_view.dart';
+import 'package:mindloom/features/search/presentation/binding/search_story_binding.dart';
+import 'package:mindloom/features/search/presentation/view/search_story_view.dart';
 import 'package:mindloom/features/social/presentation/bindings/follow_binding.dart';
 import 'package:mindloom/features/story/presentation/bindings/create_story_binding.dart';
 import 'package:mindloom/features/story/presentation/bindings/generate_story_binding.dart';
 import 'package:mindloom/features/story/presentation/bindings/story_binding.dart';
 import 'package:mindloom/features/story/presentation/views/create_manual_story.dart';
 import 'package:mindloom/features/story/presentation/views/create_story_view.dart';
+import 'package:mindloom/features/story/presentation/views/story_summary_view.dart';
 import 'package:mindloom/features/story/presentation/views/story_type_view.dart';
+import 'package:mindloom/features/streak/presentation/binding/streak_binding.dart';
 import 'package:mindloom/features/user/presentation/binding/user_binding.dart';
 import 'package:mindloom/tabs.dart';
 import 'package:mindloom/features/onboarding/binding/onboarding_binding.dart';
@@ -60,6 +66,7 @@ class AppPages {
         ExploreBinding(),
         FollowBinding(),
         NotificationBinding(),
+        StreakBinding(),
       ],
     ),
     GetPage(
@@ -95,5 +102,17 @@ class AppPages {
       binding: AddFeedbackBinding(),
       page: () => AddFeedbackView(),
     ),
+    GetPage(
+      name: Routes.search,
+      page: () => SearchStoryView(),
+      binding: SearchStoryBinding(),
+    ),
+    GetPage(name: Routes.storySummary, page: () => StorySummaryView()),
+    GetPage(
+      name: Routes.settings,
+      binding: SettingsBinding(),
+      page: () => SettingsView(),
+    ),
+
   ];
 }

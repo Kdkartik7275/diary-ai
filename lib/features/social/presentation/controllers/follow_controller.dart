@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/snackbars/error_snackbar.dart';
@@ -9,22 +10,24 @@ import 'package:mindloom/features/social/domain/usecases/follow_user.dart';
 import 'package:mindloom/features/social/domain/usecases/get_follow_status.dart';
 import 'package:mindloom/features/social/domain/usecases/get_followers.dart';
 import 'package:mindloom/features/social/domain/usecases/get_followings.dart';
+import 'package:mindloom/features/social/domain/usecases/unfollow_user.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class FollowController extends GetxController {
-  final FollowUser followUserUseCase;
-  final GetFollowStatus getFollowStatusUseCase;
-  final GetFollowers getFollowersUseCase;
-  final GetFollowings getFollowingsUseCase;
-  final CreateNotification createNotificationUseCase;
-
   FollowController({
     required this.followUserUseCase,
     required this.getFollowStatusUseCase,
     required this.getFollowersUseCase,
     required this.getFollowingsUseCase,
     required this.createNotificationUseCase,
+    required this.unFollowUserUseCase,
   });
+  final FollowUser followUserUseCase;
+  final UnFollowUser unFollowUserUseCase;
+  final GetFollowStatus getFollowStatusUseCase;
+  final GetFollowers getFollowersUseCase;
+  final GetFollowings getFollowingsUseCase;
+  final CreateNotification createNotificationUseCase;
 
   RxBool isFollowing = false.obs;
   RxBool isFollowedBy = false.obs;
@@ -90,6 +93,31 @@ class FollowController extends GetxController {
     );
   }
 
+  Future<void> unfollowUser({
+    required String currentUserId,
+    required String targetUserId,
+    required String currentUserFullName,
+  }) async {
+    isFollowing.value = false;
+    final params = UnfollowUserParams(
+      currentUserId: currentUserId,
+      targetUserId: targetUserId,
+    );
+
+    final result = await unFollowUserUseCase.call(params);
+
+    result.fold(
+      (failure) {
+        isLoading.value = false;
+        isFollowing.value = false;
+      },
+      (_) {
+        userController.updateFollowingCount(-1);
+        isLoading.value = false;
+      },
+    );
+  }
+
   Future<void> checkFollowStatus({
     required String currentUserId,
     required String targetUserId,
@@ -107,6 +135,9 @@ class FollowController extends GetxController {
         isFollowedBy.value = false;
       },
       (followStatus) {
+        debugPrint(
+          'Follow status: isFollowing=${followStatus.isFollowing}, isFollowedBy=${followStatus.isFollowedBy}',
+        );
         isFollowing.value = followStatus.isFollowing;
         isFollowedBy.value = followStatus.isFollowedBy;
       },

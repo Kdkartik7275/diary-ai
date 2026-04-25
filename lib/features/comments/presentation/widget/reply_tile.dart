@@ -1,6 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/comments/domain/entity/reply_entity.dart';
 import 'package:mindloom/features/comments/presentation/controller/comments_controller.dart';
@@ -16,12 +19,13 @@ class ReplyTile extends GetView<CommentsController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
     final userController = Get.find<UserController>();
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
 
     return FutureBuilder<UserEntity>(
       future: userController.getUserById(userId: reply.userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const _ReplyLoading();
+          return _ReplyLoading(key, isDarkMode);
         }
 
         if (snapshot.hasError) {
@@ -63,7 +67,9 @@ class ReplyTile extends GetView<CommentsController> {
                                   nameInitials(user.fullName),
                                   style: theme.titleSmall!.copyWith(
                                     fontSize: 10,
-                                    color: AppColors.text,
+                                    color: isDarkMode
+                                        ? AppColors.textDarkSecondary
+                                        : AppColors.text,
                                   ),
                                 ),
                               );
@@ -75,7 +81,9 @@ class ReplyTile extends GetView<CommentsController> {
                             nameInitials(user.fullName),
                             style: theme.titleSmall!.copyWith(
                               fontSize: 10,
-                              color: AppColors.text,
+                              color: isDarkMode
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.text,
                             ),
                           ),
                         ),
@@ -97,16 +105,20 @@ class ReplyTile extends GetView<CommentsController> {
                               style: theme.titleSmall!.copyWith(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
-                                color: AppColors.text,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.text,
                               ),
                             ),
-                            const TextSpan(text: "  "),
+                            const TextSpan(text: '  '),
                             TextSpan(
                               text: reply.content,
                               style: theme.titleSmall!.copyWith(
                                 fontSize: 12,
                                 fontWeight: FontWeight.normal,
-                                color: AppColors.text,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.text,
                                 height: 1.3,
                               ),
                             ),
@@ -123,7 +135,9 @@ class ReplyTile extends GetView<CommentsController> {
                             getCommentTime(reply.createdAt),
                             style: theme.titleSmall!.copyWith(
                               fontSize: 10,
-                              color: AppColors.textLighter,
+                              color: isDarkMode
+                                  ? AppColors.textDarkSecondary
+                                  : AppColors.textLighter,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -132,7 +146,9 @@ class ReplyTile extends GetView<CommentsController> {
                               '${reply.likesCount} ${reply.likesCount == 1 ? 'like' : 'likes'}',
                               style: theme.titleSmall!.copyWith(
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textLighter,
+                                color: isDarkMode
+                                    ? AppColors.textDarkSecondary
+                                    : AppColors.textLighter,
                                 fontSize: 11,
                               ),
                             ),
@@ -159,7 +175,11 @@ class ReplyTile extends GetView<CommentsController> {
                   },
                   child: Icon(
                     isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: isLiked ? Colors.red : AppColors.textLighter,
+                    color: isLiked
+                        ? Colors.red
+                        : isDarkMode
+                        ? AppColors.textDarkSecondary
+                        : AppColors.textLighter,
                     size: 14,
                   ),
                 ),
@@ -173,7 +193,8 @@ class ReplyTile extends GetView<CommentsController> {
 }
 
 class _ReplyLoading extends StatelessWidget {
-  const _ReplyLoading();
+  const _ReplyLoading(Key? key, this.isDarkMode) : super(key: key);
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +206,7 @@ class _ReplyLoading extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: isDarkMode ? AppColors.darkSurface : Colors.grey.shade300,
               shape: BoxShape.circle,
             ),
           ),
@@ -194,7 +215,9 @@ class _ReplyLoading extends StatelessWidget {
             child: Container(
               height: 12,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: isDarkMode
+                    ? AppColors.darkSurface
+                    : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -213,7 +236,7 @@ class _ReplyError extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.only(top: 10),
       child: Text(
-        "Failed to load user",
+        'Failed to load user',
         style: TextStyle(color: Colors.redAccent, fontSize: 11),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
@@ -43,6 +44,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
   late StoryReadingController controller;
   late FollowController followController;
   late UserEntity currentUser;
+  late bool isDarkMode;
   final ExploreController exploreController = Get.find<ExploreController>();
 
   @override
@@ -54,8 +56,12 @@ class _StoryReadingViewState extends State<StoryReadingView> {
         markStoryReadUseCase: sl<MarkStoryRead>(),
         unlikeStoryUseCase: sl<UnlikeStory>(),
         createNotificationUseCase: sl<CreateNotification>(),
+        saveStoryUseCase: sl(),
+        savedByYouUseCase: sl(),
+        removeSavedUseCase: sl(),
       ),
     );
+    isDarkMode = Get.find<ThemeController>().isDarkMode;
     followController = Get.find<FollowController>();
 
     currentUser = Get.find<UserController>().currentUser.value!;
@@ -65,6 +71,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
         targetUserId: widget.authorId,
       );
       controller.initializeStory(story: widget.story);
+      controller.savedByYouStatus(widget.story.id);
     });
 
     controller.markStoryRead(storyId: widget.story.id);
@@ -103,12 +110,30 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                 }
 
                 final user = asyncSnapshot.data!;
+                final isDeleted = user.isDeleted ?? false;
+                if (isDeleted) {
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.grey.shade300,
+                      child: const Icon(
+                        Icons.person_off,
+                        size: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                    title: Text('Deleted User', style: theme.titleLarge),
+                  );
+                }
                 return ListTile(
                   onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
                     radius: 18,
-                    backgroundColor: AppColors.primary.withValues(alpha: .3),
+                    backgroundColor: isDarkMode
+                        ? AppColors.primary
+                        : AppColors.primary.withValues(alpha: .3),
                     child:
                         (user.profileUrl != null && user.profileUrl!.isNotEmpty)
                         ? ClipOval(
@@ -122,7 +147,9 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                                   child: Text(
                                     nameInitials(user.fullName),
                                     style: theme.titleSmall!.copyWith(
-                                      color: AppColors.text,
+                                      color: isDarkMode
+                                          ? AppColors.white
+                                          : AppColors.text,
                                       fontWeight: FontWeight.normal,
                                     ),
                                   ),
@@ -134,7 +161,9 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                             child: Text(
                               nameInitials(user.fullName),
                               style: theme.titleSmall!.copyWith(
-                                color: AppColors.text,
+                                color: isDarkMode
+                                    ? AppColors.white
+                                    : AppColors.text,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
@@ -187,14 +216,26 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                               onPressed: isLoading
                                   ? null
                                   : () {
-                                      followController.followUser(
-                                        currentUserId: currentUser.id,
+                                      if (!isFollowing) {
+                                        followController.followUser(
+                                          currentUserId: currentUser.id,
 
-                                        targetUserId: user.id,
+                                          targetUserId: user.id,
 
-                                        currentUserFullName:
-                                            currentUser.fullName,
-                                      );
+                                          currentUserFullName:
+                                              currentUser.fullName,
+                                        );
+                                      }
+                                      if (isFollowing) {
+                                        followController.unfollowUser(
+                                          currentUserId: currentUser.id,
+
+                                          targetUserId: user.id,
+
+                                          currentUserFullName:
+                                              currentUser.fullName,
+                                        );
+                                      }
                                     },
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
@@ -249,7 +290,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                 Obx(() {
                   final likes = controller.stats?.likes ?? 0;
                   return Text(
-                    '${widget.story.chapters.length} chapters   •   ${formatCount(likes)} ${likes > 1 ? 'likes' : 'like'}',
+                    '${widget.story.chapters.length} ${widget.story.chapters.length == 1 ? 'chapter' : 'chapters'}   •   ${formatCount(likes)} ${likes > 1 ? 'likes' : 'like'}',
                     style: theme.titleSmall!.copyWith(
                       color: AppColors.textLighter,
                       fontWeight: FontWeight.normal,
@@ -267,7 +308,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
               return Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Text(
-                  'Chapter ${page?.chapterNumber}: ${page?.chapterTitle}',
+                'Chapter ${page?.chapterNumber}: ${page?.chapterTitle}',
                   textAlign: TextAlign.start,
                   style: theme.titleMedium!.copyWith(
                     fontWeight: FontWeight.normal,
@@ -348,7 +389,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
       bottomSheet: Container(
         height: 80,
         padding: EdgeInsets.symmetric(vertical: 12),
-        color: AppColors.white,
+        color: isDarkMode ? AppColors.dark : AppColors.white,
         child: Obx(() {
           if (controller.isLoadingStats) {
             return _BottomStatsLoading();
@@ -415,18 +456,29 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  Icon(Icons.bookmark_border, color: AppColors.border),
-                  Text(
-                    'Save',
-                    style: theme.titleSmall!.copyWith(
-                      fontWeight: FontWeight.normal,
-                      color: AppColors.textLighter,
-                    ),
+              Obx(() {
+                final isSaved = controller.savedMap[widget.story.id] ?? false;
+                return GestureDetector(
+                  onTap: () => isSaved
+                      ? controller.removeFromSaved(widget.story.id)
+                      : controller.saveStory(widget.story.id),
+                  child: Column(
+                    children: [
+                      Icon(
+                        isSaved ? Icons.bookmark : Icons.bookmark_border,
+                        color: isSaved ? AppColors.primary : AppColors.border,
+                      ),
+                      Text(
+                        isSaved ? 'Saved' : 'Save',
+                        style: theme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.normal,
+                          color: AppColors.textLighter,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              }),
             ],
           );
         }),

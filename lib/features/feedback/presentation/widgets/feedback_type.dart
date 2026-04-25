@@ -12,13 +12,14 @@ class FeedbackType extends GetView<AddFeedbackController> {
     required this.icon,
     required this.width,
     required this.index,
+    required this.isDarkMode,
   });
   final String title;
   final String subtitle;
   final Color color;
   final IconData icon;
   final int index;
-
+final bool isDarkMode;
   final double width;
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class FeedbackType extends GetView<AddFeedbackController> {
           duration: Duration(milliseconds: 300),
           width: width,
           decoration: BoxDecoration(
-            color: isSelected ? color.withValues(alpha: .1) : Colors.white,
+            color: isSelected ? color.withValues(alpha: .1) :isDarkMode ?AppColors.darkSurface: Colors.white,
             borderRadius: BorderRadius.circular(12),
 
             border: isSelected

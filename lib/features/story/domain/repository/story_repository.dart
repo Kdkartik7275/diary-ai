@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mindloom/config/constants/typedefs.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/domain/entity/story_stats.dart';
@@ -12,11 +13,15 @@ abstract interface class StoryRepository {
     required String genre,
     required String tone,
     required String characterName,
+    String? summary,
   });
   ResultFuture<StoryEntity> publishStory({
     required String storyId,
     required String userId,
   });
+
+  ResultVoid saveStory({required String storyId, required String userId});
+  ResultVoid removeFromSaved({required String storyId, required String userId});
   ResultFuture<StoryEntity> editStory({required Map<String, dynamic> data});
 
   ResultFuture<List<StoryEntity>> getUserDrafts({required String userId});
@@ -28,7 +33,13 @@ abstract interface class StoryRepository {
     required String storyId,
     required String userId,
   });
+
   ResultFuture<void> unlikeStory({
+    required String storyId,
+    required String userId,
+  });
+
+  ResultFuture<bool> savedByYou({
     required String storyId,
     required String userId,
   });
@@ -38,10 +49,12 @@ abstract interface class StoryRepository {
     required String storyId,
     required String userId,
   });
-  ResultFuture<List<StoryEntity>> getPublisedStories({required String userId});
-  ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
-    required String userId,
-  });
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStories({required String userId, DocumentSnapshot? lastDoc});
+
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStoriesByUser({required String userId, DocumentSnapshot? lastDoc});
+ 
 
   ResultFuture<int> getStoriesTotalWordCounts({required String userId});
   ResultFuture<int> getDraftCount({required String userId});
@@ -49,5 +62,9 @@ abstract interface class StoryRepository {
 
   ResultFuture<String?> uploadStoryCoverImage(File image);
 
-  ResultFuture<List<StoryEntity>> getUserFeed({required String userId});
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getUserFeed({required String userId, DocumentSnapshot? lastDoc});
+
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getSavedStories({required String userId, DocumentSnapshot? lastDoc});
 }

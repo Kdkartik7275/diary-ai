@@ -3,7 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/state_manager.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/core/utils/validators/vallidators.dart';
@@ -77,7 +76,7 @@ class LoginView extends GetView<LoginController> {
                             controller: controller.email.value,
                             hintText: 'Enter your email',
                             inputFormatters: [
-                              FilteringTextInputFormatter.deny(RegExp(r"\s")),
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
                             ],
                           ),
                           SizedBox(height: isTablet ? 18 : 12),
@@ -104,7 +103,7 @@ class LoginView extends GetView<LoginController> {
                                 ),
                               ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r"\s")),
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],
                             ),
                           ),
@@ -112,9 +111,22 @@ class LoginView extends GetView<LoginController> {
                       ),
                     ),
 
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          _showForgotPasswordModal(context, controller);
+                        },
+                        child: Text(
+                          'Forgot Password?',
+                          style: Theme.of(context).textTheme.titleSmall!
+                              .copyWith(color: AppColors.primary),
+                        ),
+                      ),
+                    ),
+
                     SizedBox(height: isTablet ? 55 : 45),
 
-                    /// LOADER / BUTTON - reactive
                     Obx(
                       () => controller.isLoading.value
                           ? const Center(
@@ -172,4 +184,104 @@ class LoginView extends GetView<LoginController> {
       ),
     );
   }
+}
+
+void _showForgotPasswordModal(
+  BuildContext context,
+  LoginController controller,
+) {
+  final emailController = TextEditingController(
+    text: controller.email.value.text, // pre-fill if available
+  );
+
+  Get.bottomSheet(
+    Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Get.isDarkMode ? AppColors.darkSurface : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// TITLE
+          Text(
+            'Reset Password',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 6),
+
+          Text(
+            'Enter your email to receive a reset link',
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall!.copyWith(color:AppColors.textLighter,fontWeight: FontWeight.normal),
+          ),
+
+          const SizedBox(height: 20),
+
+          /// EMAIL FIELD
+          AuthField(
+            prefixIcon: const Icon(CupertinoIcons.mail),
+            controller: emailController,
+            hintText: 'Enter your email',
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Email is required';
+              }
+              if (!GetUtils.isEmail(value)) {
+                return 'Please enter a valid email';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 20),
+
+          /// BUTTON
+          Obx(
+            () => controller.isResetLoading.value
+                ? Align(
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator(
+                      color: AppColors.primary,
+                      strokeWidth: 1,
+                    ),
+                  )
+                : SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: controller.isResetLoading.value
+                          ? null
+                          : () {
+                              final email = emailController.text.trim();
+
+                              if (!GetUtils.isEmail(email)) {
+                                Get.snackbar('Error', 'Enter a valid email');
+                                return;
+                              }
+
+                              controller.forgotPassword(email);
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text('Send Reset Link'),
+                    ),
+                  ),
+          ),
+
+          const SizedBox(height: 10),
+        ],
+      ),
+    ),
+    isScrollControlled: true,
+  );
 }

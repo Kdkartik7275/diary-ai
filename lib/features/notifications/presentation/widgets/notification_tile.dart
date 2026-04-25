@@ -5,10 +5,6 @@ import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/features/notifications/domain/entity/app_notification.dart';
 
 class _NotificationConfig {
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBackground;
-  final String label;
 
   const _NotificationConfig({
     required this.icon,
@@ -16,6 +12,10 @@ class _NotificationConfig {
     required this.iconBackground,
     required this.label,
   });
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBackground;
+  final String label;
 }
 
 String _timeAgo(Timestamp ts) {
@@ -120,10 +120,11 @@ Widget _priorityBadge(NotificationPriority priority) {
 }
 
 class NotificationTile extends StatelessWidget {
+
+  const NotificationTile({super.key, required this.notification, this.onTap,required this.isDarkMode});
   final AppNotification notification;
   final VoidCallback? onTap;
-
-  const NotificationTile({super.key, required this.notification, this.onTap});
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -136,9 +137,9 @@ class NotificationTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: isUnread
               ? AppColors.primary.withValues(alpha: .04)
-              : AppColors.white,
+              :isDarkMode ?AppColors.dark: AppColors.white,
           border: Border(
-            bottom: BorderSide(color: AppColors.border, width: 0.5),
+            bottom: BorderSide(color:isDarkMode ? AppColors.filledDark: AppColors.border, width: 0.5),
           ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -190,7 +191,7 @@ class NotificationTile extends StatelessWidget {
                             fontWeight: isUnread
                                 ? FontWeight.w600
                                 : FontWeight.normal,
-                            color: AppColors.text,
+                            color:isDarkMode ?AppColors.textDarkSecondary: AppColors.text,
                             height: 1.3,
                           ),
                         ),

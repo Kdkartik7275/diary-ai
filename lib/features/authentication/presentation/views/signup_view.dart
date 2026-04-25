@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,13 @@ class SignUpView extends GetView<SignUpController> {
     final horizontalPadding = width * 0.06;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isTablet = constraints.maxWidth > 600;
@@ -44,7 +52,7 @@ class SignUpView extends GetView<SignUpController> {
 
                     /// TITLE
                     Text(
-                      "Create Account",
+                      'Create Account',
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: isTablet ? 28 : 22,
@@ -53,7 +61,7 @@ class SignUpView extends GetView<SignUpController> {
                     const SizedBox(height: 6),
 
                     Text(
-                      "Start your storytelling journey today",
+                      'Start your storytelling journey today',
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontSize: isTablet ? 18 : 15,
                         color: Colors.black54,
@@ -76,10 +84,10 @@ class SignUpView extends GetView<SignUpController> {
                               value,
                             ),
                             controller: controller.fullName.value,
-                            hintText: "Enter your full name",
+                            hintText: 'Enter your full name',
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                RegExp(r"[a-zA-Z\s]"),
+                                RegExp(r'[a-zA-Z\s]'),
                               ),
                             ],
                           ),
@@ -91,9 +99,9 @@ class SignUpView extends GetView<SignUpController> {
                             validator: (value) =>
                                 TValidator.validateEmail(value),
                             controller: controller.email.value,
-                            hintText: "Enter your email",
+                            hintText: 'Enter your email',
                             inputFormatters: [
-                              FilteringTextInputFormatter.deny(RegExp(r"\s")),
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
                             ],
                           ),
                           SizedBox(height: isTablet ? 18 : 12),
@@ -105,7 +113,7 @@ class SignUpView extends GetView<SignUpController> {
                               validator: (value) =>
                                   TValidator.validatePassword(value),
                               controller: controller.password.value,
-                              hintText: "Enter your password",
+                              hintText: 'Enter your password',
                               obsecure: controller.obsecure.value,
                               suffixIcon: GestureDetector(
                                 onTap: () => controller.obsecure.value =
@@ -117,7 +125,7 @@ class SignUpView extends GetView<SignUpController> {
                                 ),
                               ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r"\s")),
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],
                             ),
                           ),
@@ -135,7 +143,7 @@ class SignUpView extends GetView<SignUpController> {
                                     value,
                                   ),
                               controller: controller.confirmPassword.value,
-                              hintText: "Confirm password",
+                              hintText: 'Confirm password',
                               obsecure: controller.obsecureConfirm.value,
                               suffixIcon: GestureDetector(
                                 onTap: () => controller.obsecureConfirm.value =
@@ -147,7 +155,7 @@ class SignUpView extends GetView<SignUpController> {
                                 ),
                               ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r"\s")),
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
                               ],
                             ),
                           ),
@@ -171,7 +179,7 @@ class SignUpView extends GetView<SignUpController> {
                               ),
                             )
                           : AuthButton(
-                              label: "Create Account",
+                              label: 'Create Account',
                               size: Size(width * 0.6, 52),
                               onPressed: () => controller.registerUser(),
                             ),
@@ -186,7 +194,7 @@ class SignUpView extends GetView<SignUpController> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "Already have an account? ",
+                              text: 'Already have an account? ',
                               style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(
                                     color: Colors.black,
@@ -194,7 +202,9 @@ class SignUpView extends GetView<SignUpController> {
                                   ),
                             ),
                             TextSpan(
-                              text: "Login",
+                               recognizer: TapGestureRecognizer()
+                                ..onTap = () => Get.back(),
+                              text: 'Login',
                               style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(
                                     color: AppColors.primary,

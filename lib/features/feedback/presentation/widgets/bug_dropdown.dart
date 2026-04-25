@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:mindloom/config/constants/colors.dart';
 
 class BugDropdownMenu extends StatelessWidget {
-  final List<String> items;
-  final String? selected;
-  final ValueChanged<String> onSelect;
 
   const BugDropdownMenu({
     super.key,
     required this.items,
     required this.selected,
     required this.onSelect,
+    required this.isDarkMode,
   });
+  final List<String> items;
+  final String? selected;
+  final bool isDarkMode;
+  final ValueChanged<String> onSelect;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ?AppColors.darkSurface:AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: isDarkMode ?null:[
           BoxShadow(
             color: Colors.black.withValues(alpha: .10),
             blurRadius: 24,
@@ -40,6 +43,7 @@ class BugDropdownMenu extends StatelessWidget {
             final isLast = i == items.length - 1;
             return _MenuItem(
               label: item,
+              isDarkMode: isDarkMode,
               isSelected: item == selected,
               showDivider: !isLast,
               theme: Theme.of(context).textTheme,
@@ -53,11 +57,6 @@ class BugDropdownMenu extends StatelessWidget {
 }
 
 class _MenuItem extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final bool showDivider;
-  final TextTheme theme;
-  final VoidCallback onTap;
 
   const _MenuItem({
     required this.label,
@@ -65,7 +64,14 @@ class _MenuItem extends StatelessWidget {
     required this.showDivider,
     required this.theme,
     required this.onTap,
+    required this.isDarkMode,
   });
+  final String label;
+  final bool isSelected;
+  final bool showDivider;
+  final TextTheme theme;
+  final VoidCallback onTap;  final bool isDarkMode;
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +80,7 @@ class _MenuItem extends StatelessWidget {
         InkWell(
           onTap: onTap,
           child: Container(
-            color: isSelected ? const Color(0xFFFDF0EF) : Colors.white,
+            color: isSelected ? const Color(0xFFFDF0EF) :isDarkMode ?AppColors.darkSurface: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             width: double.infinity,
             child: Text(
@@ -90,7 +96,7 @@ class _MenuItem extends StatelessWidget {
           Divider(
             height: 1,
             thickness: 1,
-            color: const Color(0xFFE2E4EC).withValues(alpha: .6),
+            color:isDarkMode ?AppColors.filledDark : const Color(0xFFE2E4EC).withValues(alpha: .6),
             indent: 20,
             endIndent: 20,
           ),

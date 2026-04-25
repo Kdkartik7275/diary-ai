@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:mindloom/config/constants/colors.dart';
 
 class AnimatedNotificationBell extends StatefulWidget {
-  final int unreadCount;
-  final VoidCallback onTap;
 
   const AnimatedNotificationBell({
     super.key,
     required this.unreadCount,
     required this.onTap,
   });
+  final int unreadCount;
+  final VoidCallback onTap;
 
   @override
   State<AnimatedNotificationBell> createState() =>
@@ -77,7 +77,7 @@ class _AnimatedNotificationBellState extends State<AnimatedNotificationBell>
                   ),
                   child: Text(
                     widget.unreadCount > 99
-                        ? "99+"
+                        ? '99+'
                         : widget.unreadCount.toString(),
                     style: const TextStyle(
                       color: Colors.white,

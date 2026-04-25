@@ -8,15 +8,15 @@ import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
 import 'package:mindloom/features/diary/domain/repository/diary_repository.dart';
 
 class DiaryRepositoryImpl implements DiaryRepository {
-  final DiaryRemoteDataSource remoteDataSource;
-  final DiaryLocalDataSource localDataSource;
-  final ConnectionChecker connectionChecker;
 
   DiaryRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
     required this.connectionChecker,
   });
+  final DiaryRemoteDataSource remoteDataSource;
+  final DiaryLocalDataSource localDataSource;
+  final ConnectionChecker connectionChecker;
   @override
   ResultFuture<DiaryEntity> createDiary({
     required Map<String, dynamic> diary,

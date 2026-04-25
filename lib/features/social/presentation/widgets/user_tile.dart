@@ -1,16 +1,19 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mindloom/core/utils/helpers/functions.dart';
 
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/social/presentation/views/user_profile_page.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class UserTile extends GetView<UserController> {
-  const UserTile({super.key, required this.userId});
+  const UserTile({super.key, required this.userId, required this.isDarkMode});
 
   final String userId;
+  final bool isDarkMode;
 
   static const _avatarColors = [
     Color(0xFFE8E0FF),
@@ -34,7 +37,7 @@ class UserTile extends GetView<UserController> {
       future: controller.getUserById(userId: userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const UserTileLoading();
+          return UserTileLoading(isDarkMode: isDarkMode);
         }
 
         if (snapshot.hasError) {
@@ -46,25 +49,73 @@ class UserTile extends GetView<UserController> {
         }
 
         final user = snapshot.data!;
+        debugPrint('Loaded user: ${user.isDeleted} (${user.id})');
+        final isDeleted = user.isDeleted ?? false;
         final colorIndex = user.id.hashCode.abs() % _avatarColors.length;
         final bgColor = _avatarColors[colorIndex];
-        final textColor = _avatarTextColors[colorIndex];
+        final textColor = isDarkMode
+            ? AppColors.textLighter
+            : _avatarTextColors[colorIndex];
+
+        if (isDeleted) {
+          return GestureDetector(
+              onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isDarkMode ? AppColors.darkSurface : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: isDarkMode
+                      ? AppColors.filledDark
+                      : const Color(0xFFF0F0F0),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey.shade400,
+                    ),
+                    child: const Icon(Icons.person, color: Colors.white),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Deleted User',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
 
         return GestureDetector(
           onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDarkMode ? AppColors.darkSurface : Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFF0F0F0)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              border: Border.all(
+                color: isDarkMode
+                    ? AppColors.filledDark
+                    : const Color(0xFFF0F0F0),
+              ),
+              boxShadow: isDarkMode
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
             ),
             child: Row(
               children: [
@@ -146,22 +197,23 @@ class _Initials extends StatelessWidget {
 }
 
 class UserTileLoading extends StatelessWidget {
-  const UserTileLoading({super.key});
+  const UserTileLoading({super.key, required this.isDarkMode});
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFF0F0F0)),
       ),
       child: Row(
-        children: const [
-          _AvatarPlaceholder(),
+        children: [
+          _AvatarPlaceholder(key, isDarkMode),
           SizedBox(width: 12),
-          Expanded(child: _UserTextPlaceholder()),
+          Expanded(child: _UserTextPlaceholder(isDarkMode: isDarkMode)),
         ],
       ),
     );
@@ -169,7 +221,8 @@ class UserTileLoading extends StatelessWidget {
 }
 
 class _AvatarPlaceholder extends StatelessWidget {
-  const _AvatarPlaceholder();
+  const _AvatarPlaceholder(Key? key, this.isDarkMode) : super(key: key);
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +230,7 @@ class _AvatarPlaceholder extends StatelessWidget {
       width: 46,
       height: 46,
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
+        color: isDarkMode ? AppColors.darkSurface : Colors.grey.shade300,
         shape: BoxShape.circle,
       ),
     );
@@ -185,7 +238,8 @@ class _AvatarPlaceholder extends StatelessWidget {
 }
 
 class _UserTextPlaceholder extends StatelessWidget {
-  const _UserTextPlaceholder();
+  const _UserTextPlaceholder({required this.isDarkMode});
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +250,7 @@ class _UserTextPlaceholder extends StatelessWidget {
           width: 120,
           height: 14,
           decoration: BoxDecoration(
-            color: Colors.grey.shade300,
+            color: isDarkMode ? AppColors.darkSurface : Colors.grey.shade300,
             borderRadius: BorderRadius.circular(4),
           ),
         ),
@@ -205,7 +259,7 @@ class _UserTextPlaceholder extends StatelessWidget {
           width: 80,
           height: 12,
           decoration: BoxDecoration(
-            color: Colors.grey.shade300,
+            color: isDarkMode ? AppColors.darkSurface : Colors.grey.shade300,
             borderRadius: BorderRadius.circular(4),
           ),
         ),

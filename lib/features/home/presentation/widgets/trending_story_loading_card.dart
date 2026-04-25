@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 
-class TrendingStoryLoadingCard extends StatelessWidget {
+class TrendingStoryLoadingCard extends GetView<ThemeController> {
   const TrendingStoryLoadingCard({super.key});
 
   @override
@@ -9,7 +12,7 @@ class TrendingStoryLoadingCard extends StatelessWidget {
       width: MediaQuery.of(context).size.width / 1.6,
       margin: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color:controller.isDarkMode ?AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -18,7 +21,7 @@ class TrendingStoryLoadingCard extends StatelessWidget {
           Container(
             height: MediaQuery.of(context).size.height * .18,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color:controller.isDarkMode ?AppColors.filledDark : Colors.grey.shade300,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
               ),
@@ -36,7 +39,7 @@ class TrendingStoryLoadingCard extends StatelessWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color:controller.isDarkMode ?AppColors.filledDark : Colors.grey.shade300,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -48,7 +51,7 @@ class TrendingStoryLoadingCard extends StatelessWidget {
                       width: 80,
                       height: 12,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color:controller.isDarkMode ?AppColors.filledDark : Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
@@ -57,7 +60,7 @@ class TrendingStoryLoadingCard extends StatelessWidget {
                       width: 60,
                       height: 10,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color:controller.isDarkMode ?AppColors.filledDark : Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
@@ -80,7 +83,7 @@ class TrendingStoryLoadingCard extends StatelessWidget {
                   width: 60,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color:controller.isDarkMode ?AppColors.filledDark : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),

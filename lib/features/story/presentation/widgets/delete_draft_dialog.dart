@@ -1,27 +1,34 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mindloom/config/constants/colors.dart';
 
 class DeleteDraftDialog extends StatelessWidget {
   const DeleteDraftDialog({
     super.key,
     required this.storyTitle,
     required this.onConfirm,
+    required this.isDarkMode,
   });
 
   final String storyTitle;
   final VoidCallback onConfirm;
+  final bool isDarkMode;
 
   static void show({
     required BuildContext context,
     required String storyTitle,
     required VoidCallback onConfirm,
+    required bool isDarkMode,
   }) {
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: .45),
-      builder: (_) =>
-          DeleteDraftDialog(storyTitle: storyTitle, onConfirm: onConfirm),
+      builder: (_) => DeleteDraftDialog(
+        storyTitle: storyTitle,
+        onConfirm: onConfirm,
+        isDarkMode: isDarkMode,
+      ),
     );
   }
 
@@ -30,11 +37,11 @@ class DeleteDraftDialog extends StatelessWidget {
     final theme = Theme.of(context).textTheme;
 
     return Dialog(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? AppColors.darkSurface : Colors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
@@ -132,7 +139,7 @@ class DeleteDraftDialog extends StatelessWidget {
                   child: _DialogButton(
                     label: 'Cancel',
                     backgroundColor: Colors.grey.withValues(alpha: .10),
-                    labelColor: Colors.grey[700]!,
+                    labelColor:isDarkMode ? AppColors.white:  Colors.grey[700]!,
                     onTap: () => Get.back(),
                   ),
                 ),

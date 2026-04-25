@@ -7,6 +7,7 @@ class PersonalInfoTile extends StatelessWidget {
     super.key,
     required this.height,
     required this.width,
+    required this.isDarkMode,
     required this.title,
     required this.value,
     required this.backgroundColor,
@@ -15,6 +16,7 @@ class PersonalInfoTile extends StatelessWidget {
 
   final double height;
   final double width;
+  final bool isDarkMode;
   final String title;
   final String value;
   final Color backgroundColor;
@@ -35,7 +37,7 @@ class PersonalInfoTile extends StatelessWidget {
         title,
         style: theme.titleLarge!.copyWith(
           fontWeight: FontWeight.normal,
-          color: AppColors.textLighter.withValues(alpha: .7),
+          color:isDarkMode ? AppColors.textDarkSecondary: AppColors.textLighter.withValues(alpha: .7),
           fontSize: 14,
         ),
       ),

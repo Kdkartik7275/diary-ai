@@ -16,6 +16,7 @@ abstract interface class StoryRemoteDataSource {
     required String genre,
     required String tone,
     required String characterName,
+    String? summary,
   });
   Future<StoryModel> editStory({required Map<String, dynamic> data});
   Future<void> deleteStory({required String storyId});
@@ -25,18 +26,33 @@ abstract interface class StoryRemoteDataSource {
   });
   Future<void> likeStory({required String storyId, required String userId});
   Future<void> unlikeStory({required String storyId, required String userId});
-
+  Future<bool> savedByYou({required String storyId, required String userId});
   Future<void> markStoryRead({required String storyId, required String userId});
 
   Future<StoryModel> publishStory({
     required String storyId,
     required String userId,
   });
+  Future saveStory({required String storyId, required String userId});
+  Future removeSaved({required String storyId, required String userId});
+
   Future<List<StoryModel>> getUserDrafts({required String userId});
-  Future<List<StoryModel>> getUserFeed({required String userId});
-  Future<List<StoryModel>> getPublisedStories({required String userId});
-  Future<List<StoryModel>> getPublishedStoriesByUser({required String userId});
+
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})> getUserFeed({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  });
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStories({required String userId, DocumentSnapshot? lastDoc});
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getPublishedStoriesByUser({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  });
   Future<String?> uploadStoryCoverImage(File image);
+
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getSavedStories({required String userId, DocumentSnapshot? lastDoc});
 }
 
 class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
@@ -125,6 +141,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
     try {
       final docRef = firestore.collection('stories').doc(storyId);
       final statsRef = firestore.collection('story_stats').doc(storyId);
+      final userStatsRef = firestore.collection('user_stats').doc(userId);
 
       final storyDoc = await docRef.get();
 
@@ -138,22 +155,26 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
         throw 'You are not the author of this story';
       }
 
-      await docRef.update({
-        'isPublished': true,
-        'publishedAt': Timestamp.now(),
-        'updatedAt': Timestamp.now(),
-      });
-      await statsRef.set({
-        'storyId': storyId,
-        'reads': 0,
-        'likes': 0,
-        'comments': 0,
-        'saved': 0,
-        'trendingScore': 1,
-      });
+      await Future.wait([
+        docRef.update({
+          'isPublished': true,
+          'publishedAt': Timestamp.now(),
+          'updatedAt': Timestamp.now(),
+        }),
+        statsRef.set({
+          'storyId': storyId,
+          'reads': 0,
+          'likes': 0,
+          'comments': 0,
+          'saved': 0,
+          'trendingScore': 1,
+        }),
+        userStatsRef.update({
+          'storiesCount': FieldValue.increment(1), // add
+        }),
+      ]);
 
       final updatedDoc = await docRef.get();
-
       return StoryModel.fromMap(updatedDoc.data() as Map<String, dynamic>);
     } catch (e) {
       throw e.toString();
@@ -161,23 +182,37 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }
 
   @override
-  Future<List<StoryModel>> getPublisedStories({required String userId}) async {
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStories({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  }) async {
     try {
-      final storiesDoc = await firestore
+      Query query = firestore
           .collection('stories')
           .where('userId', isEqualTo: userId)
           .where('isPublished', isEqualTo: true)
           .where('publishedAt', isNotEqualTo: null)
-          .get();
+          .orderBy('publishedAt', descending: true)
+          .limit(10);
 
-      if (storiesDoc.docs.isEmpty) {
-        return [];
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
       }
 
-      List<StoryModel> stories = storiesDoc.docs
-          .map((story) => StoryModel.fromMap(story.data()))
+      final storiesDoc = await query.get();
+
+      if (storiesDoc.docs.isEmpty) {
+        return (stories: <StoryModel>[], lastDoc: null);
+      }
+
+      final stories = storiesDoc.docs
+          .map(
+            (story) => StoryModel.fromMap(story.data() as Map<String, dynamic>),
+          )
           .toList();
-      return stories;
+
+      return (stories: stories, lastDoc: storiesDoc.docs.last);
     } catch (e) {
       throw e.toString();
     }
@@ -331,6 +366,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
     required String genre,
     required String tone,
     required String characterName,
+    String? summary,
   }) async {
     try {
       final response = await aiStoryService.generateStory(
@@ -338,9 +374,12 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
         genre: genre,
         tone: tone,
         characterName: characterName,
+        summary: summary,
       );
       return response;
-    } catch (e) {
+    } catch (e,stack) {
+      debugPrint('❌ AIStoryService error: $e');
+      debugPrint('❌ Stack: $stack');
       throw e.toString();
     }
   }
@@ -358,27 +397,35 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }
 
   @override
-  Future<List<StoryModel>> getPublishedStoriesByUser({
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getPublishedStoriesByUser({
     required String userId,
+    DocumentSnapshot? lastDoc,
   }) async {
     try {
-      final storiesDoc = await firestore
+      var query = firestore
           .collection('stories')
           .where('userId', isEqualTo: userId)
           .where('isPublished', isEqualTo: true)
           .where('publishedAt', isNotEqualTo: null)
           .orderBy('publishedAt', descending: true)
-          .limit(10)
-          .get();
+          .limit(10);
 
-      if (storiesDoc.docs.isEmpty) {
-        return [];
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
       }
 
-      List<StoryModel> stories = storiesDoc.docs
+      final storiesDoc = await query.get();
+
+      if (storiesDoc.docs.isEmpty) {
+        return (stories: <StoryModel>[], lastDoc: null);
+      }
+
+      final stories = storiesDoc.docs
           .map((story) => StoryModel.fromMap(story.data()))
           .toList();
-      return stories;
+
+      return (stories: stories, lastDoc: storiesDoc.docs.last);
     } catch (e) {
       throw e.toString();
     }
@@ -409,20 +456,23 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }
 
   @override
-  Future<List<StoryModel>> getUserFeed({required String userId}) async {
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})> getUserFeed({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  }) async {
     try {
       final db = DataBaseService.instance;
 
       List<String> followings = await db.getFollowings(userId);
 
       if (followings.isEmpty) {
-        final snapshot = await firestore
+        final followingSnapshot = await firestore
             .collection('user_following')
             .doc(userId)
             .collection('users')
             .get();
 
-        followings = snapshot.docs.map((e) => e.id).toList();
+        followings = followingSnapshot.docs.map((e) => e.id).toList();
 
         await db.insertFollowings(userId: userId, followingIds: followings);
       }
@@ -430,6 +480,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
       final userIds = [...followings, userId];
 
       List<StoryModel> stories = [];
+      DocumentSnapshot? newLastDoc;
 
       for (int i = 0; i < userIds.length; i += 10) {
         final chunk = userIds.sublist(
@@ -437,16 +488,27 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
           (i + 10 > userIds.length) ? userIds.length : i + 10,
         );
 
-        final snapshot = await firestore
+        Query query = firestore
             .collection('stories')
             .where('userId', whereIn: chunk)
             .where('isPublished', isEqualTo: true)
             .orderBy('publishedAt', descending: true)
-            .limit(20)
-            .get();
+            .limit(10);
+
+        if (lastDoc != null) {
+          query = query.startAfterDocument(lastDoc);
+        }
+
+        final snapshot = await query.get();
+
+        if (snapshot.docs.isNotEmpty) {
+          newLastDoc = snapshot.docs.last;
+        }
 
         stories.addAll(
-          snapshot.docs.map((e) => StoryModel.fromMap(e.data())).toList(),
+          snapshot.docs
+              .map((e) => StoryModel.fromMap(e.data() as Map<String, dynamic>))
+              .toList(),
         );
       }
 
@@ -461,10 +523,182 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
         return bTime.compareTo(aTime);
       });
 
-      return stories;
+      if (stories.length > 10) {
+        stories = stories.sublist(0, 10);
+      }
+
+      return (stories: stories, lastDoc: newLastDoc);
     } catch (e) {
       debugPrint(e.toString());
-      throw e.toString();
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<void> saveStory({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      final statsRef = firestore.collection('story_stats').doc(storyId);
+
+      final savedRef = firestore
+          .collection('user_saved_stories')
+          .doc(userId)
+          .collection('stories')
+          .doc(storyId);
+
+      final userStatsRef = firestore.collection('user_stats').doc(userId);
+
+      await firestore.runTransaction((transaction) async {
+        final savedDoc = await transaction.get(savedRef);
+
+        if (savedDoc.exists) return;
+
+        transaction.set(savedRef, {
+          'storyId': storyId,
+          'savedAt': Timestamp.now(),
+        });
+
+        transaction.set(statsRef, {
+          'storyId': storyId,
+          'saved': FieldValue.increment(1),
+        }, SetOptions(merge: true));
+
+        transaction.set(userStatsRef, {
+          'userId': userId,
+          'savedStoriesCount': FieldValue.increment(1),
+        }, SetOptions(merge: true));
+      });
+
+      await _updateTrendingScore(storyId: storyId, savedDelta: 1);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<bool> savedByYou({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      final savedRef = firestore
+          .collection('user_saved_stories')
+          .doc(userId)
+          .collection('stories')
+          .doc(storyId);
+
+      final doc = await savedRef.get();
+      return doc.exists;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<void> removeSaved({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      final statsRef = firestore.collection('story_stats').doc(storyId);
+
+      final savedRef = firestore
+          .collection('user_saved_stories')
+          .doc(userId)
+          .collection('stories')
+          .doc(storyId);
+
+      final userStatsRef = firestore.collection('user_stats').doc(userId);
+
+      await firestore.runTransaction((transaction) async {
+        final savedDoc = await transaction.get(savedRef);
+
+        if (!savedDoc.exists) return;
+
+        transaction.delete(savedRef);
+
+        transaction.set(statsRef, {
+          'storyId': storyId,
+          'saved': FieldValue.increment(-1),
+        }, SetOptions(merge: true));
+
+        transaction.set(userStatsRef, {
+          'userId': userId,
+          'savedStoriesCount': FieldValue.increment(-1),
+        }, SetOptions(merge: true));
+      });
+
+      await _updateTrendingScore(storyId: storyId, savedDelta: -1);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getSavedStories({required String userId, DocumentSnapshot? lastDoc}) async {
+    try {
+      debugPrint('🟡 getSavedStories START → userId: $userId');
+
+      Query query = firestore
+          .collection('user_saved_stories')
+          .doc(userId)
+          .collection('stories')
+          .orderBy('savedAt', descending: true)
+          .limit(10);
+
+      if (lastDoc != null) {
+        debugPrint('📌 Applying pagination...');
+        query = query.startAfterDocument(lastDoc);
+      }
+
+      final snapshot = await query.get();
+
+      debugPrint('📄 Saved docs fetched: ${snapshot.docs.length}');
+
+      if (snapshot.docs.isEmpty) {
+        return (stories: <StoryModel>[], lastDoc: null);
+      }
+
+      final storyIds = snapshot.docs.map((doc) => doc.id).toList();
+
+      debugPrint('🧾 Story IDs: $storyIds');
+
+      // 🔥 Fetch stories in chunks (Firestore whereIn limit = 10)
+      List<StoryModel> stories = [];
+
+      for (int i = 0; i < storyIds.length; i += 10) {
+        final chunk = storyIds.sublist(
+          i,
+          (i + 10 > storyIds.length) ? storyIds.length : i + 10,
+        );
+
+        final storyQuery = await firestore
+            .collection('stories')
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get();
+
+        final chunkStories = storyQuery.docs
+            .map((doc) => StoryModel.fromMap(doc.data()))
+            .toList();
+
+        stories.addAll(chunkStories);
+      }
+
+      // 🔥 Maintain correct order (because whereIn breaks order)
+      final storyMap = {for (var story in stories) story.id: story};
+
+      final orderedStories = storyIds
+          .map((id) => storyMap[id])
+          .whereType<StoryModel>()
+          .toList();
+
+      return (stories: orderedStories, lastDoc: snapshot.docs.last);
+    } catch (e, stack) {
+      debugPrintStack(stackTrace: stack);
+      throw Exception(e.toString());
     }
   }
 }

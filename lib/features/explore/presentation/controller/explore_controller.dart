@@ -1,35 +1,43 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/snackbars/error_snackbar.dart';
-import 'package:mindloom/features/explore/domain/entity/recently_added_story.dart';
 import 'package:mindloom/features/explore/domain/entity/trending_story_entity.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_recently_added_story.dart';
+import 'package:mindloom/features/explore/domain/usecases/get_stories_by_genre.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_story_author.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_trending_stories.dart';
 import 'package:mindloom/features/story/data/model/story_stats_model.dart';
+import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/domain/entity/story_stats.dart';
 import 'package:mindloom/features/story/domain/usecases/get_story_stats.dart';
 
 class ExploreController extends GetxController {
-
   ExploreController({
     required this.getRecentlyAddedStory,
     required this.getTrendingStories,
     required this.getStoryStats,
     required this.getStoryAuthorUseCase,
+    required this.getStoriesByGenreUseCase,
   });
+
   final GetRecentlyAddedStory getRecentlyAddedStory;
   final GetTrendingStories getTrendingStories;
   final GetStoryStats getStoryStats;
   final GetStoryAuthor getStoryAuthorUseCase;
+  final GetStoriesByGenre getStoriesByGenreUseCase;
 
-  RxList<RecentlyAddedStoryEntity> recentlyAddedStories =
-      RxList<RecentlyAddedStoryEntity>([]);
   RxList<TrendingStoryEntity> trendingStories = RxList<TrendingStoryEntity>([]);
-  RxBool recentLoading = RxBool(false);
   RxBool trendingLoading = RxBool(false);
-  RxString selectedGenre = RxString('');
+  RxBool loading = RxBool(false);
+  RxString selectedGenre = RxString('All');
+
+  RxMap<String, List<StoryEntity>> storiesByGenre = RxMap({});
+
+  final Map<String, DocumentSnapshot?> _lastDocs = {};
+
+  final Map<String, bool> _hasMore = {};
 
   final Map<String, StoryStatsEntity> _statsCache = {};
   final Map<String, Future<StoryStatsEntity>> _pendingRequests = {};
@@ -37,28 +45,20 @@ class ExploreController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchRecentlyAddedStories();
-    fetchTrendingStories();
-  }
 
-  Future<void> fetchRecentlyAddedStories() async {
-    try {
-      recentLoading.value = true;
-      final result = await getRecentlyAddedStory.call();
-      result.fold((l) => showErrorDialog(l.message), (stories) {
-        recentlyAddedStories.value = stories;
-      });
-    } catch (e) {
-      showErrorDialog(e.toString());
-    } finally {
-      recentLoading.value = false;
-    }
+    fetchTrendingStories();
+
+    ever(selectedGenre, (_) {
+      getStoriesByGenre();
+    });
   }
 
   Future<void> fetchTrendingStories() async {
     try {
       trendingLoading.value = true;
+
       final result = await getTrendingStories.call();
+
       result.fold((l) => showErrorDialog(l.message), (stories) {
         trendingStories.value = stories;
       });
@@ -103,12 +103,62 @@ class ExploreController extends GetxController {
     })();
 
     _pendingRequests[storyId] = future;
+
     return future;
   }
 
+  Future<void> getStoriesByGenre({bool loadMore = false}) async {
+    try {
+      final genreKey = selectedGenre.value;
+
+      if (!loadMore && storiesByGenre.containsKey(genreKey)) {
+        return;
+      }
+
+      if (_hasMore[genreKey] == false) return;
+
+      loading.value = true;
+
+      final result = await getStoriesByGenreUseCase.call(
+        GetStoriesByGenreParams(
+          genre: genreKey == 'All' ? null : genreKey,
+          lastDoc: _lastDocs[genreKey],
+        ),
+      );
+
+      result.fold((err) => showErrorDialog(err.message), (data) {
+        final stories = data.stories;
+
+        if (loadMore) {
+          storiesByGenre[genreKey] = [
+            ...(storiesByGenre[genreKey] ?? []),
+            ...stories,
+          ];
+        } else {
+          storiesByGenre[genreKey] = stories;
+        }
+
+        _lastDocs[genreKey] = data.lastDoc;
+
+        _hasMore[genreKey] = stories.length == 10;
+      });
+    } catch (e) {
+      showErrorDialog(e.toString());
+    } finally {
+      loading.value = false;
+    }
+  }
+
   Future<void> refreshExplore() async {
-    await Future.wait([fetchTrendingStories(), fetchRecentlyAddedStories()]);
+    await fetchTrendingStories();
+
+    storiesByGenre.clear();
+    _lastDocs.clear();
+    _hasMore.clear();
+
     _statsCache.clear();
     _pendingRequests.clear();
+
+    await getStoriesByGenre();
   }
 }

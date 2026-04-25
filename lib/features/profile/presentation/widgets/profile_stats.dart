@@ -1,17 +1,24 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/features/saved/presentation/saved_view.dart';
 
 class ProfileStats extends StatelessWidget {
   const ProfileStats({
     super.key,
     required this.totalWordsCount,
     required this.totalEntries,
+    required this.isDarkMode,
     required this.publishedStoriesCount,
+    required this.savedCount,
   });
   final int totalWordsCount;
   final int totalEntries;
   final int publishedStoriesCount;
+  final int savedCount;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -24,17 +31,19 @@ class ProfileStats extends StatelessWidget {
             children: [
               _statCard(
                 color: const Color(0xFF8BC6FF),
-                icon: CupertinoIcons.arrow_up_right,
-                value: "12 days",
-                label: "Writing Streak",
+                icon: CupertinoIcons.bookmark,
+                value: savedCount.toString(),
+                label: 'Saved Stories',
                 theme: theme,
+                onTap: () => Get.to(() => SavedView())
               ),
               const SizedBox(width: 14),
               _statCard(
                 color: const Color(0xFFFFB175),
                 icon: CupertinoIcons.pencil_outline,
                 value: totalEntries.toString(),
-                label: "Total Entries",
+                label: 'Total Entries',
+
                 theme: theme,
               ),
             ],
@@ -46,7 +55,7 @@ class ProfileStats extends StatelessWidget {
                 color: const Color(0xFFB095FF),
                 icon: CupertinoIcons.book,
                 value: publishedStoriesCount.toString(),
-                label: "Stories Published",
+                label: 'Stories Published',
                 theme: theme,
               ),
               const SizedBox(width: 14),
@@ -54,7 +63,7 @@ class ProfileStats extends StatelessWidget {
                 color: const Color(0xFFC8B5FF),
                 icon: CupertinoIcons.pencil,
                 value: totalWordsCount.toString(),
-                label: "Words Written",
+                label: 'Words Written',
                 theme: theme,
               ),
             ],
@@ -70,49 +79,56 @@ class ProfileStats extends StatelessWidget {
     required String value,
     required String label,
     required TextTheme theme,
+    Function()? onTap,
   }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .07),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: .2),
-                borderRadius: BorderRadius.circular(12),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isDarkMode ? AppColors.darkSurface : Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .07),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: theme.titleLarge!.copyWith(
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: .2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 22),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: theme.titleLarge!.copyWith(
-                fontSize: 13,
-                color: Colors.black54,
+              const SizedBox(height: 12),
+              Text(
+                value,
+                style: theme.titleLarge!.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: isDarkMode ? AppColors.textDark : Colors.black87,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: theme.titleLarge!.copyWith(
+                  fontSize: 13,
+                  color: isDarkMode ? AppColors.textDark : Colors.black54,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

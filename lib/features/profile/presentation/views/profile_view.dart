@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/features/diary/presentation/controller/diary_controller.dart';
 import 'package:mindloom/features/profile/presentation/widgets/profile_header.dart';
 import 'package:mindloom/features/profile/presentation/widgets/profile_stats.dart';
@@ -20,6 +21,7 @@ class ProfileView extends GetView<UserController> {
     final theme = Theme.of(context).textTheme;
     final diaryController = Get.find<DiaryController>();
     final storyController = Get.find<StoryController>();
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
 
     return Scaffold(
       body: Obx(() {
@@ -37,12 +39,15 @@ class ProfileView extends GetView<UserController> {
             children: [
               ProfileHeader(
                 user: user,
+                isDarkMode: isDarkMode,
                 followersCount: followersCount,
                 followingCount: followingCount,
               ),
               ProfileStats(
                 publishedStoriesCount: publishedStories,
+                savedCount: controller.userStats.value?.savedStoriesCount ?? 0,
                 totalWordsCount: totalWordsCount,
+                isDarkMode: isDarkMode,
                 totalEntries: diaryController.diaries.length,
               ),
               SizedBox(height: height * .02),
@@ -55,7 +60,7 @@ class ProfileView extends GetView<UserController> {
                     SizedBox(height: height * .02),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color:isDarkMode ?AppColors.darkSurface : Colors.white,
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(

@@ -2,15 +2,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/features/diary/domain/entity/diary_entity.dart';
 import 'package:mindloom/features/diary/presentation/controller/create_diary_controller.dart';
 import 'package:mindloom/features/diary/presentation/widgets/mood_selector.dart';
 
-class CreateEntryView extends GetView<CreateDiaryController> {
+class CreateEntryView extends StatefulWidget {
   const CreateEntryView({super.key});
+
+  @override
+  State<CreateEntryView> createState() => _CreateEntryViewState();
+}
+
+class _CreateEntryViewState extends State<CreateEntryView> {
+  late CreateDiaryController controller;
+  late ThemeController themeController;
+
+  late double width, height;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<CreateDiaryController>();
+    themeController = Get.find<ThemeController>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +35,11 @@ class CreateEntryView extends GetView<CreateDiaryController> {
     if (diary != null && !controller.isEdit.value) {
       controller.loadEntryForEdit(diary);
     }
-    final theme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final height = size.height;
-
+    width = size.width;
+    height = size.height;
+    final theme = Theme.of(context).textTheme;
+    final isDarkMode = themeController.isDarkMode;
     double horizontalPadding = width * 0.04;
     double verticalPadding = height * 0.015;
     double iconButtonSize = width * 0.12;
@@ -32,7 +49,9 @@ class CreateEntryView extends GetView<CreateDiaryController> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.primary.withValues(alpha: .1),
+        backgroundColor: isDarkMode
+            ? AppColors.darkSurface
+            : AppColors.primary.withValues(alpha: .1),
         title: Text(
           diary != null
               ? controller.formattedEffectiveDate(
@@ -51,6 +70,7 @@ class CreateEntryView extends GetView<CreateDiaryController> {
               SizedBox(
                 height: moodSelectorHeight,
                 child: MoodSelector(
+                  isDarkMode: isDarkMode,
                   initialEmoji: controller.mood.value,
                   onSelected: (emoji) {
                     controller.mood.value = emoji;
@@ -70,7 +90,8 @@ class CreateEntryView extends GetView<CreateDiaryController> {
                           fontWeight: FontWeight.w500,
                         ),
                         decoration: InputDecoration(
-                          hintText: "Give your day a title...",
+                          fillColor: isDarkMode ? AppColors.dark : null,
+                          hintText: 'Give your day a title...',
                           hintStyle: theme.titleMedium!.copyWith(
                             fontWeight: FontWeight.normal,
                             color: AppColors.hintText,
@@ -93,8 +114,9 @@ class CreateEntryView extends GetView<CreateDiaryController> {
                             color: Colors.grey.shade500,
                           ),
                           decoration: InputDecoration(
+                            fillColor: isDarkMode ? AppColors.dark : null,
                             hintText:
-                                "What happened today? How do you feel? Write freely...",
+                                'What happened today? How do you feel? Write freely...',
 
                             border: InputBorder.none,
                             errorBorder: InputBorder.none,
@@ -161,7 +183,8 @@ class CreateEntryView extends GetView<CreateDiaryController> {
                               borderRadius: BorderRadius.circular(
                                 saveButtonHeight * 0.35,
                               ),
-                              onTap: () => showTagSheet(context, controller),
+                              onTap: () =>
+                                  showTagSheet(context, controller, isDarkMode),
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
                                   vertical: saveButtonHeight * 0.25,
@@ -202,7 +225,11 @@ class CreateEntryView extends GetView<CreateDiaryController> {
   }
 }
 
-void showTagSheet(BuildContext context, CreateDiaryController controller) {
+void showTagSheet(
+  BuildContext context,
+  CreateDiaryController controller,
+  bool isDarkMode,
+) {
   final size = MediaQuery.of(context).size;
   final width = size.width;
   final height = size.height;
@@ -214,7 +241,7 @@ void showTagSheet(BuildContext context, CreateDiaryController controller) {
     builder: (context) {
       return Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDarkMode ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(width * 0.06),
           ),
@@ -246,7 +273,7 @@ void showTagSheet(BuildContext context, CreateDiaryController controller) {
                     ),
                   ),
                   Text(
-                    "Add Tags",
+                    'Add Tags',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.5,
@@ -375,12 +402,13 @@ void showTagSheet(BuildContext context, CreateDiaryController controller) {
                               SizedBox(width: width * 0.01),
                               Text(
                                 tag,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: width * 0.0325,
-                                  letterSpacing: 0.2,
-                                ),
+                                style: Theme.of(context).textTheme.titleSmall!
+                                    .copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: width * 0.0325,
+                                      letterSpacing: 0.2,
+                                    ),
                               ),
                               SizedBox(width: width * 0.01),
                               GestureDetector(
@@ -412,7 +440,7 @@ void showTagSheet(BuildContext context, CreateDiaryController controller) {
                       padding: EdgeInsets.only(bottom: height * 0.015),
                       child: Text(
                         "${controller.selectedTags.length} tag${controller.selectedTags.length != 1 ? 's' : ''} selected",
-                        style: TextStyle(
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
                           color: Colors.grey.shade600,
                           fontSize: width * 0.0325,
                           fontWeight: FontWeight.w500,
@@ -452,13 +480,19 @@ void showTagSheet(BuildContext context, CreateDiaryController controller) {
                                         end: Alignment.bottomRight,
                                       )
                                     : null,
-                                color: isSelected ? null : Colors.grey.shade100,
+                                color: isSelected
+                                    ? null
+                                    : isDarkMode
+                                    ? AppColors.filledDark
+                                    : Colors.grey.shade100,
                                 borderRadius: BorderRadius.circular(
                                   width * 0.04,
                                 ),
                                 border: Border.all(
                                   color: isSelected
                                       ? AppColors.primary.withValues(alpha: 0.3)
+                                      : isDarkMode
+                                      ? AppColors.filledDark
                                       : Colors.grey.shade300,
                                   width: 1,
                                 ),
@@ -482,6 +516,8 @@ void showTagSheet(BuildContext context, CreateDiaryController controller) {
                                     style: TextStyle(
                                       color: isSelected
                                           ? Colors.white
+                                          : isDarkMode
+                                          ? AppColors.textDarkSecondary
                                           : Colors.grey.shade700,
                                       fontWeight: isSelected
                                           ? FontWeight.w600
@@ -540,7 +576,7 @@ void showTagSheet(BuildContext context, CreateDiaryController controller) {
                       },
                       child: Text(
                         controller.selectedTags.isEmpty
-                            ? "Skip"
+                            ? 'Skip'
                             : "Add ${controller.selectedTags.length} Tag${controller.selectedTags.length != 1 ? 's' : ''}",
                         style: TextStyle(
                           color: Colors.white,

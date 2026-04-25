@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/features/diary/presentation/view/diaries_view.dart';
 import 'package:mindloom/features/explore/presentation/view/explore_stories_view.dart';
@@ -21,6 +22,7 @@ class Tabs extends StatefulWidget {
 class _TabsState extends State<Tabs> {
   int _selectedIndex = 0;
   late UserController _userController;
+  late ThemeController themeController;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,6 +42,7 @@ class _TabsState extends State<Tabs> {
   void initState() {
     super.initState();
     _userController = Get.find<UserController>();
+    themeController = Get.find<ThemeController>();
     loadUser();
   }
 
@@ -49,86 +52,95 @@ class _TabsState extends State<Tabs> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 400),
-        transitionBuilder: (child, animation) {
-          return SlideTransition(
-            position:
-                Tween<Offset>(
-                  begin: const Offset(1.0, 0.0),
-                  end: Offset.zero,
-                ).animate(
-                  CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.easeInOutCubic,
-                  ),
+    return Obx(
+       () {
+        final isDarkMode = themeController.isDarkMode;
+        return Scaffold(
+          body: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            transitionBuilder: (child, animation) {
+              return SlideTransition(
+                position:
+                    Tween<Offset>(
+                      begin: const Offset(1.0, 0.0),
+                      end: Offset.zero,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeInOutCubic,
+                      ),
+                    ),
+                child: child,
+              );
+            },
+            child: KeyedSubtree(
+              key: ValueKey(_selectedIndex),
+              child: _pages[_selectedIndex],
+            ),
+          ),
+        
+          bottomNavigationBar: Theme(
+            data: Theme.of(context).copyWith(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+            ),
+            child: BottomNavigationBar(
+              backgroundColor: isDarkMode
+                  ? AppColors.darkSurface
+                  : AppColors.white,
+              currentIndex: _selectedIndex,
+              selectedItemColor: AppColors.primary,
+              unselectedItemColor:themeController.isDarkMode
+                  ? AppColors.border.withValues(alpha: .4)
+                  : AppColors.border,
+              onTap: _onItemTapped,
+              iconSize: 26,
+              elevation: 0,
+              type: BottomNavigationBarType.fixed,
+        
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.home),
+                  activeIcon: Icon(CupertinoIcons.house_fill, color: AppColors.primary),
+                  label: 'Home',
                 ),
-            child: child,
-          );
-        },
-        child: KeyedSubtree(
-          key: ValueKey(_selectedIndex),
-          child: _pages[_selectedIndex],
-        ),
-      ),
-
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: AppColors.white,
-          currentIndex: _selectedIndex,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.border,
-          onTap: _onItemTapped,
-          iconSize: 26,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.home),
-              activeIcon: Icon(CupertinoIcons.home, color: AppColors.primary),
-              label: 'Home',
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.book),
+                  activeIcon: Icon(
+                    CupertinoIcons.book_fill,
+                    color: AppColors.primary,
+                  ),
+                  label: 'Diary',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.collections),
+                  activeIcon: Icon(
+                    CupertinoIcons.collections_solid,
+                    color: AppColors.primary,
+                  ),
+                  label: 'Stories',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.compass),
+                  activeIcon: Icon(
+                    CupertinoIcons.compass_fill,
+                    color: AppColors.primary,
+                  ),
+                  label: 'Explore',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(CupertinoIcons.person),
+                  activeIcon: Icon(
+                    CupertinoIcons.person_fill,
+                    color: AppColors.primary,
+                  ),
+                  label: 'Profile',
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.book),
-              activeIcon: Icon(
-                CupertinoIcons.book_fill,
-                color: AppColors.primary,
-              ),
-              label: 'Diary',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.collections),
-              activeIcon: Icon(
-                CupertinoIcons.collections_solid,
-                color: AppColors.primary,
-              ),
-              label: 'Stories',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.compass),
-              activeIcon: Icon(
-                CupertinoIcons.compass,
-                color: AppColors.primary,
-              ),
-              label: 'Explore',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.person),
-              activeIcon: Icon(
-                CupertinoIcons.person_fill,
-                color: AppColors.primary,
-              ),
-              label: 'Profile',
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 }

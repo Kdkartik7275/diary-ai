@@ -3,6 +3,7 @@
 class UserStats {
   final String userId;
   final int storiesCount;
+  final int savedStoriesCount;
   final int diariesCount;
   final int followersCount;
   final int followingCount;
@@ -13,6 +14,7 @@ class UserStats {
   UserStats({
     required this.userId,
     required this.storiesCount,
+    required this.savedStoriesCount,
     required this.diariesCount,
     required this.followersCount,
     required this.followingCount,
@@ -24,6 +26,7 @@ class UserStats {
   UserStats copyWith({
     String? userId,
     int? storiesCount,
+    int? savedStoriesCount,
     int? diariesCount,
     int? followersCount,
     int? followingCount,
@@ -34,6 +37,7 @@ class UserStats {
     return UserStats(
       userId: userId ?? this.userId,
       storiesCount: storiesCount ?? this.storiesCount,
+      savedStoriesCount: savedStoriesCount ?? this.savedStoriesCount,
       diariesCount: diariesCount ?? this.diariesCount,
       followersCount: followersCount ?? this.followersCount,
       followingCount: followingCount ?? this.followingCount,

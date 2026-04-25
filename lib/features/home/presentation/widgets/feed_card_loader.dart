@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 
-class FeedCardLoader extends StatelessWidget {
+class FeedCardLoader extends GetView<ThemeController> {
   const FeedCardLoader({super.key});
 
   Widget box({double? height, double? width, double radius = 8}) {
@@ -8,7 +11,7 @@ class FeedCardLoader extends StatelessWidget {
       height: height,
       width: width,
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
+        color:controller.isDarkMode ?AppColors.filledDark : Colors.grey.shade300,
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -24,7 +27,7 @@ class FeedCardLoader extends StatelessWidget {
       margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: controller.isDarkMode ?AppColors.darkSurface :Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(

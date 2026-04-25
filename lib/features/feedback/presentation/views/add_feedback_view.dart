@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/features/feedback/presentation/controller/add_feedback_controller.dart';
 import 'package:mindloom/features/feedback/presentation/widgets/bug_crash_report.dart';
 import 'package:mindloom/features/feedback/presentation/widgets/feedback_type.dart';
@@ -24,6 +25,7 @@ class _AddFeedbackViewState extends State<AddFeedbackView> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final theme = Theme.of(context).textTheme;
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -48,7 +50,7 @@ class _AddFeedbackViewState extends State<AddFeedbackView> {
           Container(
             width: width,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDarkMode ? AppColors.darkSurface : Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
@@ -64,7 +66,9 @@ class _AddFeedbackViewState extends State<AddFeedbackView> {
               '• StoryDiary AI is currently in Beta — your feedback shapes the app!',
               style: theme.titleLarge!.copyWith(
                 fontWeight: FontWeight.normal,
-                color: AppColors.textLighter,
+                color: isDarkMode
+                    ? AppColors.textDarkSecondary
+                    : AppColors.textLighter,
                 fontSize: 13,
               ),
             ),
@@ -84,6 +88,7 @@ class _AddFeedbackViewState extends State<AddFeedbackView> {
                   subtitle: 'Something broke or the app crashed',
                   title: 'Report a Bug/Crash',
                   index: 1,
+                  isDarkMode: isDarkMode,
                 ),
                 SizedBox(height: height * .02),
                 FeedbackType(
@@ -93,6 +98,7 @@ class _AddFeedbackViewState extends State<AddFeedbackView> {
                   title: 'Share an Idea',
                   subtitle: 'Suggest a feature or improvement',
                   index: 2,
+                  isDarkMode: isDarkMode,
                 ),
 
                 SizedBox(height: height * .02),
@@ -103,12 +109,13 @@ class _AddFeedbackViewState extends State<AddFeedbackView> {
                   title: 'General Feedback',
                   subtitle: 'Rate your overall experience',
                   index: 3,
+                  isDarkMode: isDarkMode,
                 ),
 
                 SizedBox(height: height * .02),
                 Obx(() {
                   return controller.selectedTypeIndex.value == 1
-                      ? BugOrCrashReport()
+                      ? BugOrCrashReport(isDarkMode: isDarkMode)
                       : controller.selectedTypeIndex.value == 2
                       ? IssueDetails(
                           title: 'Tell us your idea',
@@ -116,7 +123,9 @@ class _AddFeedbackViewState extends State<AddFeedbackView> {
                               'Describe your feature idea or improvement suggestion... ',
                           controller: TextEditingController(),
                         )
-                      : GeneralFeedback();
+                      : controller.selectedTypeIndex.value == 3
+                      ? GeneralFeedback(isDarkMode: isDarkMode)
+                      : SizedBox.shrink();
                 }),
 
                 SizedBox(height: height * .2),

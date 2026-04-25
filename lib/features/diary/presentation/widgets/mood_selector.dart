@@ -5,87 +5,95 @@ import 'package:mindloom/config/constants/colors.dart';
 
 class MoodSelector extends StatefulWidget {
   final String? initialEmoji;
+  final bool isDarkMode;
   final Function(String emoji) onSelected;
 
-  const MoodSelector({super.key, this.initialEmoji, required this.onSelected});
+  const MoodSelector({
+    super.key,
+    this.initialEmoji,
+    required this.isDarkMode,
+    required this.onSelected,
+  });
 
   @override
   State<MoodSelector> createState() => _MoodSelectorState();
 }
 
 class _MoodSelectorState extends State<MoodSelector> {
-  String selectedEmoji = "";
+  String selectedEmoji = '';
 
   final List<String> moodEmojis = [
-    "😀",
-    "😃",
-    "😄",
-    "😁",
-    "😊",
-    "🙂",
-    "😌",
-    "🤗",
-    "🥳",
-    "🎉",
-    "🎊",
-    "🤩",
-    "😎",
-    "😔",
-    "😞",
-    "😢",
-    "😭",
-    "😠",
-    "😡",
-    "🤬",
-    "😤",
-    "😴",
-    "🥱",
-    "🤒",
-    "🤕",
-    "🤔",
-    "😕",
-    "😐",
-    "😱",
-    "😲",
-    "❤️",
-    "💕",
-    "💖",
-    "💘",
-    "💗",
-    "😇",
-    "🙏",
-    "✈️",
-    "🌍",
-    "🏖️",
-    "🏝️",
-    "🚗",
-    "🏕️",
-    "🗺️",
-    "☕",
-    "🍵",
-    "🍔",
-    "🍕",
-    "🍟",
-    "🍱",
-    "🍩",
-    "🍦",
-    "💻",
-    "📝",
-    "📚",
-    "💼",
-    "📅",
+    '😀',
+    '😃',
+    '😄',
+    '😁',
+    '😊',
+    '🙂',
+    '😌',
+    '🤗',
+    '🥳',
+    '🎉',
+    '🎊',
+    '🤩',
+    '😎',
+    '😔',
+    '😞',
+    '😢',
+    '😭',
+    '😠',
+    '😡',
+    '🤬',
+    '😤',
+    '😴',
+    '🥱',
+    '🤒',
+    '🤕',
+    '🤔',
+    '😕',
+    '😐',
+    '😱',
+    '😲',
+    '❤️',
+    '💕',
+    '💖',
+    '💘',
+    '💗',
+    '😇',
+    '🙏',
+    '✈️',
+    '🌍',
+    '🏖️',
+    '🏝️',
+    '🚗',
+    '🏕️',
+    '🗺️',
+    '☕',
+    '🍵',
+    '🍔',
+    '🍕',
+    '🍟',
+    '🍱',
+    '🍩',
+    '🍦',
+    '💻',
+    '📝',
+    '📚',
+    '💼',
+    '📅',
   ];
 
   @override
   void initState() {
     super.initState();
-    selectedEmoji = widget.initialEmoji ?? "";
+    selectedEmoji = widget.initialEmoji ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.primary.withValues(alpha: .1),
+      color: widget.isDarkMode
+          ? AppColors.darkSurface
+          : AppColors.primary.withValues(alpha: .1),
       height: 80,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
@@ -111,7 +119,7 @@ class _MoodSelectorState extends State<MoodSelector> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : Colors.white,
+                  color: isSelected ? AppColors.primary :widget.isDarkMode ? AppColors.filledDark: Colors.white,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isSelected ? AppColors.primary : Colors.transparent,

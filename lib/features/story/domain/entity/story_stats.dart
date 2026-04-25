@@ -1,11 +1,4 @@
 class StoryStatsEntity {
-  final String storyId;
-  final int reads;
-  final int comments;
-  final int likes;
-  final int saved;
-  final int trendingScore;
-  final bool isLikedByYou;
 
   StoryStatsEntity({
     required this.storyId,
@@ -16,4 +9,11 @@ class StoryStatsEntity {
     required this.saved,
     required this.trendingScore,
   });
+  final String storyId;
+  final int reads;
+  final int comments;
+  final int likes;
+  final int saved;
+  final int trendingScore;
+  final bool isLikedByYou;
 }

@@ -1,22 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:mindloom/config/routes/app_routes.dart';
+import 'package:mindloom/core/snackbars/error_snackbar.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_stories_by_user.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 import 'package:mindloom/features/user/domain/entity/user_stats.dart';
+import 'package:mindloom/features/user/domain/usecases/delete_user.dart';
 import 'package:mindloom/features/user/domain/usecases/get_user.dart';
 import 'package:mindloom/features/user/domain/usecases/get_user_stats.dart';
 
 class UserController extends GetxController {
-  final GetUser getUserUseCase;
-  final GetUserStats getUserStatsUseCase;
-  final GetPublishedStoriesByUser getPublishedStoriesByUserUseCase;
-
   UserController({
     required this.getUserUseCase,
     required this.getPublishedStoriesByUserUseCase,
     required this.getUserStatsUseCase,
+    required this.deleteUserUseCase,
   });
+
+  final GetUser getUserUseCase;
+  final DeleteUser deleteUserUseCase;
+  final GetUserStats getUserStatsUseCase;
+  final GetPublishedStoriesByUser getPublishedStoriesByUserUseCase;
 
   Rx<UserEntity?> currentUser = Rx<UserEntity?>(null);
   Rx<UserStats?> userStats = Rx<UserStats?>(null);
@@ -24,6 +30,11 @@ class UserController extends GetxController {
   final Map<String, UserEntity> usersCache = {};
 
   RxMap<String, List<StoryEntity>> userStories = RxMap({});
+  RxMap<String, bool> userStoriesHasMore = RxMap({});
+  RxMap<String, bool> userStoriesLoadingMore = RxMap({});
+  RxBool userStoriesLoading = false.obs;
+
+  final Map<String, DocumentSnapshot?> _userStoriesLastDoc = {};
 
   RxBool loading = false.obs;
   RxBool userStatLoading = false.obs;
@@ -32,11 +43,13 @@ class UserController extends GetxController {
     try {
       loading.value = true;
 
-      final result = await getUserUseCase.call(uid);
+      final result = await getUserUseCase.call(
+        GetUserParams(userId: uid, isCurrrentUser: true),
+      );
 
       result.fold(
         (failure) {
-          debugPrint("Error loading user: ${failure.message}");
+          debugPrint('Error loading user: ${failure.message}');
         },
         (user) async {
           currentUser.value = user;
@@ -44,7 +57,7 @@ class UserController extends GetxController {
           final statsResult = await getUserStatsUseCase.call(user.id);
           statsResult.fold(
             (statsFailure) {
-              debugPrint("Error loading user stats: ${statsFailure.message}");
+              debugPrint('Error loading user stats: ${statsFailure.message}');
             },
             (stats) {
               userStats.value = stats;
@@ -53,7 +66,7 @@ class UserController extends GetxController {
         },
       );
     } catch (e) {
-      debugPrint("Exception loading user: $e");
+      debugPrint('Exception loading user: $e');
     } finally {
       loading.value = false;
     }
@@ -64,7 +77,9 @@ class UserController extends GetxController {
       if (usersCache.containsKey(userId)) {
         return usersCache[userId]!;
       }
-      final result = await getUserUseCase.call(userId);
+      final result = await getUserUseCase.call(
+        GetUserParams(userId: userId, isCurrrentUser: false),
+      );
 
       return result.fold((err) => throw Exception(err.message), (user) {
         usersCache[user.id] = user;
@@ -91,14 +106,55 @@ class UserController extends GetxController {
 
   Future<void> getUserStories({required String userId}) async {
     try {
-      if (userStories.containsKey(userId)) return;
-      final result = await getPublishedStoriesByUserUseCase.call(userId);
+      userStoriesLoading.value = true;
+      userStoriesHasMore[userId] = true;
+      _userStoriesLastDoc[userId] = null;
+      userStories[userId] = [];
 
-      result.fold((err) => throw err.message, (r) {
-        userStories[userId] = r;
+      final result = await getPublishedStoriesByUserUseCase.call(
+        GetPublishedStoriesParams(userId: userId),
+      );
+
+      result.fold((err) => throw err.message, (data) {
+        userStories[userId] = data.stories;
+        _userStoriesLastDoc[userId] = data.lastDoc;
+        debugPrint('Loaded ${data.stories.length} stories for user $userId');
+        if (data.stories.length < 10) {
+          userStoriesHasMore[userId] = false;
+        }
       });
     } catch (e) {
       throw e.toString();
+    } finally {
+      userStoriesLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreUserStories({required String userId}) async {
+    if (userStoriesLoadingMore[userId] == true) return;
+    if (userStoriesHasMore[userId] == false) return;
+
+    try {
+      userStoriesLoadingMore[userId] = true;
+
+      final result = await getPublishedStoriesByUserUseCase.call(
+        GetPublishedStoriesParams(
+          userId: userId,
+          lastDoc: _userStoriesLastDoc[userId],
+        ),
+      );
+
+      result.fold((err) => throw err.message, (data) {
+        userStories[userId] = [...?userStories[userId], ...data.stories];
+        _userStoriesLastDoc[userId] = data.lastDoc;
+        if (data.stories.length < 10) {
+          userStoriesHasMore[userId] = false;
+        }
+      });
+    } catch (e) {
+      throw e.toString();
+    } finally {
+      userStoriesLoadingMore[userId] = false;
     }
   }
 
@@ -108,6 +164,36 @@ class UserController extends GetxController {
     userStats.value = userStats.value!.copyWith(
       followingCount: userStats.value!.followingCount + delta,
     );
+  }
+
+  Future<void> updateSavedStoryCount(int delta) async {
+    if (userStats.value == null) return;
+
+    userStats.value = userStats.value!.copyWith(
+      savedStoriesCount: userStats.value!.savedStoriesCount + delta,
+    );
+  }
+
+  Future<void> deleteAccount(String password) async {
+    try {
+      loading.value = true;
+      final result = await deleteUserUseCase.call(password);
+      result.fold(
+        (failure) {
+          showErrorDialog(failure.message);
+          debugPrint('Error deleting account: ${failure.message}');
+        },
+        (success) {
+          debugPrint('Account deleted successfully');
+          Get.offAllNamed(Routes.login);
+        },
+      );
+    } catch (e) {
+      showErrorDialog(e.toString());
+      debugPrint('Exception deleting account: $e');
+    } finally {
+      loading.value = false;
+    }
   }
 
   void updateUser(UserEntity user) {

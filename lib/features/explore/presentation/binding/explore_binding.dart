@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_recently_added_story.dart';
+import 'package:mindloom/features/explore/domain/usecases/get_stories_by_genre.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_story_author.dart';
 import 'package:mindloom/features/explore/domain/usecases/get_trending_stories.dart';
 import 'package:mindloom/features/explore/presentation/controller/explore_controller.dart';
@@ -15,6 +16,7 @@ class ExploreBinding extends Bindings {
         getTrendingStories: sl<GetTrendingStories>(),
         getStoryStats: sl<GetStoryStats>(),
         getStoryAuthorUseCase: sl<GetStoryAuthor>(),
+        getStoriesByGenreUseCase: sl<GetStoriesByGenre>()
       ),
       fenix: true,
     );

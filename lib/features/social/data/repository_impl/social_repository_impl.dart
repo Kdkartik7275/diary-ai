@@ -99,4 +99,28 @@ class SocialRepositoryImpl implements SocialRepository {
       return left(FirebaseFailure(message: e.toString()));
     }
   }
+
+  @override
+  ResultVoid unfollowUser({
+    required String currentUserId,
+    required String targetUserId,
+  }) async {
+    if (!await connectionChecker.isConnected) {
+      return left(FirebaseFailure(message: 'No internet connection'));
+    }
+
+    try {
+      await remoteDataSource.unfollowUser(
+        currentUserId: currentUserId,
+        targetUserId: targetUserId,
+      );
+      await localDataSource.removeFollowing(
+        followingId: targetUserId,
+        userId: currentUserId,
+      );
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
 }

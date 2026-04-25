@@ -15,6 +15,8 @@ class DependencyInjection {
     _initSocial();
     _initNotification();
     _initFeedback();
+    _initSearch();
+    _initStreak();
   }
 }
 
@@ -84,6 +86,9 @@ void _initUser() {
   sl.registerLazySingleton(() => EditUser(repository: sl()));
   sl.registerLazySingleton(() => GetUserStats(repository: sl()));
   sl.registerLazySingleton(() => UploadUserProfile(repository: sl()));
+  sl.registerLazySingleton(() => DeleteUser(repository: sl()));
+  sl.registerLazySingleton(() => ChangeUserPassword(repository: sl()));
+  sl.registerLazySingleton(() => ResetPassword(repository: sl()));
 }
 
 void _initDiary() {
@@ -148,6 +153,11 @@ void _initStory() {
   sl.registerLazySingleton(() => GenerateStoryFromDiaries(repository: sl()));
   sl.registerLazySingleton(() => DeleteDraft(repository: sl()));
   sl.registerLazySingleton(() => GetUserFeed(repository: sl()));
+  sl.registerLazySingleton(() => GetStoriesByGenre(repository: sl()));
+  sl.registerLazySingleton(() => SaveStory(repository: sl()));
+  sl.registerLazySingleton(() => RemoveSaved(repository: sl()));
+  sl.registerLazySingleton(() => SavedByYou(repository: sl()));
+  sl.registerLazySingleton(() => GetSavedStories(repository: sl()));
 }
 
 void _initExplore() {
@@ -209,6 +219,7 @@ void _initSocial() {
   );
   // USECASES
   sl.registerLazySingleton(() => FollowUser(repository: sl()));
+  sl.registerLazySingleton(() => UnFollowUser(repository: sl()));
   sl.registerLazySingleton(() => GetFollowStatus(repository: sl()));
   sl.registerLazySingleton(() => GetFollowers(repository: sl()));
   sl.registerLazySingleton(() => GetFollowings(repository: sl()));
@@ -230,6 +241,7 @@ void _initNotification() {
   sl.registerLazySingleton(() => CreateNotification(repository: sl()));
   sl.registerLazySingleton(() => GetUserNotification(repository: sl()));
   sl.registerLazySingleton(() => MarkNotificationAsRead(repository: sl()));
+  sl.registerLazySingleton(() => MarkAllNotificationRead(repository: sl()));
 }
 
 void _initFeedback() {
@@ -246,4 +258,34 @@ void _initFeedback() {
   );
   // USECASES
   sl.registerLazySingleton(() => SubmitFeedback(repository: sl()));
+}
+
+void _initSearch() {
+  // DATASOURCE
+  sl.registerLazySingleton<SearchStoryRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(firestore: sl<FirebaseFirestore>()),
+  );
+
+  sl.registerLazySingleton<SearchRepository>(
+    () => SearchRepositoryImpl(
+      connectionChecker: sl<ConnectionChecker>(),
+      remoteDataSource: sl<SearchStoryRemoteDataSource>(),
+    ),
+  );
+  // USECASES
+  sl.registerLazySingleton(() => SearchStory(repository: sl()));
+}
+
+void _initStreak() {
+  // DATASOURCE
+  sl.registerLazySingleton<StreakRemoteDataSource>(
+    () => StreakRemoteDataSourceImpl(sl<FirebaseFirestore>()),
+  );
+
+  sl.registerLazySingleton<StreakRepository>(
+    () => StreakRepositoryImpl(remoteDataSource: sl<StreakRemoteDataSource>()),
+  );
+  // USECASES
+  sl.registerLazySingleton(() => GetStreak(repository: sl()));
+  sl.registerLazySingleton(() => UpdateStreak(repository: sl()));
 }

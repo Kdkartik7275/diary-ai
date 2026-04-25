@@ -3,9 +3,8 @@ import 'package:mindloom/core/usecases/usecases.dart';
 import 'package:mindloom/features/social/domain/repository/social_repository.dart';
 
 class FollowUser implements UseCaseWithParams<void, FollowUserParams> {
-  final SocialRepository repository;
-
   FollowUser({required this.repository});
+  final SocialRepository repository;
 
   @override
   ResultVoid call(FollowUserParams params) async {
@@ -17,8 +16,7 @@ class FollowUser implements UseCaseWithParams<void, FollowUserParams> {
 }
 
 class FollowUserParams {
+  FollowUserParams({required this.currentUserId, required this.targetUserId});
   final String currentUserId;
   final String targetUserId;
-
-  FollowUserParams({required this.currentUserId, required this.targetUserId});
 }

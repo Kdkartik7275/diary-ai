@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 
 class IssueDetails extends StatelessWidget {
   const IssueDetails({
@@ -16,7 +18,7 @@ class IssueDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
-
+    final isDarkMode = Get.find<ThemeController>().isDarkMode;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -27,33 +29,37 @@ class IssueDetails extends StatelessWidget {
           width: double.infinity,
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .10),
-                blurRadius: 24,
+            boxShadow: isDarkMode
+                ? null
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .10),
+                      blurRadius: 24,
 
-                offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .04),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .04),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
           ),
           child: TextField(
             controller: controller,
             maxLines: 4,
             style: theme.titleSmall!.copyWith(
               fontWeight: FontWeight.normal,
-              color: AppColors.textLighter,
+              color: isDarkMode
+                  ? AppColors.textDarkSecondary
+                  : AppColors.textLighter,
             ),
 
             decoration: InputDecoration(
               hintText: hintText,
-
+              fillColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -101,31 +107,35 @@ class IssueDetails extends StatelessWidget {
           width: double.infinity,
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .10),
-                blurRadius: 24,
+            boxShadow: isDarkMode
+                ? null
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .10),
+                      blurRadius: 24,
 
-                offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .04),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .04),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
           ),
           child: TextField(
             style: theme.titleSmall!.copyWith(
               fontWeight: FontWeight.normal,
-              color: AppColors.textLighter,
+              color: isDarkMode
+                  ? AppColors.textDarkSecondary
+                  : AppColors.textLighter,
             ),
 
             decoration: InputDecoration(
               hintText: 'your@email.com',
-
+              fillColor: isDarkMode ? AppColors.darkSurface : AppColors.white,
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,

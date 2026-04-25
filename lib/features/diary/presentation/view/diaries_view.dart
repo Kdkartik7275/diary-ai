@@ -1,15 +1,32 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/state_manager.dart';
+import 'package:get/get.dart';
+
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/config/theme/theme_controller.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/core/empty/empty_diary.dart';
 import 'package:mindloom/features/diary/presentation/controller/diary_controller.dart';
 import 'package:mindloom/features/diary/presentation/widgets/diary_card.dart';
 
-class DiariesView extends GetView<DiaryController> {
+class DiariesView extends StatefulWidget {
   const DiariesView({super.key});
+
+  @override
+  State<DiariesView> createState() => _DiariesViewState();
+}
+
+class _DiariesViewState extends State<DiariesView> {
+  late DiaryController controller;
+  late ThemeController themeController;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<DiaryController>();
+    themeController = Get.find<ThemeController>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +34,7 @@ class DiariesView extends GetView<DiaryController> {
     final width = size.width;
     final height = size.height;
     final theme = Theme.of(context).textTheme;
+    final isDarkMode = themeController.isDarkMode;
     return Scaffold(
       body: Obx(
         () => controller.diariesLoading.value
@@ -46,93 +64,66 @@ class DiariesView extends GetView<DiaryController> {
                         'All your memories in one place.',
                         style: theme.titleSmall!.copyWith(
                           fontWeight: FontWeight.w500,
-                          color: AppColors.textLighter,
+                          color:isDarkMode ?AppColors.white.withValues(alpha: .6) : AppColors.textLighter,
                         ),
                       ),
                       SizedBox(height: height * 0.02),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TRoundedContainer(
-                              height: height * 0.05,
+                      TRoundedContainer(
+                        height: height * 0.05,
 
-                              radius: 14,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: .07),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-
-                              child: TextField(
-                                onChanged: (query) {
-                                  if (query.isEmpty) {
-                                    controller.searching.value = false;
-                                  } else {
-                                    controller.searchDiaries(query);
-                                  }
-                                },
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 12,
-                                      right: 10,
-                                    ),
-                                    child: Icon(
-                                      CupertinoIcons.search,
-                                      color: AppColors.hintText,
-                                      size: 20,
-                                    ),
-                                  ),
-
-                                  prefixIconConstraints: const BoxConstraints(
-                                    minWidth: 0,
-                                    minHeight: 0,
-                                  ),
-
-                                  contentPadding: const EdgeInsets.only(
-                                    top: 5,
-                                    bottom: 10,
-                                    right: 16,
-                                  ),
-
-                                  hintText: 'Search your entries...',
-                                  hintStyle: theme.bodyLarge!.copyWith(
-                                    color: AppColors.hintText,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 12),
-
-                          TRoundedContainer(
-                            height: height * 0.05,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 10,
-                            ),
-                            radius: 14,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: .07),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                            child: Icon(
-                              Icons.filter_alt_outlined,
-                              color: AppColors.hintText,
-                            ),
+                        radius: 14,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: .07),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
+
+                        child: TextField(
+                          onChanged: (query) {
+                            if (query.isEmpty) {
+                              controller.searching.value = false;
+                            } else {
+                              controller.searchDiaries(query);
+                            }
+                          },
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+
+                            prefixIcon: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 12,
+                                right: 10,
+                              ),
+                              child: Icon(
+                                CupertinoIcons.search,
+                                color: AppColors.hintText,
+                                size: 20,
+                              ),
+                            ),
+
+                            prefixIconConstraints: const BoxConstraints(
+                              minWidth: 0,
+                              minHeight: 0,
+                            ),
+
+                            contentPadding: const EdgeInsets.only(
+                              top: 5,
+                              bottom: 10,
+                              right: 16,
+                            ),
+
+                            hintText: 'Search your entries...',
+                            hintStyle: theme.bodyLarge!.copyWith(
+                              color: AppColors.hintText,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(height: height * 0.02),
 
@@ -146,7 +137,7 @@ class DiariesView extends GetView<DiaryController> {
                                 children: [const EmptyDiaryState()],
                               )
                             : RefreshIndicator(
-                                backgroundColor: AppColors.white,
+                                backgroundColor:isDarkMode ?AppColors.filledDark : AppColors.white,
                                 color: AppColors.primary,
                                 onRefresh: () async {
                                   await controller.getDiaries();
@@ -164,6 +155,7 @@ class DiariesView extends GetView<DiaryController> {
                                       theme: theme,
                                       height: height,
                                       diary: diary,
+                                      isDarkMode: isDarkMode,
                                       onDelete: () async {
                                         await controller.deleteDiary(
                                           diaryId: diary.id,

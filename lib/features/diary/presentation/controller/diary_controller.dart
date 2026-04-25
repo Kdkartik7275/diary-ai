@@ -10,13 +10,13 @@ import 'package:mindloom/features/diary/domain/usecases/delete_diary.dart';
 import 'package:mindloom/features/diary/domain/usecases/get_user_diaries.dart';
 
 class DiaryController extends GetxController {
-  final GetUserDiaries getUserDiaries;
-  final DeleteDiary deleteDiaryUseCase;
 
   DiaryController({
     required this.getUserDiaries,
     required this.deleteDiaryUseCase,
   });
+  final GetUserDiaries getUserDiaries;
+  final DeleteDiary deleteDiaryUseCase;
 
   RxList<DiaryEntity> diaries = RxList([]);
   RxList<DiaryEntity> searchedDiaries = RxList([]);
@@ -85,7 +85,7 @@ class DiaryController extends GetxController {
 
       result.fold((err) => showErrorDialog(err.message), (r) {
         diaries.removeWhere((diary) => diary.id == diaryId);
-        showSuccessDialog("Diary moved to Trash.");
+        showSuccessDialog('Diary moved to Trash.');
         update();
       });
     } catch (e) {

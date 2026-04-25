@@ -21,4 +21,15 @@ class AppColors {
   static const Color filled = Color(0xffF2F2F2);
   static const Color filledTextField = Color(0xffE6E6E6);
   static const Color focusedBorder = Color(0xff05A660);
+
+  // Dark
+  static const Color dark = Color(0xFF121212);
+  static const Color darkSurface = Color(0xFF1E1E1E);
+
+  // Dark text
+  static const Color textDark = Color(0xFFE0E0E0);
+  static const Color textDarkSecondary = Color(0xFFAAAAAA);
+
+  // Dark input
+  static const Color filledDark = Color(0xFF2A2A2A);
 }

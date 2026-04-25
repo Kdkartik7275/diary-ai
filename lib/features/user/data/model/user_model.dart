@@ -2,6 +2,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 
 class UserModel extends UserEntity {
+  factory UserModel.fromSql(Map<String, dynamic> row) {
+    return UserModel(
+      id: row['id'] ?? '',
+      fullName: row['fullName'] ?? '',
+      username: row['username'],
+      bio: row['bio'],
+      isStoriesPublic: row['isStoriesPublic'] == 1,
+      profileVisibility: row['profileVisibility'] == 1,
+      email: row['email'] ?? '',
+      profileUrl: row['profileUrl'],
+      phone: row['phone'],
+      location: row['location'],
+      createdAt: Timestamp.fromDate(
+        DateTime.tryParse(row['createdAt'] ?? '') ?? DateTime.now(),
+      ),
+    );
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      id: map['id'] ?? '',
+      fullName: map['fullName'] ?? '',
+      username: map['username'] ?? '',
+      bio: map['bio'] ?? '',
+      isStoriesPublic: map['isStoriesPublic'] ?? false,
+      profileVisibility: map['profileVisibility'] ?? false,
+      email: map['email'] ?? '',
+      profileUrl: map['profileUrl'] ?? '',
+      location: map['location'] ?? '',
+      phone: map['phone'] ?? '',
+      createdAt: map['createdAt'] ?? Timestamp.now(),
+      isDeleted: map['isDeleted'] ?? false,
+      deletedAt: map['deletedAt'],
+    );
+  }
   UserModel({
     required super.id,
     required super.fullName,
@@ -14,6 +49,8 @@ class UserModel extends UserEntity {
     super.profileUrl,
     super.location,
     super.phone,
+    super.isDeleted,
+    super.deletedAt,
   });
 
   UserModel copyWith({
@@ -28,6 +65,8 @@ class UserModel extends UserEntity {
     String? phone,
     String? location,
     Timestamp? createdAt,
+    bool? isDeleted,
+    Timestamp? deletedAt,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -41,6 +80,8 @@ class UserModel extends UserEntity {
       location: location ?? this.location,
       phone: phone ?? this.phone,
       createdAt: createdAt ?? this.createdAt,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -57,23 +98,9 @@ class UserModel extends UserEntity {
       'createdAt': createdAt,
       'phone': phone,
       'location': location,
+      'isDeleted': isDeleted,
+      'deletedAt': deletedAt,
     };
-  }
-
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      id: map['id'] ?? '',
-      fullName: map['fullName'] ?? '',
-      username: map['username'] ?? '',
-      bio: map['bio'] ?? '',
-      isStoriesPublic: map['isStoriesPublic'] ?? false,
-      profileVisibility: map['profileVisibility'] ?? false,
-      email: map['email'] ?? '',
-      profileUrl: map['profileUrl'] ?? '',
-      location: map['location'] ?? '',
-      phone: map['phone'] ?? '',
-      createdAt: map['createdAt'] ?? Timestamp.now(),
-    );
   }
 
   Map<String, dynamic> toJson() => toMap();
@@ -92,23 +119,5 @@ class UserModel extends UserEntity {
       'location': location,
       'createdAt': createdAt.toDate().toIso8601String(),
     };
-  }
-
-  factory UserModel.fromSql(Map<String, dynamic> row) {
-    return UserModel(
-      id: row['id'] ?? '',
-      fullName: row['fullName'] ?? '',
-      username: row['username'],
-      bio: row['bio'],
-      isStoriesPublic: row['isStoriesPublic'] == 1,
-      profileVisibility: row['profileVisibility'] == 1,
-      email: row['email'] ?? '',
-      profileUrl: row['profileUrl'],
-      phone: row['phone'],
-      location: row['location'],
-      createdAt: Timestamp.fromDate(
-        DateTime.tryParse(row['createdAt'] ?? '') ?? DateTime.now(),
-      ),
-    );
   }
 }

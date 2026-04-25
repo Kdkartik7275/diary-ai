@@ -4,6 +4,7 @@ import 'package:mindloom/features/story/domain/usecases/delete_draft.dart';
 import 'package:mindloom/features/story/domain/usecases/get_drafts_count.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_count.dart';
 import 'package:mindloom/features/story/domain/usecases/get_published_stories.dart';
+import 'package:mindloom/features/story/domain/usecases/get_story_stats.dart';
 import 'package:mindloom/features/story/domain/usecases/get_user_drafts.dart';
 import 'package:mindloom/features/story/domain/usecases/publish_story.dart';
 import 'package:mindloom/features/story/domain/usecases/stories_total_wordcount.dart';
@@ -21,6 +22,7 @@ class StoryBinding extends Bindings {
         publishStory: sl<PublishStory>(),
         getPublishedStories: sl<GetPublishedStories>(),
         deleteDraftUseCase: sl<DeleteDraft>(),
+        getStoryStatsUseCase: sl<GetStoryStats>()
       ),
     );
   }

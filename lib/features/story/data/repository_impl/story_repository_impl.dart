@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -163,25 +164,29 @@ class StoryRepositoryImpl implements StoryRepository {
   }
 
   @override
-  ResultFuture<List<StoryEntity>> getPublisedStories({
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStories({
     required String userId,
+    DocumentSnapshot? lastDoc,
   }) async {
     try {
-      final isTableEmpty = await localDataSource.isStoryTableEmpty();
-      if (!isTableEmpty) {
+      if (!await connectionChecker.isConnected) {
         final stories = await localDataSource.getPublishedStories(
           userId: userId,
         );
-        return right(stories);
-      }
-      if (!await connectionChecker.isConnected) {
-        return left(FirebaseFailure(message: 'No Internet Connection'));
+
+        return right((lastDoc: null, stories: stories));
       }
 
-      final result = await remoteDataSource.getPublisedStories(userId: userId);
-      for (StoryModel story in result) {
+      final result = await remoteDataSource.getPublisedStories(
+        userId: userId,
+        lastDoc: lastDoc,
+      );
+
+      for (StoryModel story in result.stories) {
         await localDataSource.createStory(data: story);
       }
+
       return right(result);
     } catch (e) {
       return left(FirebaseFailure(message: e.toString()));
@@ -292,6 +297,7 @@ class StoryRepositoryImpl implements StoryRepository {
     required String genre,
     required String tone,
     required String characterName,
+    String? summary,
   }) async {
     try {
       if (!await connectionChecker.isConnected) {
@@ -303,6 +309,7 @@ class StoryRepositoryImpl implements StoryRepository {
         genre: genre,
         tone: tone,
         characterName: characterName,
+        summary: summary
       );
 
       return right(result);
@@ -327,7 +334,52 @@ class StoryRepositoryImpl implements StoryRepository {
   }
 
   @override
-  ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStoriesByUser({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  }) async {
+    try {
+   
+      final result = await remoteDataSource.getPublishedStoriesByUser(
+        userId: userId,
+        lastDoc: lastDoc,
+      );
+
+      for (StoryModel story in result.stories) {
+        await localDataSource.createStory(data: story);
+      }
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<
+    ({DocumentSnapshot<Object?>? lastDoc, List<StoryEntity> stories})
+  >
+  getUserFeed({
+    required String userId,
+    DocumentSnapshot<Object?>? lastDoc,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.getUserFeed(userId: userId);
+
+      return right(result);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultVoid saveStory({
+    required String storyId,
     required String userId,
   }) async {
     try {
@@ -335,8 +387,27 @@ class StoryRepositoryImpl implements StoryRepository {
         return left(FirebaseFailure(message: 'No Internet Connection'));
       }
 
-      final result = await remoteDataSource.getPublishedStoriesByUser(
+      await remoteDataSource.saveStory(userId: userId, storyId: storyId);
+
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<bool> savedByYou({
+    required String storyId,
+    required String userId,
+  }) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection'));
+      }
+
+      final result = await remoteDataSource.savedByYou(
         userId: userId,
+        storyId: storyId,
       );
 
       return right(result);
@@ -346,13 +417,40 @@ class StoryRepositoryImpl implements StoryRepository {
   }
 
   @override
-  ResultFuture<List<StoryEntity>> getUserFeed({required String userId}) async {
+  ResultVoid removeFromSaved({
+    required String storyId,
+    required String userId,
+  }) async {
     try {
       if (!await connectionChecker.isConnected) {
         return left(FirebaseFailure(message: 'No Internet Connection'));
       }
 
-      final result = await remoteDataSource.getUserFeed(userId: userId);
+      await remoteDataSource.removeSaved(userId: userId, storyId: storyId);
+
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultFuture<
+    ({DocumentSnapshot<Object?>? lastDoc, List<StoryEntity> stories})
+  >
+  getSavedStories({
+    required String userId,
+    DocumentSnapshot<Object?>? lastDoc,
+  }) async {
+    try {
+      final result = await remoteDataSource.getSavedStories(
+        userId: userId,
+        lastDoc: lastDoc,
+      );
+
+      for (StoryModel story in result.stories) {
+        await localDataSource.createStory(data: story);
+      }
 
       return right(result);
     } catch (e) {

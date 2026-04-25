@@ -14,4 +14,6 @@ class Routes {
   static const comments = '/comments';
   static const notification = '/notification';
   static const addFeedback = '/addFeedback';
+  static const search = '/search';
+  static const storySummary = '/story-summary';
 }

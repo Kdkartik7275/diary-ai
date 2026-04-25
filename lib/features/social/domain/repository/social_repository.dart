@@ -8,6 +8,11 @@ abstract interface class SocialRepository {
     required String targetUserId,
   });
 
+  ResultVoid unfollowUser({
+    required String currentUserId,
+    required String targetUserId,
+  });
+
   ResultFuture<FollowStatusEntity> getFollowStatus({
     required String currentUserId,
     required String targetUserId,

@@ -1,21 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StoryEntity {
-  final String id;
-  final String userId;
-
-  final String title;
-  final List<String> tags;
-  final List<StoryChapterEntity> chapters;
-
-  final bool isPublished;
-  final bool generatedByAI;
-  final Timestamp? publishedAt;
-
-  final Timestamp createdAt;
-  final Timestamp? updatedAt;
-  final Timestamp? deletedAt;
-  final String? coverImageUrl;
 
   StoryEntity({
     required this.id,
@@ -31,13 +16,24 @@ class StoryEntity {
     this.publishedAt,
     this.coverImageUrl,
   });
+  final String id;
+  final String userId;
+
+  final String title;
+  final List<String> tags;
+  final List<StoryChapterEntity> chapters;
+
+  final bool isPublished;
+  final bool generatedByAI;
+  final Timestamp? publishedAt;
+
+  final Timestamp createdAt;
+  final Timestamp? updatedAt;
+  final Timestamp? deletedAt;
+  final String? coverImageUrl;
 }
 
 class StoryChapterEntity {
-  final String id;
-  final String title;
-  final String content;
-  final Timestamp createdAt;
 
   StoryChapterEntity({
     required this.id,
@@ -45,4 +41,8 @@ class StoryChapterEntity {
     required this.content,
     required this.createdAt,
   });
+  final String id;
+  final String title;
+  final String content;
+  final Timestamp createdAt;
 }
