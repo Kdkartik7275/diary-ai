@@ -8,18 +8,34 @@ import 'package:mindloom/features/explore/presentation/view/reading_view.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
-class Stories extends GetView<UserController> {
+class Stories extends StatefulWidget {
   final String userId;
   const Stories({super.key, required this.userId});
 
   @override
+  State<Stories> createState() => _StoriesState();
+}
+
+class _StoriesState extends State<Stories> {
+  late UserController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.find<UserController>();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final stories = controller.userStories[userId];
+      final stories = _controller.userStories[widget.userId];
+      final isLoadingMore =
+          _controller.userStoriesLoadingMore[widget.userId] == true;
+      final hasMore = _controller.userStoriesHasMore[widget.userId] == true;
 
-      if (controller.userStatLoading.value) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22),
+      if (_controller.userStoriesLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 22),
           child: Center(
             child: CircularProgressIndicator(
               color: AppColors.primary,
@@ -28,21 +44,40 @@ class Stories extends GetView<UserController> {
           ),
         );
       }
-      return (stories == null || stories.isEmpty)
-          ? _ProfileStoriesEmptyState()
-          : GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.85,
-              ),
-              itemCount: stories.length,
-              itemBuilder: (_, i) => UserStoryCard(story: stories[i]),
-            );
+
+      if (stories == null || stories.isEmpty) {
+        return const _ProfileStoriesEmptyState();
+      }
+
+      return GridView.builder(
+        shrinkWrap: true,
+        physics:
+            const NeverScrollableScrollPhysics(), // parent ListView scrolls
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.85,
+        ),
+        itemCount: stories.length + (isLoadingMore || hasMore ? 1 : 0),
+        itemBuilder: (_, i) {
+          if (i == stories.length) {
+            return isLoadingMore
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink();
+          }
+          return UserStoryCard(story: stories[i]);
+        },
+      );
     });
   }
 }
@@ -60,7 +95,6 @@ class _ProfileStoriesEmptyState extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 28),
-
           Text(
             'No stories published',
             style: tt.titleLarge?.copyWith(
@@ -69,9 +103,7 @@ class _ProfileStoriesEmptyState extends StatelessWidget {
               color: AppColors.text,
             ),
           ),
-
           const SizedBox(height: 10),
-
           Text(
             'When they publish their first story,\nit will appear here.',
             style: tt.titleSmall?.copyWith(
@@ -116,7 +148,6 @@ class UserStoryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Thumbnail
             Expanded(
               child: Container(
                 width: double.infinity,

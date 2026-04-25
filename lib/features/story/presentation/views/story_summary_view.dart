@@ -11,11 +11,8 @@ class StorySummaryView extends GetView<GenerateStoryController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
     final isDarkMode = Get.find<ThemeController>().isDarkMode;
-
     return Scaffold(
-      appBar: AppBar(
-        
-      ),
+      appBar: AppBar(),
       bottomNavigationBar: SafeArea(
         bottom: true,
         child: Padding(
@@ -94,7 +91,18 @@ class StorySummaryView extends GetView<GenerateStoryController> {
                     decoration: const InputDecoration(
                       hintText:
                           'e.g. A mysterious journey through forgotten dreams...',
-                      border: InputBorder.none,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(14)),
+                        borderSide: BorderSide(color: Color(0xFFE5E5E5)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(14)),
+                        borderSide: BorderSide(color: Color(0xFFE5E5E5)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(14)),
+                        borderSide: BorderSide(color: Color(0xFFE5E5E5)),
+                      ),
                     ),
                   ),
                 ],
@@ -129,36 +137,47 @@ class StorySummaryView extends GetView<GenerateStoryController> {
                     ),
                   ),
                   const SizedBox(height: 12),
-
-                  InkWell(
-                    borderRadius: BorderRadius.circular(14),
-                    onTap: () {},
-                    child: Container(
-                      height: 140,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: const Color(0xFFE5E5E5)),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.image_outlined,
-                              size: 28,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Tap to upload',
-                              style: theme.titleSmall?.copyWith(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
+                  Obx(
+                    () => InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () => controller.pickStoryCover(),
+                      child: Container(
+                        height: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFFE5E5E5)),
                         ),
+                        child: controller.storyCover.value != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: Image.file(
+                                  controller.storyCover.value!,
+                                  fit: BoxFit.cover,
+                                  height: 140,
+                                  width: double.infinity,
+                                ),
+                              )
+                            : Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.image_outlined,
+                                      size: 28,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      'Tap to upload',
+                                      style: theme.titleSmall?.copyWith(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                       ),
                     ),
                   ),

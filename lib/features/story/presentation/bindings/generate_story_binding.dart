@@ -13,6 +13,7 @@ class GenerateStoryBinding implements Bindings {
         generateStoryFromDiariesUseCase: sl<GenerateStoryFromDiaries>(),
         getDiariesByRangeUseCase: sl<GetDiariesByRange>(),
         createStoryUseCase: sl<CreateStory>(),
+        uploadStoryCoverImageUsecase: sl(),
       ),
     );
   }

@@ -13,6 +13,7 @@ abstract interface class StoryRepository {
     required String genre,
     required String tone,
     required String characterName,
+    String? summary,
   });
   ResultFuture<StoryEntity> publishStory({
     required String storyId,
@@ -32,6 +33,7 @@ abstract interface class StoryRepository {
     required String storyId,
     required String userId,
   });
+
   ResultFuture<void> unlikeStory({
     required String storyId,
     required String userId,
@@ -49,9 +51,10 @@ abstract interface class StoryRepository {
   });
   ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
   getPublisedStories({required String userId, DocumentSnapshot? lastDoc});
-  ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
-    required String userId,
-  });
+
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStoriesByUser({required String userId, DocumentSnapshot? lastDoc});
+ 
 
   ResultFuture<int> getStoriesTotalWordCounts({required String userId});
   ResultFuture<int> getDraftCount({required String userId});

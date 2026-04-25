@@ -15,6 +15,8 @@ class GenerateStoryFromDiaries
       genre: params['genre'] ?? '',
       tone: params['tone'] ?? '',
       characterName: params['characterName'] ?? '',
+      summary: params['summary'],
+
     );
   }
 }

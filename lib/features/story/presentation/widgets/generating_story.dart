@@ -115,6 +115,7 @@ class _GeneratingStoryViewState extends State<GeneratingStoryView>
       genre: widget.genre,
       tone: widget.tone,
       characterName: widget.characterName,
+    
     );
   }
 

@@ -9,10 +9,9 @@ import 'package:mindloom/features/user/data/model/user_stat_model.dart';
 import 'package:uuid/uuid.dart';
 
 class TestingApp {
+  TestingApp({required this.firestore, required this.auth});
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
-
-  TestingApp({required this.firestore, required this.auth});
 
   final List<Map<String, String>> dummyUsers = [
     {
@@ -740,6 +739,34 @@ class TestingApp {
       debugPrint('✅ titleLower added to all stories');
     } catch (e) {
       debugPrint('❌ Error updating stories: $e');
+    }
+  }
+
+  Future<void> fixStoriesCount() async {
+    try {
+      debugPrint(
+        '🔧 Starting storiesCount fix for ${testUserIds.length} users...',
+      );
+
+      for (final userId in testUserIds) {
+        final snapshot = await firestore
+            .collection('stories')
+            .where('userId', isEqualTo: userId)
+            .where('isPublished', isEqualTo: true)
+            .get();
+
+        final count = snapshot.docs.length;
+
+        await firestore.collection('user_stats').doc(userId).update({
+          'storiesCount': count,
+        });
+
+        debugPrint('✅ $userId → $count stories');
+      }
+
+      debugPrint('🎉 storiesCount fix completed for all users');
+    } catch (e) {
+      debugPrint('❌ Error fixing storiesCount: $e');
     }
   }
 }

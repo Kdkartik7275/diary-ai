@@ -11,12 +11,12 @@ import 'package:mindloom/features/user/domain/usecases/upload_user_profile.dart'
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
 
 class EditProfileController extends GetxController {
-  final EditUser editUser;
-  final UploadUserProfile uploadUserProfile;
   EditProfileController({
     required this.editUser,
     required this.uploadUserProfile,
   });
+  final EditUser editUser;
+  final UploadUserProfile uploadUserProfile;
 
   var username = TextEditingController().obs;
   var fullname = TextEditingController().obs;

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart' show DocumentSnapshot;
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/routes/app_routes.dart';
@@ -17,6 +18,7 @@ class UserController extends GetxController {
     required this.getUserStatsUseCase,
     required this.deleteUserUseCase,
   });
+
   final GetUser getUserUseCase;
   final DeleteUser deleteUserUseCase;
   final GetUserStats getUserStatsUseCase;
@@ -28,6 +30,11 @@ class UserController extends GetxController {
   final Map<String, UserEntity> usersCache = {};
 
   RxMap<String, List<StoryEntity>> userStories = RxMap({});
+  RxMap<String, bool> userStoriesHasMore = RxMap({});
+  RxMap<String, bool> userStoriesLoadingMore = RxMap({});
+  RxBool userStoriesLoading = false.obs;
+
+  final Map<String, DocumentSnapshot?> _userStoriesLastDoc = {};
 
   RxBool loading = false.obs;
   RxBool userStatLoading = false.obs;
@@ -36,7 +43,9 @@ class UserController extends GetxController {
     try {
       loading.value = true;
 
-      final result = await getUserUseCase.call(GetUserParams(userId: uid, isCurrrentUser: true));
+      final result = await getUserUseCase.call(
+        GetUserParams(userId: uid, isCurrrentUser: true),
+      );
 
       result.fold(
         (failure) {
@@ -68,7 +77,9 @@ class UserController extends GetxController {
       if (usersCache.containsKey(userId)) {
         return usersCache[userId]!;
       }
-      final result = await getUserUseCase.call(GetUserParams(userId: userId, isCurrrentUser: false));
+      final result = await getUserUseCase.call(
+        GetUserParams(userId: userId, isCurrrentUser: false),
+      );
 
       return result.fold((err) => throw Exception(err.message), (user) {
         usersCache[user.id] = user;
@@ -95,14 +106,55 @@ class UserController extends GetxController {
 
   Future<void> getUserStories({required String userId}) async {
     try {
-      if (userStories.containsKey(userId)) return;
-      final result = await getPublishedStoriesByUserUseCase.call(userId);
+      userStoriesLoading.value = true;
+      userStoriesHasMore[userId] = true;
+      _userStoriesLastDoc[userId] = null;
+      userStories[userId] = [];
 
-      result.fold((err) => throw err.message, (r) {
-        userStories[userId] = r;
+      final result = await getPublishedStoriesByUserUseCase.call(
+        GetPublishedStoriesParams(userId: userId),
+      );
+
+      result.fold((err) => throw err.message, (data) {
+        userStories[userId] = data.stories;
+        _userStoriesLastDoc[userId] = data.lastDoc;
+        debugPrint('Loaded ${data.stories.length} stories for user $userId');
+        if (data.stories.length < 10) {
+          userStoriesHasMore[userId] = false;
+        }
       });
     } catch (e) {
       throw e.toString();
+    } finally {
+      userStoriesLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreUserStories({required String userId}) async {
+    if (userStoriesLoadingMore[userId] == true) return;
+    if (userStoriesHasMore[userId] == false) return;
+
+    try {
+      userStoriesLoadingMore[userId] = true;
+
+      final result = await getPublishedStoriesByUserUseCase.call(
+        GetPublishedStoriesParams(
+          userId: userId,
+          lastDoc: _userStoriesLastDoc[userId],
+        ),
+      );
+
+      result.fold((err) => throw err.message, (data) {
+        userStories[userId] = [...?userStories[userId], ...data.stories];
+        _userStoriesLastDoc[userId] = data.lastDoc;
+        if (data.stories.length < 10) {
+          userStoriesHasMore[userId] = false;
+        }
+      });
+    } catch (e) {
+      throw e.toString();
+    } finally {
+      userStoriesLoadingMore[userId] = false;
     }
   }
 
@@ -128,7 +180,7 @@ class UserController extends GetxController {
       final result = await deleteUserUseCase.call(password);
       result.fold(
         (failure) {
-          showErrorDialog(  failure.message);
+          showErrorDialog(failure.message);
           debugPrint('Error deleting account: ${failure.message}');
         },
         (success) {
@@ -137,7 +189,7 @@ class UserController extends GetxController {
         },
       );
     } catch (e) {
-      showErrorDialog(  e.toString());
+      showErrorDialog(e.toString());
       debugPrint('Exception deleting account: $e');
     } finally {
       loading.value = false;

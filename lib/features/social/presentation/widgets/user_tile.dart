@@ -54,40 +54,43 @@ class UserTile extends GetView<UserController> {
         final colorIndex = user.id.hashCode.abs() % _avatarColors.length;
         final bgColor = _avatarColors[colorIndex];
         final textColor = isDarkMode
-            ? AppColors.textDarkSecondary
+            ? AppColors.textLighter
             : _avatarTextColors[colorIndex];
 
         if (isDeleted) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: isDarkMode ? AppColors.darkSurface : Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isDarkMode
-                    ? AppColors.filledDark
-                    : const Color(0xFFF0F0F0),
+          return GestureDetector(
+              onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isDarkMode ? AppColors.darkSurface : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: isDarkMode
+                      ? AppColors.filledDark
+                      : const Color(0xFFF0F0F0),
+                ),
               ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey.shade400,
+              child: Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey.shade400,
+                    ),
+                    child: const Icon(Icons.person, color: Colors.white),
                   ),
-                  child: const Icon(Icons.person, color: Colors.white),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Deleted User',
-                    style: TextStyle(color: Colors.grey),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Deleted User',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }

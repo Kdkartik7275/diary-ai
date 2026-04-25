@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,13 @@ import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/snackbars/error_snackbar.dart';
 import 'package:mindloom/core/snackbars/success_dialog.dart';
+import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/diary/domain/usecases/get_diaries_by_range.dart';
 import 'package:mindloom/features/story/data/model/story_model.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
 import 'package:mindloom/features/story/domain/usecases/create_story.dart';
 import 'package:mindloom/features/story/domain/usecases/generate_story_from_diaries.dart';
+import 'package:mindloom/features/story/domain/usecases/upload_story_image.dart';
 import 'package:mindloom/features/story/presentation/views/draft_preview.dart';
 import 'package:mindloom/features/story/presentation/widgets/generating_story.dart';
 import 'package:uuid/uuid.dart';
@@ -21,15 +24,18 @@ class GenerateStoryController extends GetxController {
     required this.generateStoryFromDiariesUseCase,
     required this.getDiariesByRangeUseCase,
     required this.createStoryUseCase,
+    required this.uploadStoryCoverImageUsecase,
   });
   final GenerateStoryFromDiaries generateStoryFromDiariesUseCase;
   final GetDiariesByRange getDiariesByRangeUseCase;
   final CreateStory createStoryUseCase;
+  final UploadStoryCoverImage uploadStoryCoverImageUsecase;
 
   final mainCharacter = ''.obs;
   final selectedTone = ''.obs;
   final selectedGenre = ''.obs;
   RxString summary = ''.obs;
+  final storyCover = Rx<File?>(null);
 
   Rxn<DateTime> startDate = Rxn<DateTime>();
   Rxn<DateTime> endDate = Rxn<DateTime>();
@@ -80,6 +86,13 @@ class GenerateStoryController extends GetxController {
       } else {
         endDate.value = picked;
       }
+    }
+  }
+
+  void pickStoryCover() async {
+    final image = await pickImage();
+    if (image != null) {
+      storyCover.value = image;
     }
   }
 
@@ -180,6 +193,7 @@ class GenerateStoryController extends GetxController {
         'genre': genre,
         'tone': tone,
         'characterName': characterName,
+        'summary': summary.value,
       });
 
       debugPrint('Story generation response received');
@@ -209,11 +223,27 @@ class GenerateStoryController extends GetxController {
                 ),
               )
               .toList();
+          String? coverImageUrl;
+
+          if (storyCover.value != null) {
+            final imageUrl = await uploadStoryCoverImageUsecase.call(
+              storyCover.value!,
+            );
+            imageUrl.fold(
+              (l) {
+                showErrorDialog(l.message);
+                return null;
+              },
+              (r) {
+                coverImageUrl = r;
+              },
+            );
+          }
 
           final storyResult = await createStoryUseCase.call({
             'userId': userId,
             'title': r['title'],
-            'tags': r['tags'] ?? [],
+            'tags': selectedGenre.value.isNotEmpty ? [selectedGenre.value] : [],
             'chapters': chapters.map((chapter) {
               final content = chapter.content;
               return {
@@ -228,6 +258,7 @@ class GenerateStoryController extends GetxController {
             'createdAt': Timestamp.now(),
             'isPublished': false,
             'generatedByAI': true,
+            if (coverImageUrl != null) 'coverImageUrl': coverImageUrl,
           });
 
           storyResult.fold(

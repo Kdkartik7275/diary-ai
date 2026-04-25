@@ -16,6 +16,7 @@ abstract interface class StoryRemoteDataSource {
     required String genre,
     required String tone,
     required String characterName,
+    String? summary,
   });
   Future<StoryModel> editStory({required Map<String, dynamic> data});
   Future<void> deleteStory({required String storyId});
@@ -43,7 +44,11 @@ abstract interface class StoryRemoteDataSource {
   });
   Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
   getPublisedStories({required String userId, DocumentSnapshot? lastDoc});
-  Future<List<StoryModel>> getPublishedStoriesByUser({required String userId});
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getPublishedStoriesByUser({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+  });
   Future<String?> uploadStoryCoverImage(File image);
 
   Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
@@ -136,6 +141,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
     try {
       final docRef = firestore.collection('stories').doc(storyId);
       final statsRef = firestore.collection('story_stats').doc(storyId);
+      final userStatsRef = firestore.collection('user_stats').doc(userId);
 
       final storyDoc = await docRef.get();
 
@@ -149,22 +155,26 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
         throw 'You are not the author of this story';
       }
 
-      await docRef.update({
-        'isPublished': true,
-        'publishedAt': Timestamp.now(),
-        'updatedAt': Timestamp.now(),
-      });
-      await statsRef.set({
-        'storyId': storyId,
-        'reads': 0,
-        'likes': 0,
-        'comments': 0,
-        'saved': 0,
-        'trendingScore': 1,
-      });
+      await Future.wait([
+        docRef.update({
+          'isPublished': true,
+          'publishedAt': Timestamp.now(),
+          'updatedAt': Timestamp.now(),
+        }),
+        statsRef.set({
+          'storyId': storyId,
+          'reads': 0,
+          'likes': 0,
+          'comments': 0,
+          'saved': 0,
+          'trendingScore': 1,
+        }),
+        userStatsRef.update({
+          'storiesCount': FieldValue.increment(1), // add
+        }),
+      ]);
 
       final updatedDoc = await docRef.get();
-
       return StoryModel.fromMap(updatedDoc.data() as Map<String, dynamic>);
     } catch (e) {
       throw e.toString();
@@ -356,6 +366,7 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
     required String genre,
     required String tone,
     required String characterName,
+    String? summary,
   }) async {
     try {
       final response = await aiStoryService.generateStory(
@@ -363,9 +374,12 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
         genre: genre,
         tone: tone,
         characterName: characterName,
+        summary: summary,
       );
       return response;
-    } catch (e) {
+    } catch (e,stack) {
+      debugPrint('❌ AIStoryService error: $e');
+      debugPrint('❌ Stack: $stack');
       throw e.toString();
     }
   }
@@ -383,27 +397,35 @@ class StoryRemoteDataSourceImpl extends StoryRemoteDataSource {
   }
 
   @override
-  Future<List<StoryModel>> getPublishedStoriesByUser({
+  Future<({List<StoryModel> stories, DocumentSnapshot? lastDoc})>
+  getPublishedStoriesByUser({
     required String userId,
+    DocumentSnapshot? lastDoc,
   }) async {
     try {
-      final storiesDoc = await firestore
+      var query = firestore
           .collection('stories')
           .where('userId', isEqualTo: userId)
           .where('isPublished', isEqualTo: true)
           .where('publishedAt', isNotEqualTo: null)
           .orderBy('publishedAt', descending: true)
-          .limit(10)
-          .get();
+          .limit(10);
 
-      if (storiesDoc.docs.isEmpty) {
-        return [];
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
       }
 
-      List<StoryModel> stories = storiesDoc.docs
+      final storiesDoc = await query.get();
+
+      if (storiesDoc.docs.isEmpty) {
+        return (stories: <StoryModel>[], lastDoc: null);
+      }
+
+      final stories = storiesDoc.docs
           .map((story) => StoryModel.fromMap(story.data()))
           .toList();
-      return stories;
+
+      return (stories: stories, lastDoc: storiesDoc.docs.last);
     } catch (e) {
       throw e.toString();
     }

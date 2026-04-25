@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/snackbars/error_snackbar.dart';
@@ -134,6 +135,9 @@ class FollowController extends GetxController {
         isFollowedBy.value = false;
       },
       (followStatus) {
+        debugPrint(
+          'Follow status: isFollowing=${followStatus.isFollowing}, isFollowedBy=${followStatus.isFollowedBy}',
+        );
         isFollowing.value = followStatus.isFollowing;
         isFollowedBy.value = followStatus.isFollowedBy;
       },

@@ -297,6 +297,7 @@ class StoryRepositoryImpl implements StoryRepository {
     required String genre,
     required String tone,
     required String characterName,
+    String? summary,
   }) async {
     try {
       if (!await connectionChecker.isConnected) {
@@ -308,6 +309,7 @@ class StoryRepositoryImpl implements StoryRepository {
         genre: genre,
         tone: tone,
         characterName: characterName,
+        summary: summary
       );
 
       return right(result);
@@ -332,17 +334,21 @@ class StoryRepositoryImpl implements StoryRepository {
   }
 
   @override
-  ResultFuture<List<StoryEntity>> getPublisedStoriesByUser({
+  ResultFuture<({List<StoryEntity> stories, DocumentSnapshot? lastDoc})>
+  getPublisedStoriesByUser({
     required String userId,
+    DocumentSnapshot? lastDoc,
   }) async {
     try {
-      if (!await connectionChecker.isConnected) {
-        return left(FirebaseFailure(message: 'No Internet Connection'));
-      }
-
+   
       final result = await remoteDataSource.getPublishedStoriesByUser(
         userId: userId,
+        lastDoc: lastDoc,
       );
+
+      for (StoryModel story in result.stories) {
+        await localDataSource.createStory(data: story);
+      }
 
       return right(result);
     } catch (e) {

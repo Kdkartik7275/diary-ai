@@ -290,7 +290,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
                 Obx(() {
                   final likes = controller.stats?.likes ?? 0;
                   return Text(
-                    '${widget.story.chapters.length} chapters   •   ${formatCount(likes)} ${likes > 1 ? 'likes' : 'like'}',
+                    '${widget.story.chapters.length} ${widget.story.chapters.length == 1 ? 'chapter' : 'chapters'}   •   ${formatCount(likes)} ${likes > 1 ? 'likes' : 'like'}',
                     style: theme.titleSmall!.copyWith(
                       color: AppColors.textLighter,
                       fontWeight: FontWeight.normal,
@@ -308,7 +308,7 @@ class _StoryReadingViewState extends State<StoryReadingView> {
               return Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Text(
-                  'Chapter ${page?.chapterNumber}: ${page?.chapterTitle}',
+                'Chapter ${page?.chapterNumber}: ${page?.chapterTitle}',
                   textAlign: TextAlign.start,
                   style: theme.titleMedium!.copyWith(
                     fontWeight: FontWeight.normal,
