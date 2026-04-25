@@ -45,6 +45,7 @@ import 'package:mindloom/features/notifications/data/repository_impl/notificatio
 import 'package:mindloom/features/notifications/domain/repository/notification_repository.dart';
 import 'package:mindloom/features/notifications/domain/usecases/create_notification.dart';
 import 'package:mindloom/features/notifications/domain/usecases/get_user_notification.dart';
+import 'package:mindloom/features/notifications/domain/usecases/mark_all_notification_read.dart';
 import 'package:mindloom/features/notifications/domain/usecases/mark_notification_read.dart';
 import 'package:mindloom/features/search/data/data_source/search_story_remote_data_source.dart';
 import 'package:mindloom/features/search/data/repository_impl/search_repository_impl.dart';

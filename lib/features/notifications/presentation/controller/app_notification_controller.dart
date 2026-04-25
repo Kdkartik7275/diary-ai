@@ -4,16 +4,18 @@ import 'package:mindloom/core/di/init_dependencies.dart';
 import 'package:mindloom/core/snackbars/error_snackbar.dart';
 import 'package:mindloom/features/notifications/domain/entity/app_notification.dart';
 import 'package:mindloom/features/notifications/domain/usecases/get_user_notification.dart';
+import 'package:mindloom/features/notifications/domain/usecases/mark_all_notification_read.dart';
 import 'package:mindloom/features/notifications/domain/usecases/mark_notification_read.dart';
 
 class AppNotificationController extends GetxController {
-  final GetUserNotification getUserNotificationUseCase;
-  final MarkNotificationAsRead markNotificationAsReadUseCase;
-
   AppNotificationController({
     required this.getUserNotificationUseCase,
     required this.markNotificationAsReadUseCase,
+    required this.markAllNotificationReadUseCase,
   });
+  final GetUserNotification getUserNotificationUseCase;
+  final MarkNotificationAsRead markNotificationAsReadUseCase;
+  final MarkAllNotificationRead markAllNotificationReadUseCase;
 
   RxBool isloading = RxBool(false);
 
@@ -57,8 +59,8 @@ class AppNotificationController extends GetxController {
         }
 
         sortedNotifications.value = {
-          if (todayList.isNotEmpty) "Today": todayList,
-          if (earlierList.isNotEmpty) "Earlier": earlierList,
+          if (todayList.isNotEmpty) 'Today': todayList,
+          if (earlierList.isNotEmpty) 'Earlier': earlierList,
         };
       });
     } catch (e) {
@@ -79,6 +81,30 @@ class AppNotificationController extends GetxController {
 
       result.fold((err) => showErrorDialog(err.message), (_) {
         _updateNotificationLocally(notifId);
+      });
+    } catch (e) {
+      showErrorDialog(e.toString());
+    }
+  }
+
+  Future<void> markAllNotifsRead() async {
+    try {
+      final result = await markAllNotificationReadUseCase.call(
+        sl<FirebaseAuth>().currentUser!.uid,
+      );
+
+      result.fold((err) => showErrorDialog(err.message), (_) {
+        for (final key in sortedNotifications.keys) {
+          final list = sortedNotifications[key];
+
+          if (list == null) continue;
+
+          for (int i = 0; i < list.length; i++) {
+            list[i] = list[i].copyWith(isRead: true);
+          }
+        }
+
+        sortedNotifications.refresh();
       });
     } catch (e) {
       showErrorDialog(e.toString());

@@ -7,13 +7,12 @@ import 'package:mindloom/features/notifications/domain/entity/app_notification.d
 import 'package:mindloom/features/notifications/domain/repository/notification_repository.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
-  final NotificationRemoteDataSource remoteDataSource;
-  final ConnectionChecker connectionChecker;
-
   NotificationRepositoryImpl({
     required this.remoteDataSource,
     required this.connectionChecker,
   });
+  final NotificationRemoteDataSource remoteDataSource;
+  final ConnectionChecker connectionChecker;
   @override
   ResultVoid createNotification({required Map<String, dynamic> data}) async {
     try {
@@ -59,6 +58,20 @@ class NotificationRepositoryImpl implements NotificationRepository {
         userId: userId,
         notifId: notifId,
       );
+
+      return right(null);
+    } catch (e) {
+      return left(FirebaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  ResultVoid markAllNotificationsAsRead({required String userId}) async {
+    try {
+      if (!await connectionChecker.isConnected) {
+        return left(FirebaseFailure(message: 'No Internet Connection.'));
+      }
+      await remoteDataSource.markAllNotificationsAsRead(userId: userId);
 
       return right(null);
     } catch (e) {

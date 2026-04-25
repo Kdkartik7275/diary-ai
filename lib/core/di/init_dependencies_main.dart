@@ -241,6 +241,7 @@ void _initNotification() {
   sl.registerLazySingleton(() => CreateNotification(repository: sl()));
   sl.registerLazySingleton(() => GetUserNotification(repository: sl()));
   sl.registerLazySingleton(() => MarkNotificationAsRead(repository: sl()));
+  sl.registerLazySingleton(() => MarkAllNotificationRead(repository: sl()));
 }
 
 void _initFeedback() {

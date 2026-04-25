@@ -184,7 +184,6 @@ class StorySummaryView extends GetView<GenerateStoryController> {
                 ],
               ),
             ),
-
             const SizedBox(height: 40),
           ],
         ),

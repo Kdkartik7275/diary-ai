@@ -11,4 +11,6 @@ abstract interface class NotificationRepository {
     required String notifId,
     required String userId,
   });
+
+  ResultVoid markAllNotificationsAsRead({required String userId});
 }

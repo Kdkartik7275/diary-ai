@@ -101,7 +101,7 @@ class _TabsState extends State<Tabs> {
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(CupertinoIcons.home),
-                  activeIcon: Icon(CupertinoIcons.home, color: AppColors.primary),
+                  activeIcon: Icon(CupertinoIcons.house_fill, color: AppColors.primary),
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
@@ -123,7 +123,7 @@ class _TabsState extends State<Tabs> {
                 BottomNavigationBarItem(
                   icon: Icon(CupertinoIcons.compass),
                   activeIcon: Icon(
-                    CupertinoIcons.compass,
+                    CupertinoIcons.compass_fill,
                     color: AppColors.primary,
                   ),
                   label: 'Explore',

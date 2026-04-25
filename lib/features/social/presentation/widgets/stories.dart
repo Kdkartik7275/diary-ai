@@ -31,7 +31,6 @@ class _StoriesState extends State<Stories> {
       final stories = _controller.userStories[widget.userId];
       final isLoadingMore =
           _controller.userStoriesLoadingMore[widget.userId] == true;
-      final hasMore = _controller.userStoriesHasMore[widget.userId] == true;
 
       if (_controller.userStoriesLoading.value) {
         return const Padding(
@@ -51,8 +50,7 @@ class _StoriesState extends State<Stories> {
 
       return GridView.builder(
         shrinkWrap: true,
-        physics:
-            const NeverScrollableScrollPhysics(), // parent ListView scrolls
+        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -60,21 +58,12 @@ class _StoriesState extends State<Stories> {
           mainAxisSpacing: 12,
           childAspectRatio: 0.85,
         ),
-        itemCount: stories.length + (isLoadingMore || hasMore ? 1 : 0),
+        itemCount: stories.length + (isLoadingMore ? 2 : 0),
         itemBuilder: (_, i) {
-          if (i == stories.length) {
-            return isLoadingMore
-                ? const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink();
+          if (i >= stories.length) {
+            return const _StoryShimmerCard();
           }
+
           return UserStoryCard(story: stories[i]);
         },
       );
@@ -206,6 +195,59 @@ class UserStoryCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _StoryShimmerCard extends StatelessWidget {
+  const _StoryShimmerCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade500,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 12,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 10,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

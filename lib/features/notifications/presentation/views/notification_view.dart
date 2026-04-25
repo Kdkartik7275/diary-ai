@@ -91,6 +91,19 @@ class NotificationView extends GetView<AppNotificationController> {
             color: isDarkMode ? AppColors.white : AppColors.text,
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => controller.markAllNotifsRead(),
+            child: Text(
+              'Mark as read',
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                color: AppColors.primary,
+                fontSize: 13,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Obx(() {
         if (controller.isloading.value) {

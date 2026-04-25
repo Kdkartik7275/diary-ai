@@ -9,6 +9,7 @@ class NotificationBinding extends Bindings {
       () => AppNotificationController(
         getUserNotificationUseCase: sl(),
         markNotificationAsReadUseCase: sl(),
+        markAllNotificationReadUseCase: sl(),
       ),
     );
   }

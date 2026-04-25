@@ -12,12 +12,12 @@ abstract interface class NotificationRemoteDataSource {
     required String notifId,
     required String userId,
   });
+  Future<void> markAllNotificationsAsRead({required String userId});
 }
 
 class NotificationRemoteDataSourceImpl extends NotificationRemoteDataSource {
-  final FirebaseFirestore firestore;
-
   NotificationRemoteDataSourceImpl({required this.firestore});
+  final FirebaseFirestore firestore;
 
   CollectionReference<Map<String, dynamic>> _notificationRef(String userId) {
     return firestore
@@ -82,6 +82,27 @@ class NotificationRemoteDataSourceImpl extends NotificationRemoteDataSource {
       final notifRef = _notificationRef(userId).doc(notifId);
 
       await notifRef.update({'isRead': true});
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<void> markAllNotificationsAsRead({required String userId}) async {
+    try {
+      final querySnapshot = await _notificationRef(
+        userId,
+      ).where('isRead', isEqualTo: false).get();
+
+      if (querySnapshot.docs.isEmpty) return;
+
+      final batch = firestore.batch();
+
+      for (final doc in querySnapshot.docs) {
+        batch.update(doc.reference, {'isRead': true});
+      }
+
+      await batch.commit();
     } catch (e) {
       throw Exception(e.toString());
     }
