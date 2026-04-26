@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/theme/theme_controller.dart';
+import 'package:mindloom/core/animation/shimmer_effect.dart';
 import 'package:mindloom/features/social/presentation/controllers/follow_controller.dart';
 import 'package:mindloom/features/social/presentation/widgets/user_tile.dart';
 
@@ -102,10 +103,9 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
         color: isDarkMode ? AppColors.dark : AppColors.white,
         child: TabBarView(
           controller: _tabController,
-
           children: [
-            _FollowList(type: _ListType.followers,isDarkMode: isDarkMode),
-            _FollowList(type: _ListType.following,isDarkMode: isDarkMode),
+            _FollowList(type: _ListType.followers, isDarkMode: isDarkMode),
+            _FollowList(type: _ListType.following, isDarkMode: isDarkMode),
           ],
         ),
       ),
@@ -116,7 +116,7 @@ class _FollowersFollowingViewState extends State<FollowersFollowingView>
 enum _ListType { followers, following }
 
 class _FollowList extends StatelessWidget {
-  const _FollowList({required this.type,required this.isDarkMode});
+  const _FollowList({required this.type, required this.isDarkMode});
 
   final _ListType type;
   final bool isDarkMode;
@@ -127,12 +127,7 @@ class _FollowList extends StatelessWidget {
 
     return Obx(() {
       if (controller.isLoading.value) {
-        return const Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: AppColors.primary,
-          ),
-        );
+        return _UserTileListShimmer(isDarkMode: isDarkMode);
       }
 
       final source = type == _ListType.followers
@@ -144,7 +139,8 @@ class _FollowList extends StatelessWidget {
       }
 
       return RefreshIndicator(
-        backgroundColor:isDarkMode ?AppColors.darkSurface : AppColors.white,
+        backgroundColor:
+            isDarkMode ? AppColors.darkSurface : AppColors.white,
         color: AppColors.primary,
         onRefresh: () async {
           if (type == _ListType.followers) {
@@ -156,13 +152,78 @@ class _FollowList extends StatelessWidget {
         child: ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           itemCount: source.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 10),
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (context, index) {
-            return UserTile(userId: source[index].id,isDarkMode: isDarkMode);
+            return UserTile(userId: source[index].id, isDarkMode: isDarkMode);
           },
         ),
       );
     });
+  }
+}
+
+// ─── Full list shimmer ────────────────────────────────────────────────────────
+
+class _UserTileListShimmer extends StatelessWidget {
+  const _UserTileListShimmer({required this.isDarkMode});
+  final bool isDarkMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShimmerWrapper(
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 7,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (_, __) => _UserTileShimmer(isDarkMode: isDarkMode),
+      ),
+    );
+  }
+}
+
+// ─── Single tile shimmer skeleton ────────────────────────────────────────────
+
+class _UserTileShimmer extends StatelessWidget {
+  const _UserTileShimmer({required this.isDarkMode});
+  final bool isDarkMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: isDarkMode ? AppColors.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDarkMode ? AppColors.filledDark : const Color(0xFFF0F0F0),
+        ),
+      ),
+      child: Row(
+        children: [
+          const ShimmerBox.circle(size: 46),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerBox(
+                  width: 120,
+                  height: 14,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                const SizedBox(height: 6),
+                ShimmerBox(
+                  width: 80,
+                  height: 12,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -176,15 +237,14 @@ class _EmptyState extends StatelessWidget {
     final theme = Theme.of(context).textTheme;
     final isFollowers = type == _ListType.followers;
 
-    final icon = (isFollowers
+    final icon = isFollowers
         ? Icons.people_outline_rounded
-        : Icons.person_add_alt_1_outlined);
-
-    final title = (isFollowers ? 'No followers yet' : 'Not following anyone');
-
-    final subtitle = (isFollowers
+        : Icons.person_add_alt_1_outlined;
+    final title =
+        isFollowers ? 'No followers yet' : 'Not following anyone';
+    final subtitle = isFollowers
         ? 'When people follow you, they\'ll appear here'
-        : 'Start following people to see them here');
+        : 'Start following people to see them here';
 
     return Center(
       child: Padding(

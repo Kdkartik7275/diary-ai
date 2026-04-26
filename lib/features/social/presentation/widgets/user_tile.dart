@@ -2,8 +2,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/animation/shimmer_effect.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/social/presentation/views/user_profile_page.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
@@ -39,17 +39,10 @@ class UserTile extends GetView<UserController> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return UserTileLoading(isDarkMode: isDarkMode);
         }
-
-        if (snapshot.hasError) {
-          return const UserTileError();
-        }
-
-        if (!snapshot.hasData) {
-          return const UserTileEmpty();
-        }
+        if (snapshot.hasError) return const UserTileError();
+        if (!snapshot.hasData) return const UserTileEmpty();
 
         final user = snapshot.data!;
-        debugPrint('Loaded user: ${user.isDeleted} (${user.id})');
         final isDeleted = user.isDeleted ?? false;
         final colorIndex = user.id.hashCode.abs() % _avatarColors.length;
         final bgColor = _avatarColors[colorIndex];
@@ -59,9 +52,10 @@ class UserTile extends GetView<UserController> {
 
         if (isDeleted) {
           return GestureDetector(
-              onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
+            onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: isDarkMode ? AppColors.darkSurface : Colors.white,
                 borderRadius: BorderRadius.circular(14),
@@ -98,7 +92,8 @@ class UserTile extends GetView<UserController> {
         return GestureDetector(
           onTap: () => Get.to(() => UserProfilePage(userId: user.id)),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: isDarkMode ? AppColors.darkSurface : Colors.white,
               borderRadius: BorderRadius.circular(14),
@@ -126,7 +121,8 @@ class UserTile extends GetView<UserController> {
                     shape: BoxShape.circle,
                     color: bgColor,
                   ),
-                  child: user.profileUrl != null && user.profileUrl!.isNotEmpty
+                  child: user.profileUrl != null &&
+                          user.profileUrl!.isNotEmpty
                       ? ClipOval(
                           child: CachedNetworkImage(
                             imageUrl: user.profileUrl!,
@@ -196,77 +192,56 @@ class _Initials extends StatelessWidget {
   }
 }
 
+// ─── Loading state ────────────────────────────────────────────────────────────
+
 class UserTileLoading extends StatelessWidget {
   const UserTileLoading({super.key, required this.isDarkMode});
   final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.darkSurface : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFF0F0F0)),
-      ),
-      child: Row(
-        children: [
-          _AvatarPlaceholder(key, isDarkMode),
-          SizedBox(width: 12),
-          Expanded(child: _UserTextPlaceholder(isDarkMode: isDarkMode)),
-        ],
-      ),
-    );
-  }
-}
-
-class _AvatarPlaceholder extends StatelessWidget {
-  const _AvatarPlaceholder(Key? key, this.isDarkMode) : super(key: key);
-  final bool isDarkMode;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 46,
-      height: 46,
-      decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.darkSurface : Colors.grey.shade300,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
-}
-
-class _UserTextPlaceholder extends StatelessWidget {
-  const _UserTextPlaceholder({required this.isDarkMode});
-  final bool isDarkMode;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 120,
-          height: 14,
-          decoration: BoxDecoration(
-            color: isDarkMode ? AppColors.darkSurface : Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(4),
+    return ShimmerWrapper(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: isDarkMode ? AppColors.darkSurface : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isDarkMode
+                ? AppColors.filledDark
+                : const Color(0xFFF0F0F0),
           ),
         ),
-        SizedBox(height: 6),
-        Container(
-          width: 80,
-          height: 12,
-          decoration: BoxDecoration(
-            color: isDarkMode ? AppColors.darkSurface : Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(4),
-          ),
+        child: Row(
+          children: [
+            const ShimmerBox.circle(size: 46),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ShimmerBox(
+                    width: 120,
+                    height: 14,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  const SizedBox(height: 6),
+                  ShimmerBox(
+                    width: 80,
+                    height: 12,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
+
+// ─── Error & empty states ─────────────────────────────────────────────────────
 
 class UserTileError extends StatelessWidget {
   const UserTileError({super.key});
@@ -287,7 +262,5 @@ class UserTileEmpty extends StatelessWidget {
   const UserTileEmpty({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
-  }
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

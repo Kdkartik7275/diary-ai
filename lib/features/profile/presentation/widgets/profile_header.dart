@@ -63,7 +63,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 horizontalPadding,
                 12,
                 horizontalPadding,
-                0,
+                0,                                                                                
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -105,6 +105,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               height: avatarSize,
               width: avatarSize,
               decoration: BoxDecoration(
+                border: widget.isDarkMode
+                    ? Border.all(color: AppColors.darkSurface, width: 2)
+                    : null,
                 shape: BoxShape.circle,
                 gradient: widget.isDarkMode
                     ? null

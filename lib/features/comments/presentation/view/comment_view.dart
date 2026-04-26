@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
 import 'package:mindloom/config/theme/theme_controller.dart';
+import 'package:mindloom/core/animation/shimmer_effect.dart';
 import 'package:mindloom/features/comments/presentation/controller/comments_controller.dart';
 import 'package:mindloom/features/comments/presentation/widget/comment_tile.dart';
 import 'package:mindloom/features/user/presentation/controller/user_controller.dart';
@@ -86,12 +87,7 @@ class _CommentViewState extends State<CommentView> {
           children: [
             Expanded(
               child: controller.isLoading.value
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                        strokeWidth: 2,
-                      ),
-                    )
+                  ? _CommentListShimmer(isDarkMode: isDarkMode)
                   : controller.comments.isEmpty
                   ? Center(
                       child: Text(
@@ -135,17 +131,16 @@ class _CommentViewState extends State<CommentView> {
                       ),
                     ),
             ),
+
+            // Load-more shimmer
             if (controller.isLoadingMore.value)
-              Center(
-                child: SizedBox(
-                  height: 18,
-                  width: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.primary,
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: ShimmerWrapper(
+                  child: _CommentTileShimmer(isDarkMode: isDarkMode),
                 ),
               ),
+
             const SizedBox(height: 100),
           ],
         );
@@ -187,7 +182,6 @@ class _CommentViewState extends State<CommentView> {
                         Expanded(
                           child: Text(
                             'Replying to user',
-                            //  'Replying to ${controller.replyingTo.value!.userName}',
                             style: theme.titleSmall!.copyWith(
                               color: isDarkMode
                                   ? AppColors.textDarkSecondary
@@ -197,9 +191,7 @@ class _CommentViewState extends State<CommentView> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            controller.clearReplyingTo();
-                          },
+                          onTap: () => controller.clearReplyingTo(),
                           child: Icon(
                             Icons.close,
                             size: 18,
@@ -291,9 +283,8 @@ class _CommentViewState extends State<CommentView> {
                             hintStyle: TextStyle(
                               color: isDarkMode
                                   ? AppColors.textDarkSecondary
-                                  : AppColors.textLighter.withValues(
-                                      alpha: 0.6,
-                                    ),
+                                  : AppColors.textLighter
+                                      .withValues(alpha: 0.6),
                               fontSize: 15,
                             ),
                             fillColor: isDarkMode
@@ -350,9 +341,8 @@ class _CommentViewState extends State<CommentView> {
                                     ? AppColors.primary
                                     : isDarkMode
                                     ? AppColors.textDarkSecondary
-                                    : AppColors.textLighter.withValues(
-                                        alpha: 0.5,
-                                      ),
+                                    : AppColors.textLighter
+                                        .withValues(alpha: 0.5),
                                 fontWeight: FontWeight.w600,
                                 fontSize: 15,
                               ),
@@ -368,6 +358,74 @@ class _CommentViewState extends State<CommentView> {
           );
         }),
       ),
+    );
+  }
+}
+
+// ─── Initial load shimmer — shows a list of fake comment tiles ───────────────
+
+class _CommentListShimmer extends StatelessWidget {
+  const _CommentListShimmer({required this.isDarkMode});
+  final bool isDarkMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShimmerWrapper(
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 6,
+        itemBuilder: (_, __) => _CommentTileShimmer(isDarkMode: isDarkMode),
+        separatorBuilder: (_, __) => const SizedBox(height: 20),
+      ),
+    );
+  }
+}
+
+// ─── Single comment tile shimmer skeleton ────────────────────────────────────
+
+class _CommentTileShimmer extends StatelessWidget {
+  const _CommentTileShimmer({required this.isDarkMode});
+  final bool isDarkMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const ShimmerBox.circle(size: 36),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ShimmerBox(
+                width: 120,
+                height: 12,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              const SizedBox(height: 8),
+              ShimmerBox(
+                width: double.infinity,
+                height: 10,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              const SizedBox(height: 6),
+              ShimmerBox(
+                width: 200,
+                height: 10,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              const SizedBox(height: 8),
+              ShimmerBox(
+                width: 60,
+                height: 8,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

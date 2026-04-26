@@ -73,6 +73,8 @@ class AppPages {
       name: Routes.writeDiary,
       page: () => const CreateEntryView(),
       binding: CreateDiaryBinding(),
+      transition: Transition.downToUp,
+      transitionDuration: Duration(milliseconds: 200),
     ),
     GetPage(
       name: Routes.editProfile,
@@ -112,7 +114,8 @@ class AppPages {
       name: Routes.settings,
       binding: SettingsBinding(),
       page: () => SettingsView(),
+      
+      
     ),
-
   ];
 }

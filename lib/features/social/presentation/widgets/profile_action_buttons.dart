@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/animation/shimmer_effect.dart';
 import 'package:mindloom/features/social/presentation/controllers/follow_controller.dart';
 import 'package:mindloom/features/user/domain/entity/user_entity.dart';
 
@@ -63,18 +64,11 @@ class _FollowButton extends StatelessWidget {
       final isFollowedByUser = followController.isFollowedBy.value;
 
       if (isLoading) {
-        return const SizedBox(
-          height: 40,
-          width: 40,
-          child: Center(
-            child: SizedBox(
-              height: 18,
-              width: 18,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.primary,
-              ),
-            ),
+        return ShimmerWrapper(
+          child: ShimmerBox(
+            width: 110,
+            height: 40,
+            borderRadius: BorderRadius.circular(12),
           ),
         );
       }

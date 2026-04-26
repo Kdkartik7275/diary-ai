@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/animation/shimmer_effect.dart';
 import 'package:mindloom/core/containers/rounded_container.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/story/domain/entity/story_entity.dart';
@@ -262,11 +263,13 @@ class StoryStatsLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [_StatPlaceholder(), _StatPlaceholder()],
+    return ShimmerWrapper(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [_StatPlaceholder(), _StatPlaceholder()],
+        ),
       ),
     );
   }
@@ -279,22 +282,12 @@ class _StatPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 18,
-          height: 18,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade300,
-            shape: BoxShape.circle,
-          ),
-        ),
+        const ShimmerBox.circle(size: 18),
         const SizedBox(width: 6),
-        Container(
+        ShimmerBox(
           width: 60,
           height: 10,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(4),
-          ),
+          borderRadius: BorderRadius.circular(4),
         ),
       ],
     );

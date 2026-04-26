@@ -27,7 +27,8 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView>
+    with SingleTickerProviderStateMixin {
   late UserController controller;
   late HomeController homeController;
   late DiaryController diaryController;
@@ -37,8 +38,13 @@ class _HomeViewState extends State<HomeView> {
   late ThemeController themeController;
   late StreakController streakController;
   late ScrollController scrollController;
+  late AnimationController animationController;
   late String greeting;
   late String subtitle;
+  late Tween opacity;
+  late Animation<Offset> slideAnimation;
+  late Animation<Offset> streakSlideAnimation;
+  late Animation<Offset> draftSlideAnimation;
 
   @override
   void initState() {
@@ -58,7 +64,25 @@ class _HomeViewState extends State<HomeView> {
 
     streakController.loadStreak();
     scrollController = ScrollController();
-
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    opacity = Tween(begin: 0.0, end: 1.0);
+    opacity.animate(animationController);
+    slideAnimation =
+        Tween<Offset>(begin: const Offset(-1.0, 0.0), end: Offset.zero).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        );
+    streakSlideAnimation =
+        Tween<Offset>(begin: const Offset(-1.0, 0.0), end: Offset.zero).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        );
+    draftSlideAnimation =
+        Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        );
+    animationController.forward();
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
               scrollController.position.maxScrollExtent - 200 &&
@@ -90,9 +114,12 @@ class _HomeViewState extends State<HomeView> {
         ),
         actions: [
           Obx(
-            () => AnimatedNotificationBell(
-              unreadCount: notificationController.unreadCount,
-              onTap: () => Get.toNamed(Routes.notification),
+            () => FadeTransition(
+              opacity: animationController,
+              child: AnimatedNotificationBell(
+                unreadCount: notificationController.unreadCount,
+                onTap: () => Get.toNamed(Routes.notification),
+              ),
             ),
           ),
         ],
@@ -117,26 +144,29 @@ class _HomeViewState extends State<HomeView> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Obx(() {
-                      final user = controller.currentUser.value;
-                      return Text(
-                        '$greeting, ${user?.fullName.split(' ')[0] ?? ''}',
-                        style: theme.titleMedium!.copyWith(
-                          fontWeight: FontWeight.w500,
+                child: FadeTransition(
+                  opacity: animationController,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Obx(() {
+                        final user = controller.currentUser.value;
+                        return Text(
+                          '$greeting, ${user?.fullName.split(' ')[0] ?? ''}',
+                          style: theme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: theme.titleSmall!.copyWith(
+                          color: AppColors.textLighter,
                         ),
-                      );
-                    }),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: theme.titleSmall!.copyWith(
-                        color: AppColors.textLighter,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -148,7 +178,17 @@ class _HomeViewState extends State<HomeView> {
                   horizontal: width * 0.04,
                   vertical: height * 0.02,
                 ),
-                child: TodayCard(width: width, height: height, theme: theme),
+                child: FadeTransition(
+                  opacity: animationController,
+                  child: SlideTransition(
+                    position: slideAnimation,
+                    child: TodayCard(
+                      width: width,
+                      height: height,
+                      theme: theme,
+                    ),
+                  ),
+                ),
               ),
             ),
 
@@ -160,23 +200,30 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     Expanded(
                       child: Obx(
-                        () => StatCard(
-                          icon: Icons.trending_up_rounded,
-                          label: 'Writing Streak',
-                          value: '${streakController.currentStreak.value} Days',
-                          theme: theme,
+                        () => SlideTransition(
+                          position: streakSlideAnimation,
+                          child: StatCard(
+                            icon: Icons.trending_up_rounded,
+                            label: 'Writing Streak',
+                            value:
+                                '${streakController.currentStreak.value} Days',
+                            theme: theme,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Obx(
-                        () => StatCard(
-                          icon: CupertinoIcons.wand_stars,
-                          label: 'Draft Stories',
-                          value:
-                              '${storyController.draftStoriesCount.value} Notes',
-                          theme: theme,
+                        () => SlideTransition(
+                          position: draftSlideAnimation,
+                          child: StatCard(
+                            icon: CupertinoIcons.wand_stars,
+                            label: 'Draft Stories',
+                            value:
+                                '${storyController.draftStoriesCount.value} Notes',
+                            theme: theme,
+                          ),
                         ),
                       ),
                     ),
@@ -194,12 +241,15 @@ class _HomeViewState extends State<HomeView> {
                   width * 0.04,
                   0,
                 ),
-                child: Row(
-                  children: [
-                    Icon(Icons.trending_up_rounded, color: AppColors.primary),
-                    SizedBox(width: width * .02),
-                    Text('Trending Stories', style: theme.titleLarge),
-                  ],
+                child: SlideTransition(
+                  position: slideAnimation,
+                  child: Row(
+                    children: [
+                      Icon(Icons.trending_up_rounded, color: AppColors.primary),
+                      SizedBox(width: width * .02),
+                      Text('Trending Stories', style: theme.titleLarge),
+                    ],
+                  ),
                 ),
               ),
             ),

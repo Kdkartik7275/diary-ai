@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindloom/config/constants/colors.dart';
+import 'package:mindloom/core/animation/shimmer_effect.dart';
 import 'package:mindloom/core/utils/helpers/functions.dart';
 import 'package:mindloom/features/comments/domain/entity/comment_entity.dart';
 import 'package:mindloom/features/comments/presentation/controller/comments_controller.dart';
@@ -33,16 +34,11 @@ class CommentTile extends GetView<CommentsController> {
       future: userController.getUserById(userId: comment.userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _CommentLoading(isReply: isReply,isDarkMode: isDarkMode);
+          return _CommentLoading(isReply: isReply);
         }
+        if (snapshot.hasError) return _CommentError(isReply: isReply);
+        if (!snapshot.hasData) return _CommentEmpty(isReply: isReply);
 
-        if (snapshot.hasError) {
-          return _CommentError(isReply: isReply);
-        }
-
-        if (!snapshot.hasData) {
-          return _CommentEmpty(isReply: isReply);
-        }
         final user = snapshot.data!;
         return Column(
           children: [
@@ -54,8 +50,8 @@ class CommentTile extends GetView<CommentsController> {
                   CircleAvatar(
                     radius: isReply ? 16 : 22,
                     backgroundColor: AppColors.primary,
-                    child:
-                        (user.profileUrl != null && user.profileUrl!.isNotEmpty)
+                    child: (user.profileUrl != null &&
+                            user.profileUrl!.isNotEmpty)
                         ? ClipOval(
                             child: Image.network(
                               user.profileUrl!,
@@ -154,9 +150,7 @@ class CommentTile extends GetView<CommentsController> {
                             if (!isReply) ...[
                               const SizedBox(width: 16),
                               GestureDetector(
-                                onTap: () {
-                                  controller.setReplyingTo(comment);
-                                },
+                                onTap: () => controller.setReplyingTo(comment),
                                 child: Text(
                                   'Reply',
                                   style: theme.titleSmall!.copyWith(
@@ -195,9 +189,8 @@ class CommentTile extends GetView<CommentsController> {
                           Padding(
                             padding: const EdgeInsets.only(top: 12),
                             child: GestureDetector(
-                              onTap: () {
-                                controller.toggleRepliesVisibility(comment.id);
-                              },
+                              onTap: () => controller
+                                  .toggleRepliesVisibility(comment.id),
                               child: Obx(() {
                                 final isExpanded = controller.expandedCommentIds
                                     .contains(comment.id);
@@ -209,9 +202,8 @@ class CommentTile extends GetView<CommentsController> {
                                       height: 1,
                                       color: isDarkMode
                                           ? AppColors.textDarkSecondary
-                                          : AppColors.textLighter.withValues(
-                                              alpha: 0.3,
-                                            ),
+                                          : AppColors.textLighter
+                                              .withValues(alpha: 0.3),
                                     ),
                                     const SizedBox(width: 12),
                                     Text(
@@ -238,114 +230,72 @@ class CommentTile extends GetView<CommentsController> {
                                 .contains(comment.id);
                             if (!isExpanded) return const SizedBox.shrink();
 
-                            final replies = controller.getRepliesForComment(
-                              comment.id,
-                            );
+                            final replies = controller
+                                .getRepliesForComment(comment.id);
                             final hasMore =
                                 controller.hasMoreRepliesMap[comment.id] ??
-                                false;
+                                    false;
 
-                            return controller.loadingRepliesMap[comment.id] ==
-                                    true
-                                ? Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 48,
-                                      top: 12,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        SizedBox(
-                                          height: 12,
-                                          width: 12,
-                                          child:
-                                              const CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                color: AppColors.primary,
-                                              ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          'Loading replies...',
-                                          style: theme.titleSmall!.copyWith(
-                                            fontSize: 12,
-                                            color: isDarkMode
-                                                ? AppColors.textDarkSecondary
-                                                : AppColors.textLighter,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ...replies.map(
-                                        (r) => ReplyTile(reply: r),
+                            // Loading replies shimmer
+                            if (controller.loadingRepliesMap[comment.id] ==
+                                true) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 48, top: 12),
+                                child: ShimmerWrapper(
+                                  child: Column(
+                                    children: List.generate(
+                                      2,
+                                      (_) => Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 12),
+                                        child: _ReplyShimmer(
+                                            isReply: true),
                                       ),
-                                      if (hasMore)
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 0,
-                                            top: 12,
-                                          ),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              controller.loadReplies(
-                                                comment.id,
-                                                comment.storyId,
-                                                loadMore: true,
-                                              );
-                                            },
-                                            child: Text(
-                                              'View more replies',
-                                              style: theme.titleSmall!.copyWith(
-                                                fontSize: 12,
-                                                color: isDarkMode
-                                                    ? AppColors
-                                                          .textDarkSecondary
-                                                    : AppColors.textLighter,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ...replies.map((r) => ReplyTile(reply: r)),
+                                if (hasMore)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 12),
+                                    child: GestureDetector(
+                                      onTap: () => controller.loadReplies(
+                                        comment.id,
+                                        comment.storyId,
+                                        loadMore: true,
+                                      ),
+                                      child: Text(
+                                        'View more replies',
+                                        style: theme.titleSmall!.copyWith(
+                                          fontSize: 12,
+                                          color: isDarkMode
+                                              ? AppColors.textDarkSecondary
+                                              : AppColors.textLighter,
+                                          fontWeight: FontWeight.w600,
                                         ),
-                                      if (controller
-                                              .loadingMoreRepliesMap[comment
-                                              .id] ==
-                                          true)
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 0,
-                                            top: 12,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              SizedBox(
-                                                height: 12,
-                                                width: 12,
-                                                child:
-                                                    const CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                      color: AppColors.primary,
-                                                    ),
-                                              ),
-                                              const SizedBox(width: 10),
-                                              Text(
-                                                'Loading more replies...',
-                                                style: theme.titleSmall!.copyWith(
-                                                  fontSize: 12,
-                                                  color: isDarkMode
-                                                      ? AppColors
-                                                            .textDarkSecondary
-                                                      : AppColors.textLighter,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                    ],
-                                  );
+                                      ),
+                                    ),
+                                  ),
+
+                                // Load-more replies shimmer
+                                if (controller.loadingMoreRepliesMap[
+                                        comment.id] ==
+                                    true)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 12),
+                                    child: ShimmerWrapper(
+                                      child: _ReplyShimmer(isReply: true),
+                                    ),
+                                  ),
+                              ],
+                            );
                           }),
                       ],
                     ),
@@ -361,7 +311,8 @@ class CommentTile extends GetView<CommentsController> {
                     return GestureDetector(
                       onTap: () async {
                         if (isLiked) {
-                          await controller.unlikeComment(commentId: comment.id);
+                          await controller.unlikeComment(
+                              commentId: comment.id);
                         } else {
                           await controller.likeComment(commentId: comment.id);
                         }
@@ -387,67 +338,77 @@ class CommentTile extends GetView<CommentsController> {
   }
 }
 
-class _CommentLoading extends StatelessWidget {
-  const _CommentLoading({required this.isReply,required this.isDarkMode});
+// ─── Comment loading shimmer ─────────────────────────────────────────────────
 
+class _CommentLoading extends StatelessWidget {
+  const _CommentLoading({required this.isReply});
   final bool isReply;
-  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 6, left: isReply ? 48 : 0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: isReply ? 32 : 44,
-            height: isReply ? 32 : 44,
-            decoration: BoxDecoration(
-              color: isDarkMode
-                    ? AppColors.darkSurface
-                    : Colors.grey.shade300,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 12,
-                  width: 120,
-                  decoration: BoxDecoration(
-                    color: isDarkMode
-                    ? AppColors.darkSurface
-                    : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  height: 12,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: isDarkMode
-                    ? AppColors.darkSurface
-                    : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+    return ShimmerWrapper(
+      child: Padding(
+        padding: EdgeInsets.only(top: 6, left: isReply ? 48 : 0),
+        child: _ReplyShimmer(isReply: isReply),
       ),
     );
   }
 }
 
+// ─── Shared shimmer skeleton (used for both comment & reply loading) ──────────
+
+class _ReplyShimmer extends StatelessWidget {
+  const _ReplyShimmer({required this.isReply});
+  final bool isReply;
+
+  @override
+  Widget build(BuildContext context) {
+    final double avatarSize = isReply ? 32 : 44;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ShimmerBox.circle(size: avatarSize),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ShimmerBox(
+                width: 120,
+                height: 12,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              const SizedBox(height: 8),
+              ShimmerBox(
+                width: double.infinity,
+                height: 12,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              const SizedBox(height: 6),
+              ShimmerBox(
+                width: 160,
+                height: 12,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              const SizedBox(height: 8),
+              ShimmerBox(
+                width: 60,
+                height: 8,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Error & empty states ─────────────────────────────────────────────────────
+
 class _CommentError extends StatelessWidget {
   const _CommentError({required this.isReply});
-
   final bool isReply;
 
   @override
@@ -464,11 +425,8 @@ class _CommentError extends StatelessWidget {
 
 class _CommentEmpty extends StatelessWidget {
   const _CommentEmpty({required this.isReply});
-
   final bool isReply;
 
   @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
-  }
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

@@ -7,7 +7,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mindloom/config/routes/app_pages.dart';
-
 import 'package:mindloom/config/routes/app_routes.dart';
 import 'package:mindloom/config/theme/theme.dart';
 import 'package:mindloom/config/theme/theme_controller.dart';
@@ -55,9 +54,7 @@ Future<void> main() async {
 
   final initialRoute = await resolveInitialRoute();
   Get.put(ThemeController(), permanent: true);
-
   runApp(LifelineApp(initialRoute: initialRoute));
-
   FlutterNativeSplash.remove();
 }
 

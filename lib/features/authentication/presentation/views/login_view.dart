@@ -10,8 +10,59 @@ import 'package:mindloom/features/authentication/presentation/controller/login_c
 import 'package:mindloom/features/authentication/presentation/widgets/auth_button.dart';
 import 'package:mindloom/features/authentication/presentation/widgets/auth_field.dart';
 
-class LoginView extends GetView<LoginController> {
+class LoginView extends StatefulWidget {
   const LoginView({super.key});
+
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView>
+    with SingleTickerProviderStateMixin {
+  late LoginController controller;
+  late AnimationController animationController;
+  late Animation<Offset> welcomeSlideAnimation;
+  late Animation<Offset> emailFieldSlideAnimation;
+  late Animation<Offset> passwordFieldSlideAnimation;
+  late Animation<Offset> buttonSlideAnimation;
+    late Tween opacity;
+
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<LoginController>();
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+      
+    welcomeSlideAnimation =
+        Tween<Offset>(begin: const Offset(-1.0, 0.0), end: Offset.zero).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        );
+    emailFieldSlideAnimation =
+        Tween<Offset>(begin: const Offset(-1.0, 0.0), end: Offset.zero).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        );
+    passwordFieldSlideAnimation =
+        Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        );
+    buttonSlideAnimation =
+        Tween<Offset>(begin: const Offset(0.0, 1.0), end: Offset.zero).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+        );
+    animationController.forward();
+
+        opacity = Tween(begin: 0.0, end: 1.0);
+    opacity.animate(animationController);
+  }
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,20 +96,27 @@ class LoginView extends GetView<LoginController> {
                   children: [
                     SizedBox(height: height * 0.15),
 
-                    Text(
-                      'Welcome Back',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: isTablet ? 28 : 22,
+                    SlideTransition(
+                      position: welcomeSlideAnimation,
+                      child: Text(
+                        'Welcome Back',
+                        style: Theme.of(context).textTheme.titleMedium!
+                            .copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: isTablet ? 28 : 22,
+                            ),
                       ),
                     ),
                     const SizedBox(height: 6),
 
-                    Text(
-                      'Continue your storytelling journey',
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        fontSize: isTablet ? 18 : 15,
-                        color: Colors.black54,
+                    SlideTransition(
+                      position: welcomeSlideAnimation,
+                      child: Text(
+                        'Continue your storytelling journey',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          fontSize: isTablet ? 18 : 15,
+                          color: Colors.black54,
+                        ),
                       ),
                     ),
 
@@ -69,58 +127,67 @@ class LoginView extends GetView<LoginController> {
                       autovalidateMode: AutovalidateMode.onUnfocus,
                       child: Column(
                         children: [
-                          AuthField(
-                            prefixIcon: Icon(CupertinoIcons.mail),
-                            validator: (value) =>
-                                TValidator.validateEmail(value),
-                            controller: controller.email.value,
-                            hintText: 'Enter your email',
-                            inputFormatters: [
-                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                            ],
+                          SlideTransition(
+                            position: emailFieldSlideAnimation,
+                            child: AuthField(
+                              prefixIcon: Icon(CupertinoIcons.mail),
+                              validator: (value) =>
+                                  TValidator.validateEmail(value),
+                              controller: controller.email.value,
+                              hintText: 'Enter your email',
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                              ],
+                            ),
                           ),
                           SizedBox(height: isTablet ? 18 : 12),
 
                           /// ONLY obscure + suffixIcon needs reactive updates
                           Obx(
-                            () => AuthField(
-                              prefixIcon: const Icon(CupertinoIcons.lock),
-                              validator: (value) =>
-                                  TValidator.validateEmptyText(
-                                    'Password',
-                                    value,
+                            () => SlideTransition(
+                              position: passwordFieldSlideAnimation,
+                              child: AuthField(
+                                prefixIcon: const Icon(CupertinoIcons.lock),
+                                validator: (value) =>
+                                    TValidator.validateEmptyText(
+                                      'Password',
+                                      value,
+                                    ),
+                                controller: controller.password.value,
+                                hintText: 'Enter your Password',
+                                obsecure: controller.obsecure.value,
+                                suffixIcon: GestureDetector(
+                                  onTap: () => controller.obsecure.value =
+                                      !controller.obsecure.value,
+                                  child: Icon(
+                                    controller.obsecure.value
+                                        ? CupertinoIcons.eye
+                                        : CupertinoIcons.eye_slash,
                                   ),
-                              controller: controller.password.value,
-                              hintText: 'Enter your Password',
-                              obsecure: controller.obsecure.value,
-                              suffixIcon: GestureDetector(
-                                onTap: () => controller.obsecure.value =
-                                    !controller.obsecure.value,
-                                child: Icon(
-                                  controller.obsecure.value
-                                      ? CupertinoIcons.eye
-                                      : CupertinoIcons.eye_slash,
                                 ),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                ],
                               ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          _showForgotPasswordModal(context, controller);
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: Theme.of(context).textTheme.titleSmall!
-                              .copyWith(color: AppColors.primary),
+                    FadeTransition(
+                      opacity: animationController,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            _showForgotPasswordModal(context, controller);
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: Theme.of(context).textTheme.titleSmall!
+                                .copyWith(color: AppColors.primary),
+                          ),
                         ),
                       ),
                     ),
@@ -139,39 +206,48 @@ class LoginView extends GetView<LoginController> {
                                 ),
                               ),
                             )
-                          : AuthButton(
-                              label: 'Continue',
-                              size: Size(width * 0.6, 50),
-                              onPressed: () => controller.loginUser(),
+                          : FadeTransition(
+                            opacity: animationController,
+                            child: SlideTransition(
+                              position: buttonSlideAnimation,
+                              child: AuthButton(
+                                  label: 'Continue',
+                                  size: Size(width * 0.6, 50),
+                                  onPressed: () => controller.loginUser(),
+                                ),
                             ),
+                          ),
                     ),
 
                     SizedBox(height: isTablet ? 35 : 25),
 
-                    Align(
-                      alignment: Alignment.center,
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Don’t have an account? ',
-                              style: Theme.of(context).textTheme.titleLarge!
-                                  .copyWith(
-                                    color: Colors.black,
-                                    fontSize: isTablet ? 16 : 14,
-                                  ),
-                            ),
-                            TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () => Get.toNamed(Routes.signup),
-                              text: 'Sign up',
-                              style: Theme.of(context).textTheme.titleLarge!
-                                  .copyWith(
-                                    color: AppColors.primary,
-                                    fontSize: isTablet ? 18 : 16,
-                                  ),
-                            ),
-                          ],
+                    FadeTransition(
+                      opacity: animationController,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Don’t have an account? ',
+                                style: Theme.of(context).textTheme.titleLarge!
+                                    .copyWith(
+                                      color: Colors.black,
+                                      fontSize: isTablet ? 16 : 14,
+                                    ),
+                              ),
+                              TextSpan(
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () => Get.toNamed(Routes.signup),
+                                text: 'Sign up',
+                                style: Theme.of(context).textTheme.titleLarge!
+                                    .copyWith(
+                                      color: AppColors.primary,
+                                      fontSize: isTablet ? 18 : 16,
+                                    ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -216,9 +292,10 @@ void _showForgotPasswordModal(
 
           Text(
             'Enter your email to receive a reset link',
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall!.copyWith(color:AppColors.textLighter,fontWeight: FontWeight.normal),
+            style: Theme.of(context).textTheme.titleSmall!.copyWith(
+              color: AppColors.textLighter,
+              fontWeight: FontWeight.normal,
+            ),
           ),
 
           const SizedBox(height: 20),

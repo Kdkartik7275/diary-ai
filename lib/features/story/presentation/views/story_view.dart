@@ -203,7 +203,7 @@ class _StoryViewState extends State<StoryView>
                       physics: const AlwaysScrollableScrollPhysics(),
                       children: [
                         SizedBox(height: height * .2),
-                        EmptyStories(theme: theme),
+                        EmptyStories(theme: theme,hasPublishedStories: controller.published.isNotEmpty),
                       ],
                     )
                   : ListView.separated(
