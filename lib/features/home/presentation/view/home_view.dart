@@ -76,11 +76,12 @@ class _HomeViewState extends State<HomeView>
         );
     streakSlideAnimation =
         Tween<Offset>(begin: const Offset(-1.0, 0.0), end: Offset.zero).animate(
-          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+                 CurvedAnimation(parent: animationController, curve: Interval(.3, .9,curve: Curves.easeOut)),
+
         );
     draftSlideAnimation =
         Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero).animate(
-          CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+          CurvedAnimation(parent: animationController, curve: Interval(.3, .9,curve: Curves.easeOut)),
         );
     animationController.forward();
     scrollController.addListener(() {
